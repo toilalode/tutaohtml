@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Thiên Mệnh Kiếm Pháp</title><link rel="stylesheet" href="style.css"><link rel="manifest" href="manifest.json"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#020005"></head>
+<body>
+<div id="top">
+ <div id="hudL"><div class="t c">HP: <span id="hpT">100</span>/100</div><div class="bar hpb"><i id="hp"></i></div>
+  <div class="t b">THỂ LỰC: <span id="stT">100</span>/100</div><div class="bar stb"><i id="st"></i></div>
+  <div class="t y">KILLS: <span id="killT">0</span></div></div>
+ <div id="hudR"><div class="badge g" id="bStyle">KIẾM PHÁP</div><div class="badge o" id="bSword">KIẾM</div><div id="buffs"></div></div>
+</div>
+<div id="start"><h1>THIÊN MỆNH KIẾM PHÁP</h1><p>Chạm để vào game<br><small>(toàn màn hình + tự xoay ngang)</small></p></div>
+<div id="flash"></div><div id="cb1" class="cb"></div><div id="cb2" class="cb"></div><div id="banner"></div><div id="toast"></div>
+<div id="popup"><div id="ptitle"></div><div id="popts"></div></div>
+<div id="guide"><div id="gtabs"></div><div id="gbody"></div><button id="gclose">Đóng</button></div>
+<div id="joy"><b id="knob"></b></div>
+<div id="colL" class="col"></div><div id="colR" class="col"></div><div id="btns"></div>
+<script src="lib/three.min.js"></script>
+<script>if(typeof THREE==="undefined")document.body.insertAdjacentHTML("beforeend","<p style='position:fixed;top:40%;width:100%;text-align:center'>Không tải được lib/three.min.js — hãy chạy server trong đúng thư mục thienmenh (xem README).</p>")</script>
+<script src="skills.js"></script>
+<script src="beasts.js"></script>
+<script src="game.js"></script><script>if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(function(){})</script></body></html>
