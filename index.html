@@ -7,6 +7,15 @@
 (function(){function show(m){var d=document.getElementById('errbox');if(!d){d=document.createElement('pre');d.id='errbox';d.style.cssText='position:fixed;left:0;right:0;top:0;max-height:45%;overflow:auto;margin:0;padding:6px;background:rgba(150,0,0,.92);color:#fff;font:11px monospace;white-space:pre-wrap;z-index:99999;touch-action:auto;user-select:text';(document.body||document.documentElement).appendChild(d)}d.textContent+=m+'\n'}
 window.addEventListener('error',function(e){show('LỖI: '+e.message+' ('+(e.filename||'').split('/').pop()+':'+e.lineno+':'+e.colno+')')});
 window.addEventListener('unhandledrejection',function(e){show('LỖI PROMISE: '+(e.reason&&e.reason.message||e.reason))});})();
+</script>
+<script>
+// Chống thu phóng khi bấm liên tục / chụm 2 ngón (không đụng tới pointer/touch của joystick và nút chiêu)
+(function(){var last=0;
+document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<350&&e.target.closest&&!e.target.closest('#popup,#guide,#tp,#kp,#start'))e.preventDefault();last=n},{passive:false});
+['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault()})});
+document.addEventListener('dblclick',function(e){e.preventDefault()});
+document.addEventListener('touchmove',function(e){if(e.scale&&e.scale!==1)e.preventDefault()},{passive:false});
+})();
 </script></head>
 <body>
 <div id="top">
