@@ -77,7 +77,8 @@ button{font-family:'Courier New',monospace}
 /* cột trái lùi xuống 30px */
 #colL{bottom:82px}
 /* GPU: đẩy lên lớp compositor, thanh máu dùng transform thay vì width */
-#dmg,#eh{will-change:transform,opacity}
+canvas{transform:translateZ(0);will-change:transform;backface-visibility:hidden}
+#top,.col,#btns,#dmg,#eh,#tp,#banner,#toast,#flash,#joy,#buffs{will-change:transform,opacity;backface-visibility:hidden}
 .hpb i,.stb i{transform-origin:0 50%;will-change:transform}
 #ehF{transform-origin:0 50%;will-change:transform}
 #eh{left:0;top:0}
