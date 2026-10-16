@@ -1,0 +1,86 @@
+*{box-sizing:border-box;touch-action:none;user-select:none;-webkit-user-select:none}
+body{margin:0;overflow:hidden;background:#020005;font-family:'Courier New',monospace;color:#fff}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
+#top{position:fixed;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;align-items:flex-start;z-index:100;pointer-events:none}
+#hudL{background:rgba(10,5,25,.85);border:1px solid #4d26b3;padding:8px;border-radius:6px;min-width:170px;display:flex;flex-direction:column;gap:4px}
+.t{font-size:11px;font-weight:bold}.c{color:#0ff}.b{color:#48f}.y{color:#fc0}
+.bar{height:9px;background:#221133;border:1px solid #537;border-radius:3px;overflow:hidden}
+.hpb i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#f05,#f50)}
+.stb i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#04f,#0cf)}
+#hudR{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.badge{padding:4px 10px;border-radius:4px;font-weight:bold;font-size:11px}
+.g{background:rgba(255,204,0,.2);border:1px solid #fc0;color:#fc0;text-shadow:0 0 5px #fc0}
+.o{background:rgba(255,170,0,.15);border:1px solid #fa0;color:#fa0}
+#buffs{position:fixed;top:8px;left:50%;transform:translateX(-50%);max-width:34vw;display:flex;flex-direction:row;flex-wrap:wrap;gap:3px;justify-content:center}
+#buffs span{padding:2px 8px;font-size:10px;font-weight:bold;background:rgba(238,130,238,.15);border:1px solid #e8e;color:#e8e;border-radius:4px}
+#banner{position:fixed;bottom:51px;left:50%;transform:translateX(-50%);max-width:90%;text-align:center;font-size:clamp(12px,2.5vw,19px);font-weight:900;color:#ffd700;text-shadow:0 0 10px #f80,0 0 4px #000;pointer-events:none;opacity:0;transition:opacity .25s;z-index:99}
+#toast{position:fixed;top:30%;width:100%;text-align:center;color:#f88;pointer-events:none;font-size:13px;text-shadow:0 0 4px #000;z-index:99}
+#flash{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .15s;z-index:5}
+#popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,360px);max-height:88vh;overflow:auto;background:rgba(8,2,22,.97);border:2px solid #9945ff;border-radius:14px;padding:14px;display:none;z-index:900;box-shadow:0 0 30px #9945ff88}
+#ptitle{color:#9945ff;font-weight:900;text-align:center;margin-bottom:10px;letter-spacing:1px}
+#popts button{display:block;width:100%;margin:7px 0;padding:11px;font:bold 13px 'Courier New',monospace;text-align:left;background:rgba(255,204,0,.12);color:#fc0;border:2px solid #fc0;border-radius:8px}
+#popts button.on{background:#fc0;color:#000}
+#joy{position:fixed;left:75px;bottom:70px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.3);z-index:200}
+#knob{position:absolute;left:36px;top:36px;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#fa0,#9945ff);border:1px solid #fff}
+.col{position:fixed;bottom:112px;z-index:200;display:flex;flex-direction:column;gap:6px}
+#colL{left:8px}#colR{right:8px}
+button{font-family:'Courier New',monospace}
+.col button{width:54px;height:38px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;background:#0a0a1a}
+.col b,#btns b{font-size:13px}.col i,#btns i{font-size:7px;font-style:normal;color:#aaa;white-space:nowrap}
+.c1{border:2px solid #9945ff;color:#9945ff;background:#1b053a!important}.c2{border:2px solid #ff45b5;color:#ff45b5;background:#3a052d!important}
+.c3{border:2px solid #fa0;color:#fa0;background:#3a2c05!important}.c4{border:2px solid #2ecc71;color:#2ecc71;background:rgba(30,80,40,.85)!important}
+.c5{border:2px solid #f50;color:#f50;background:rgba(120,20,0,.85)!important}
+#btns{position:fixed;bottom:8px;left:8px;right:8px;z-index:200;display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+#btns button{width:44px;height:40px;background:#0a0a1a;border:1px solid #fa0;border-radius:6px;color:#fa0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+#btns button.cd,.col button.cd{opacity:.35}#btns button.on,.col button.on{background:#fa0!important;color:#000}
+#btns button.on i,.col button.on i{color:#000}
+
+.c6{border:2px solid #7ab8ff;color:#7ab8ff;background:#0a1630!important}.c7{border:2px solid #e0e0e0;color:#e0e0e0;background:#222a33!important}
+.col button.c7.on{background:#e0e0e0!important}
+#btns button.rR{border-color:#ff5555;color:#ff5555;background:#2a0a0a}#btns button.rT{border-color:#55ddff;color:#55ddff;background:#08222a}
+#btns button.rY{border-color:#5cff7a;color:#5cff7a;background:#0a2a12}#btns button.rU{border-color:#ff55e0;color:#ff55e0;background:#2a0a26}
+#btns button.rR.on{background:#ff5555!important;color:#000}#btns button.rT.on{background:#55ddff!important;color:#000}
+#btns button.rY.on{background:#5cff7a!important;color:#000}#btns button.rU.on{background:#ff55e0!important;color:#000}
+#btns button.lock{opacity:.3;border-style:dashed}
+#start{position:fixed;inset:0;z-index:9999;background:#020005;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#ffd700}
+#start h1{font-size:clamp(20px,5vw,34px);text-shadow:0 0 16px #f80;margin:0 0 12px}#start p{font-size:16px;color:#fff}#start small{color:#aaa}
+/* Dự phòng: nếu trình duyệt không cho khoá xoay, tự xoay giao diện 90° khi máy đang để dọc */
+@media (orientation:portrait){
+ html{overflow:hidden;height:100%}
+ body{position:fixed;top:0;left:100vw;width:100vh;height:100vw;transform-origin:0 0;transform:rotate(90deg)}
+}
+
+#guide{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(94vw,540px);display:none;flex-direction:column;background:rgba(8,2,22,.98);border:2px solid #9945ff;border-radius:14px;padding:10px;z-index:950;box-shadow:0 0 30px #9945ff88}
+#gtabs{display:flex;gap:4px;margin-bottom:8px}
+#gtabs button{flex:1;padding:8px 2px;font:bold 11px 'Courier New',monospace;background:#1b053a;color:#c8a0ff;border:1px solid #9945ff;border-radius:6px}
+#gtabs button.on{background:#9945ff;color:#000}
+#gbody{overflow-y:auto;font-size:12px;line-height:1.55;color:#ddd;padding:4px 6px}
+#gbody h3{color:#fc0;margin:8px 0 4px;font-size:13px}#gbody b{color:#0ff}#gbody small{color:#999}
+#gclose{margin-top:8px;padding:10px;font:bold 13px 'Courier New',monospace;background:#fc0;color:#000;border:0;border-radius:8px}
+#btns button.cd,.col button.cd{opacity:.6}
+#btns button.cd b,.col button.cd b{color:#fff;font-size:14px}
+
+.cb{position:fixed;left:0;right:0;height:13%;background:#000;opacity:0;transition:opacity .3s;pointer-events:none;z-index:90}#cb1{top:0}#cb2{bottom:0}
+#btns button.rR{border-color:#ff9a1f;color:#ff9a1f;background:#2a1600}
+#btns button.rT,#btns button.rY,#btns button.rU{border-color:#ff3333;color:#ff3333;background:#2a0808}
+#btns button.rR.on{background:#ff9a1f!important;color:#000}
+#btns button.rT.on,#btns button.rY.on,#btns button.rU.on{background:#ff3333!important;color:#000}
+
+#dmg{position:fixed;bottom:188px;left:130px;transform:translateX(-50%);z-index:150;pointer-events:none;opacity:0;font:900 clamp(20px,4vw,32px) 'Courier New',monospace;color:#ffd24d;text-shadow:0 0 8px #f50,0 2px 0 #7a1500,0 0 3px #000;white-space:nowrap}
+#eh{position:fixed;display:none;z-index:120;pointer-events:none;transform:translate(-50%,-100%);width:200px;height:26px;background:rgba(10,0,15,.85);border:2px solid #fff;border-radius:6px;overflow:hidden}
+#ehF{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,#d00040,#ff6a00)}
+#ehT{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:bold 14px 'Courier New',monospace;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+#tp{position:fixed;top:38px;left:50%;transform:translateX(-50%);z-index:160;display:none;align-items:center;gap:5px;background:rgba(10,5,25,.9);border:1px solid #9945ff;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:bold;color:#fc0}
+#tp input{width:84px;padding:4px;background:#120a26;border:1px solid #9945ff;border-radius:4px;color:#fff;font:bold 12px 'Courier New',monospace;user-select:text;-webkit-user-select:text;touch-action:auto}
+#tp button{padding:5px 9px;background:#9945ff;color:#fff;border:0;border-radius:4px;font:bold 11px 'Courier New',monospace}
+
+/* cột trái lùi xuống 30px */
+#colL{bottom:82px}
+/* GPU: đẩy lên lớp compositor, thanh máu dùng transform thay vì width */
+canvas{transform:translateZ(0);will-change:transform;backface-visibility:hidden}
+#top,.col,#btns,#dmg,#eh,#tp,#banner,#toast,#flash,#joy,#buffs{will-change:transform,opacity;backface-visibility:hidden}
+.hpb i,.stb i{transform-origin:0 50%;will-change:transform}
+#ehF{transform-origin:0 50%;will-change:transform}
+#eh{left:0;top:0}
+
+#tp input[readonly]{opacity:.7;background:#0a0618;border-color:#555}
