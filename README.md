@@ -1,4 +1,4 @@
-# Thiên Mệnh Kiếm Pháp 3D — hướng dẫn chạy (không màn hình đen)
+# Tổng Hợp Kiếm Pháp 3D — hướng dẫn chạy (không màn hình đen)
 Game đã gói sẵn three.js trong `lib/` nên KHÔNG cần Internet.
 
 ## Cách 1 (khuyên dùng): localhost
