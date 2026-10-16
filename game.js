@@ -161,7 +161,7 @@ async function run(sp,k0){
  if(k=='guard2')P.inv=60;if(sp.inv)P.inv=sp.inv;
  const lines=sp.lines||[];if(!lines.length)say(sp.n,1000);
  for(const t of lines){say(t,sp.ld?600:700);await wait(sp.ld||24)}
- if(sp.domain){domainOpen();say('LÃNH ĐỊA — Nhất Trảm Độc Tôn Vực!',1400);flash(PURP);shake=Math.max(shake,16);FXK('ring',{r:DR/1.2,life:50,col:GOLD});await wait(40)}
+ if(sp.domain){domainOpen();say('',1400);flash(PURP);shake=Math.max(shake,16);FXK('ring',{r:DR/1.2,life:50,col:GOLD});await wait(40)}
  if(sp.bagua){if(!sp.nogr)FXK('bagua',{r:8,life:100,col});FXK('back',{tex:texBagua,size:9,life:100})}
  if(sp.n.includes('Cửu Cung'))FXK('floor',{tex:texTaiji,size:10,life:100});
  if(sp.ring)[0x50e696,0xf5f5ff,0xff6e28,0x468cff].forEach((c,i)=>FXK('ring',{r:3+i*3,life:40,col:c}));
