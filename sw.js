@@ -1,5 +1,5 @@
-const V='thienmenh-v3';
-const CORE=['./','index.html','style.css','skills.js','beasts.js','game.js','manifest.json','lib/three.min.js',
+const V='thienmenh-v4';
+const CORE=['./','index.html','style.css','skills.js','beasts.js','game.js','rules.js','manifest.json','lib/three.min.js',
   'icons/icon-192.png','icons/icon-512.png','icons/maskable-192.png','icons/maskable-512.png','icons/apple-touch-icon.png','icons/favicon-48.png'];
 // File nặng, ít đổi → ưu tiên cache (nhanh hơn, ít tốn mạng)
 const STATIC=/\/(lib\/three\.min\.js|icons\/[^/]+)$/;
