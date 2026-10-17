@@ -98,8 +98,8 @@ const domeM=(()=>{const c=document.createElement('canvas');c.width=1024;c.height
  g.strokeStyle='rgba(255,214,70,.55)';g.lineWidth=3;for(let i=0;i<16;i++){g.beginPath();g.moveTo(i*64,0);g.lineTo(i*64,512);g.stroke()}for(let j=1;j<5;j++){g.beginPath();g.moveTo(0,j*100);g.lineTo(1024,j*100);g.stroke()}
  return new THREE.Mesh(new THREE.SphereGeometry(DR,32,20),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.BackSide,transparent:true,opacity:.82,fog:false,depthWrite:false}))})();
 const domeG=plane(texBagua,DR*2,.75);domeG.rotation.x=-Math.PI/2;
-function domainOpen(){DC={x:player.position.x,z:player.position.z};domeM.position.set(DC.x,0,DC.z);domeG.position.set(DC.x,.09,DC.z);scene.add(domeM);scene.add(domeG);P.lt=156;scene.fog.color.set(0x1a0c3a);scene.fog.near=30;scene.fog.far=140}
-function domainClose(){P.lt=0;DC=null;scene.remove(domeM);scene.remove(domeG);scene.fog.color.set(HOR);scene.fog.near=60;scene.fog.far=230}
+function domainOpen(){DC={x:player.position.x,z:player.position.z};domeM.position.set(DC.x,0,DC.z);domeG.position.set(DC.x,.09,DC.z);scene.add(domeM);scene.add(domeG);P.lt=1e9;scene.fog.color.set(0x1a0c3a);scene.fog.near=30;scene.fog.far=140}
+function domainClose(){P.lt=0;DC=null;domeG.scale.setScalar(1);scene.remove(domeM);scene.remove(domeG);scene.fog.color.set(HOR);scene.fog.near=60;scene.fog.far=230}
 // ===== TIỆN ÍCH =====
 function say(t,ms=1500){const b=$('banner');b.style.bottom=($('btns').offsetHeight+8+3)+'px';b.textContent=t;b.style.opacity=1;clearTimeout(say.t);say.t=setTimeout(()=>b.style.opacity=0,ms)}
 function toast(t){const e=$('toast');e.textContent=t;clearTimeout(toast.t);toast.t=setTimeout(()=>e.textContent='',1800)}
@@ -155,7 +155,7 @@ function strike(kind,tx,tz,dm,r,col){const vr=r*hbMul();
 const BEAST={'2z':'long','2x':'long','2c':'ho','2v':'tuoc','2b':'tuoc','2n':'vu','2j':'all','2f':'all'};
 async function run(sp,k0){
  const col=cpick(sp),k=sp.sp,pl=P,flyUp=(P.sty==0&&k!='counter'&&!sp.nofly)||!!sp.skyfly,lk=k!='counter';P.busy++;if(lk)P.lk++;if(flyUp){P.flyN++;P.flyH=24}
- let dotT=0;if(sp.dot)dotT=setInterval(()=>{if(paused)return;const px=player.position.x,pz=player.position.z;hit(px,pz,sp.dot[0],sp.dot[1],.2);FXK('slash',{x:px+Math.random()*8-4,z:pz+Math.random()*8-4,r:3,col})},220);
+ let dotT=0,dotN=sp.dot&&sp.dot[2]||999;if(sp.dot)dotT=setInterval(()=>{if(paused)return;if(dotN--<=0){clearInterval(dotT);return}const px=player.position.x,pz=player.position.z;hit(px,pz,sp.dot[0],sp.dot[1],.2);FXK('slash',{x:px+Math.random()*8-4,z:pz+Math.random()*8-4,r:3,col})},220);
  try{
  if(sp.fat)P.tf=1;if(sp.cutscene)P.cutMax=P.cut=30+(sp.lines||[]).length*(sp.ld||24)+10;
  if(sp.skyfly)await wait(30);
@@ -163,7 +163,7 @@ async function run(sp,k0){
  if(k=='dom4'){P.dom4=1;say('Thái Cực Hình Ý — Vô Địch Chi Cảnh',2000);await wait(30);return}
  if(k=='dom5'){P.dom5=1;say('Đệ Ngũ Thức — Ngưng Động Thời Gian! Thao Túng Quy Luật Vạn Vật',2200);flash(PURP);await wait(30);return}
  if(k&&k.startsWith('form')){const v=+k[4];P.form=P.form==v?0:v;say(sp.n+(P.form?' — BẬT':' — TẮT'),1200);await wait(20);return}
- if(k=='rewrite'){P.inv=150;flash(PURP);FXK('ring',{r:40,life:40,col:GOLD})}
+ if(k=='rewrite'){P.inv=3600;P.nost=3600;flash(PURP);FXK('ring',{r:40,life:40,col:GOLD})}
  if(k=='guard2')P.inv=60;if(sp.inv)P.inv=sp.inv;
  const lines=sp.lines||[];if(!lines.length)say(sp.n,1000);
  for(const t of lines){say(t,sp.ld?600:700);await wait(sp.ld||24)}
@@ -179,10 +179,11 @@ async function run(sp,k0){
  let[tx,tz]=target();
  for(let i=0;i<(sp.rain||0);i++){const rx=tx+Math.random()*12-6,rz=tz+Math.random()*8-4;FXK('blade',{x:rx,z:rz,col});setTimeout(()=>hit(rx,rz,2.6,sp.rd||25,.3),200);await wait(2)}
  if(sp.end)say(sp.end,1000);
- if(sp.domain&&DC){enemies.forEach(e=>{if(e.hp>0&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){e.hit=10;FXK('blade',{x:e.m.position.x,z:e.m.position.z,col:GOLD});e.hp-=2500*dmgMul()/3}});FXK('sky',{col:GOLD});flash(GOLD);shake=Math.max(shake,20)}
+ if(sp.domain&&DC){enemies.forEach(e=>{if(e.hp>0&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){e.hit=10;FXK('blade',{x:e.m.position.x,z:e.m.position.z,col:GOLD});e.hp-=1500*dmgMul()}});FXK('sky',{col:GOLD});flash(GOLD);shake=Math.max(shake,20)}
  for(const[kind,dm,r]of sp.seq||[]){[tx,tz]=target();strike(kind,tx,tz,dm,r,col);await wait(sp.gap||12)}
+ if(sp.domain&&DC){domainClose();flash(0xffffff);shake=Math.max(shake,18);FXK('ring',{r:30,life:30,col:GOLD})}
  if(sp.fat){P.fat=600;toast('Cấm Kị: cơ thể mệt, hồi chiêu lâu hơn')}
- }finally{clearInterval(dotT);P.busy--;if(lk)P.lk--;if(sp.fat)P.tf=0;if(flyUp){P.flyN--;P.fly=Math.max(P.fly,25)}}}
+ }finally{clearInterval(dotT);if(sp.domain&&DC)domainClose();P.busy--;if(lk)P.lk--;if(sp.fat)P.tf=0;if(flyUp){P.flyN--;P.fly=Math.max(P.fly,25)}}}
 function cast(k){
  if(paused||P.block)return;k=k.toLowerCase();const sp=SK[P.sty][k];if(!sp)return;if(P.lk>0)return;
  if(sp.sp=='dom4'&&P.dom4>0){P.dom4=0;return say('Tắt Vô Địch Chi Cảnh',900)}
@@ -194,7 +195,7 @@ function cast(k){
  if(sp.sp=='dom4'&&P.dom5>0)return toast('Đệ Ngũ đang dùng: cấm Đệ Tứ');
  if(sp.sp=='dom5'&&P.dom4>0)return toast('Đệ Tứ đang dùng: cấm Đệ Ngũ');
  const ck=P.sty+(sp.cdk||k);if(P.cd[ck]>0)return;
- const cm=costMul(),sc=sp.sta*cm.st;if(P.st<sc)return toast('Thiếu thể lực');P.st-=sc;P.cd[ck]=sp.cd/60*(P.fat>0?1.5:1)*cm.cd;
+ const cm=costMul(),sc=sp.sta*cm.st;if(!(P.nost>0)){if(P.st<sc)return toast('Thiếu thể lực');P.st-=sc}P.cd[ck]=sp.cd/60*(P.fat>0?1.5:1)*cm.cd;
  run(sp,k)}
 function atk(){if(paused||P.block||P.cd.atk>0||P.busy>0||P.lk>0||P.cut>0)return;P.cd.atk=.28;P.swing=.25;const[tx,tz]=target();
  FXK('slash',{x:tx,z:tz,r:2.5,col:P.form?GOLD:0xffffff});hit(tx,tz,3,40,.8)}
@@ -235,7 +236,7 @@ addEventListener('keyup',e=>{keys[e.code]=0;if(e.code=='KeyE')blockOn(0)});
 addEventListener('contextmenu',e=>e.preventDefault());
 const jump=()=>{if(P.ground&&!paused&&!P.lk&&!(P.busy>0)&&!(P.cut>0)){P.vy=P.rule[0]?15:9;P.ground=false}};
 function blockOn(v){if(v&&(paused||P.hp<=0||P.cd.block>0||P.busy>0||P.lk>0||P.cut>0))return;P.block=v?1:0}
-function dash(){if(paused||P.lk>0||P.busy>0||P.cut>0)return;if(P.st<8)return toast('Thiếu thể lực');P.st-=8;
+function dash(){if(paused||P.lk>0||P.busy>0||P.cut>0)return;if(!(P.nost>0)){if(P.st<8)return toast('Thiếu thể lực');P.st-=8}
  const c=Math.cos(camYaw),s=Math.sin(camYaw),ix=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x,iz=(keys.KeyS?1:0)-(keys.KeyW?1:0)+joy.y;let dx,dz;
  if(Math.hypot(ix,iz)>.2){dx=c*ix+s*iz;dz=-s*ix+c*iz}else{dx=Math.sin(yaw);dz=Math.cos(yaw)}
  const l=Math.hypot(dx,dz)||1;P.dvx=dx/l*42;P.dvz=dz/l*42;P.dashT=.2;P.inv=Math.max(P.inv,14);yaw=Math.atan2(dx,dz);
@@ -311,7 +312,7 @@ function placeCols(){const h=$('btns').offsetHeight;$('colR').style.bottom=Math.
 // ===== HƯỚNG DẪN =====
 const NOTE=[
 {z:'Triệu 1 phân thân, mưa 24 kiếm từ trời rồi nổ lớn.',x:'Bóng khổng lồ, 2 tia kiếm rồi 1 nhát chém lớn.',c:'6 phân thân hợp nhất thành 1 nhát chém lớn.',v:'3 nhát chém liên tiếp. Không bay lên trời.',b:'Thế phản đòn 1.7 giây: bị đánh thì chém trả 300 sát thương.',n:'1 nhát chém mạnh. Không bay lên trời.',m:'8 phân thân, hố đen trên trời rồi nổ cực lớn.',f:'Mưa 44 kiếm rồi nổ cực lớn, bóng khổng lồ.'},
-{z:'Nhát chém nhanh, nhẹ, hồi chiêu ngắn.',x:'4 tia phi kiếm liên tiếp.',c:'Bất tử ~2.5 giây, sóng vàng quanh người rồi chém lớn.',v:'Vệt chém từ trời quét cả màn hình.',g:'8 phân thân, mở Lãnh Địa: quái trong vực đứng im, bị thiêu đốt rồi bị chém tất trúng. Lãnh địa vỡ nát 3 giây sau câu Vạn Cổ Tuyệt Hưởng.'},
+{z:'Nhát chém nhanh, nhẹ, hồi chiêu ngắn.',x:'4 tia phi kiếm liên tiếp.',c:'Bất tử 1 phút và không tốn thể lực; chém quái 3500 sát thương gốc.',v:'Chém đầu 1750 rồi Nhất Trảm Khai Thiên 3750 (tổng 5500).',g:'8 phân thân, mở Lãnh Địa (quái trong vực đứng im, chịu 1500 sát thương, bát quái nằm sau lưng), chém cuối rồi phá Lãnh Địa. Tổng 18000.'},
 {z:'Thanh Long: 4 tia sét liên tiếp rồi nổ.',x:'Thanh Long: 1 nhát chém sét lớn.',c:'Bạch Hổ: 1 tia kiếm xa.',v:'Chu Tước: nổ lửa lớn.',b:'Chu Tước: 6 tia lửa liên tiếp.',n:'Huyền Vũ: bất tử 1 giây, 1 tia rồi 1 nhát chém.',m:'Bật/tắt Tứ Thánh Khí Tức: 4 thú xoay quanh người, sát thương Tứ Tượng +500%.',j:'4 phân thân, chém lớn Tứ Thánh Quy Nhất.',f:'4 vòng sáng 4 thú rồi chém cực lớn. Thêm: khi bị đánh, Huyền Vũ tự đỡ và bắn trả (gần như liên tục).'},
 {z:'3 phân thân, bát quái dưới chân, gây sát thương liên tục quanh người rồi chém.',x:'Bản mạnh hơn: tốn thể lực hơn, sát thương liên tục lớn hơn, kết thúc bằng nổ.',c:'Bất tử ~1.2 giây, 16 nhát chém liên hoàn rồi nổ.',v:'10 phân thân, Thái Cực xoay dưới chân rồi chém.',b:'Bật/tắt Vô Địch Chi Cảnh: quái trong tầm đứng im, sát thương ×2.5.',n:'Cần Vô Địch Chi Cảnh đang bật: chém bát quái rất mạnh.',m:'Bật/tắt Nghịch Thiên: ngưng thời gian, quái đứng im, sát thương ×4.5, chỉ dùng được Thần Trảm.',j:'Cần Nghịch Thiên đang bật: cutscene cận mặt, niệm 8 quẻ rồi tia chém từ trời.',f:'Bay lên, ngưng thời gian (màn hình xám) suốt lúc thi triển, chém và nổ cực lớn; sau đó cơ thể mệt, hồi chiêu ×1.5 trong 10 giây.'},
 {z:'4 nhát chém nhanh rồi nổ.',x:'22 nhát chém dồn dập rồi nổ.',c:'4 phân thân, 1 nhát chém lớn.',v:'Bật/tắt Hình Thái Đại Thánh: sát thương ×3.5.',f:'Cần Đại Thánh hoặc Thần Châm đang bật: bay lên, bóng khổng lồ, tia chém từ trời rồi nổ cực lớn.',g:'Bật/tắt Định Hải Thần Châm: sát thương ×6.'}];
@@ -320,8 +321,8 @@ const GUIDE={
 'Điều khiển':`<h3>Di chuyển & camera</h3><b>WASD</b> / joystick trái: chạy. <b>Space</b> / nút ⤒: nhảy.<br>Kéo ngón tay (hoặc giữ chuột trái rồi kéo) để xoay camera: <b>trái/phải và lên/xuống đều xoay được trọn 360°</b>.<h3>Chiến đấu</h3><b>M1</b> (chạm / bấm màn hình): chạm nhanh = 1 đòn, giữ yên = đánh liên tục.<br><b>M2</b> (H / chuột phải / nút M2): menu Quy Luật (cần bật R).<br><b>Q</b> Lướt: né đòn, tốn 8 thể lực, <b>không hồi chiêu</b>.<br><b>E</b> (giữ) Đỡ đòn: tốn thể lực khi bị đánh, hết thể lực sẽ vỡ thế đỡ.<br><b>1</b> chọn kiếm pháp, <b>2</b> chọn kiếm.<br><b>Z X C V B N M J F G</b>: các chiêu (tuỳ kiếm pháp, xem tab Kiếm pháp).<h3>Lưu ý</h3>Đang thi triển chiêu thì <b>phải đứng yên, không lướt/nhảy được, quái không đánh trúng bạn</b>, và chưa dùng được chiêu khác — chờ chiêu xong. Nút đang hồi chiêu hiện số giây còn lại.`,
 'Buff':`<h3>Điều kiện</h3>Nút R T Y U chỉ hiện khi dùng <b>Thiên Mệnh Kiếm</b> (phím 2) + kiếm pháp <b>Cửu Ngũ Chí Tôn Kiếm</b> hoặc <b>Thiên Mệnh Kiếm Pháp</b> (phím 1). Riêng <b>R</b> chỉ có ở Cửu Ngũ Chí Tôn Kiếm, Thiên Mệnh Kiếm Pháp không có R. Đổi sang kiếm/kiếm pháp khác thì các buff tự tắt.<h3>Các buff (bật/tắt, không hồi chiêu)</h3><b>R</b> Kiếm Hồn Cửu Ngũ Chí Tôn (cam): hình bóng vàng sau lưng, <b>sát thương ×4</b> (chỉ ở Cửu Ngũ Chí Tôn Kiếm), mở khoá M2 Quy Luật.<br><b>T</b> Thiên Địa Chi Cảnh (đỏ): <b>sát thương ×2.3</b>, hồi thể lực gấp đôi (18/giây), mỗi đòn trúng hút +0.3 máu. Không hấp thụ sát thương.<br><b>Y</b> Thiên Mệnh Xích Giáp (đỏ): mọi sát thương nhận vào không trừ máu mà <b>dồn lại thành điểm hấp thụ</b> (hiện trên thanh buff).<br><b>U</b> Phản Hồi (đỏ): dùng sau khi Y đã hấp thụ — nổ bán kính lớn trả lại sát thương đã hấp thụ (nhân 6), rồi <b>sát thương ×2 trong 10 giây</b>. Dùng xong điểm hấp thụ về 0.<h3>Quy tắc</h3>Bật R thì cấm T, Y, U. Bật T hoặc Y thì cấm R.<h3>M2 — Quy Luật Kiếm Hồn</h3>Vạn Kiếm Giáng Thế · Thiên Trảm · Áp Chế (bật/tắt, quái đứng im và bị thiêu đốt).`,
 'Kiếm':`<h3>Titan Sword (xám)</h3>Kiếm thường: sát thương ×1, không có thưởng gì thêm.<h3>Taichi Sword (đen trắng)</h3>Sát thương ×1.25. Khi dùng <b>Thái Cực Kiếm Pháp</b>: sát thương ×3 (tổng ×3.75), hồi chiêu ×0.6, tốn thể lực ×0.5.<h3>Thiên Mệnh Kiếm (vàng kim)</h3>Sát thương ×1.7. Khi dùng <b>Cửu Ngũ Chí Tôn Kiếm</b> hoặc <b>Thiên Mệnh Kiếm Pháp</b>: thêm sát thương ×1.5, vùng trúng đòn rộng ×1.5, hồi chiêu và thể lực chỉ còn ×0.4. Chỉ kiếm này mới mở được nút R T Y U.<h3>Cộng dồn</h3>Các hệ số nhân với nhau: kiếm × buff (R/T/U) × trạng thái chiêu (Đệ Tứ ×2.5, Đệ Ngũ ×4.5, Đại Thánh ×3.5, Định Hải Thần Châm ×6).`,
-'Chiêu':()=>STYLES.map((s,i)=>'<h3>'+s+'</h3>'+Object.keys(SK[i]).map(k=>{const q=SK[i][k];return '<b>'+k.toUpperCase()+'</b> '+q.n+' <small>(thể lực '+q.sta+(q.cd?', hồi '+(q.cd/60).toFixed(1)+'s':'')+')</small><br><small style="color:#bbb">'+((NOTE[i]||{})[k]||'')+'</small>'}).join('<br>')).join(''),
-'Mẹo':`<h3>Mẹo chơi</h3>• <b>Nhất Trảm Độc Tôn</b> (Thiên Mệnh Kiếm Pháp, phím G): mở <b>Lãnh Địa</b> — quái trong vực đứng im, bị thiêu đốt rồi bị chém tất trúng; lãnh địa vỡ nát 3 giây sau câu Vạn Cổ Tuyệt Hưởng.<br>• <b>Đệ Ngũ Thức: Nghịch Thiên</b> ngưng động thời gian, quái đứng im; chỉ dùng được Thần Trảm.<br>• <b>Thái Cực Thần Trảm</b> có cutscene cận mặt nhân vật lúc niệm chú.<br>• <b>Cấm Kị Chung Chương</b> ngưng động thời gian (màn hình xám) suốt lúc thi triển.<br>• <b>Cửu Ngũ Chí Tôn Kiếm</b>: các chiêu bay lên trời (trừ Tam Liên Trảm, Vạn Tượng Lai Triều và Ngôn Xuất Pháp Tuỳ Thức).<br>• <b>Tứ Tượng</b>: Huyền Vũ tự đỡ đòn khi bị đánh.<br>• Thể lực hồi chậm khi đang đỡ đòn; bật T hồi nhanh gấp đôi.<br>• Tự hồi máu 2 HP/giây sau 3 giây không bị đánh.<br>• Game tự lưu mỗi 2 giây. Xoá lưu: mở Console gõ <b>resetSave()</b>.<br>• Điện thoại: bật xoay tự động; giao diện tự xoay ngang.`};
+'Chiêu':()=>STYLES.map((s,i)=>'<h3>'+s+'</h3>'+Object.keys(SK[i]).map(k=>{const q=SK[i][k];return '<b>'+k.toUpperCase()+'</b> '+q.n+' <small>(thể lực '+q.sta+(q.cd?', hồi '+(q.cd/60).toFixed(1)+'s':'')+(q.tot?', sát thương gốc '+q.tot:'')+')</small><br><small style="color:#bbb">'+((NOTE[i]||{})[k]||'')+'</small>'}).join('<br>')).join(''),
+'Mẹo':`<h3>Mẹo chơi</h3>• <b>Nhất Trảm Độc Tôn</b> (Thiên Mệnh Kiếm Pháp, phím G): mở <b>Lãnh Địa</b> — quái trong vực đứng im, chịu 1500 sát thương rồi bị chém tất trúng; Lãnh Địa bị phá ngay sau nhát chém cuối.<br>• <b>Đệ Ngũ Thức: Nghịch Thiên</b> ngưng động thời gian, quái đứng im; chỉ dùng được Thần Trảm.<br>• <b>Thái Cực Thần Trảm</b> có cutscene cận mặt nhân vật lúc niệm chú.<br>• <b>Cấm Kị Chung Chương</b> ngưng động thời gian (màn hình xám) suốt lúc thi triển.<br>• <b>Cửu Ngũ Chí Tôn Kiếm</b>: các chiêu bay lên trời (trừ Tam Liên Trảm, Vạn Tượng Lai Triều và Ngôn Xuất Pháp Tuỳ Thức).<br>• <b>Tứ Tượng</b>: Huyền Vũ tự đỡ đòn khi bị đánh.<br>• Thể lực hồi chậm khi đang đỡ đòn; bật T hồi nhanh gấp đôi.<br>• Tự hồi máu 2 HP/giây sau 3 giây không bị đánh.<br>• Game tự lưu mỗi 2 giây. Xoá lưu: mở Console gõ <b>resetSave()</b>.<br>• Điện thoại: bật xoay tự động; giao diện tự xoay ngang.`};
 function guideOpen(){if(castBusy())return;paused=true;const g=$('guide');g.style.display='flex';g.style.maxHeight=VH()*.92+'px';$('gbody').style.maxHeight=(VH()*.92-95)+'px';guideTab(guideCur)}
 function guideTab(n){guideCur=n;const t=$('gtabs');t.innerHTML='';Object.keys(GUIDE).forEach(x=>{const b=document.createElement('button');b.textContent=x;if(x==n)b.className='on';b.onclick=()=>guideTab(x);t.appendChild(b)});const c=GUIDE[n];$('gbody').innerHTML=typeof c=='function'?c():c;$('gbody').scrollTop=0}
 {const gb=$('gbody');let gy=null;const Y=t=>VP()?-t.clientX:t.clientY;gb.addEventListener('touchstart',e=>{gy=Y(e.touches[0])},{passive:true});gb.addEventListener('touchmove',e=>{const y=Y(e.touches[0]);if(gy!=null)gb.scrollTop-=y-gy;gy=y;e.preventDefault()},{passive:false});gb.addEventListener('touchend',()=>{gy=null})}
@@ -332,8 +333,8 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
  if(paused){if(pdone)return;pdone=true}else pdone=false;
  if(!paused){
   for(const k in P.cd)if(P.cd[k]>0)P.cd[k]-=dt;
-  ['guard','inv','pwr','fat','cut'].forEach(k=>{if(P[k]>0){P[k]-=fr;if(P[k]<0)P[k]=0}});if(P.fly>0)P.fly-=fr;
-  if(P.lt>0){P.lt-=fr;domeM.rotation.y+=.002*fr;domeG.rotation.z+=.004*fr;if(P.lt<=0){domainClose();say('Lãnh Địa vỡ nát!',1200);flash(0xffffff);shake=Math.max(shake,18);FXK('ring',{r:30,life:30,col:GOLD})}}if((!rtyuOk()&&(P.kh||P.td||P.xich||P.absorb||P.pwr||P.ap))||(P.sty!=0&&(P.kh||P.ap)))syncRT();
+  ['guard','inv','pwr','fat','cut','nost'].forEach(k=>{if(P[k]>0){P[k]-=fr;if(P[k]<0)P[k]=0}});if(P.fly>0)P.fly-=fr;
+  if(P.lt>0){P.lt-=fr;domeM.rotation.y+=.002*fr;if(P.lt<=0){domainClose()}}if((!rtyuOk()&&(P.kh||P.td||P.xich||P.absorb||P.pwr||P.ap))||(P.sty!=0&&(P.kh||P.ap)))syncRT();
   if(heldM1)atk();if(keys.Tab)atk();
   const lkf=P.lk>0?0:1,mx=((keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x)*lkf,mz=((keys.KeyS?1:0)-(keys.KeyW?1:0)+joy.y)*lkf;
   P.mv=0;if(P.lk>0)P.dashT=0;if(P.dashT>0){P.dashT-=dt;P.mv=1;player.position.x+=P.dvx*dt;player.position.z+=P.dvz*dt}
@@ -347,7 +348,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
   if(P.hurtT>0)P.hurtT-=dt;else if(P.hp>0&&P.hp<100)P.hp=Math.min(100,P.hp+2*dt);if(P.rule[3])P.hp=Math.min(100,P.hp+3*dt);
   let apN=0;if(P.ap>0){P.apT=(P.apT||0)+dt;apN=Math.floor(P.apT/.005);P.apT-=apN*.005}else P.apT=0;
   enemies.forEach(e=>{if(e.hp<=0)return;const d=_d.copy(player.position).sub(e.m.position);d.y=0;const l=d.length(),ang=Math.atan2(d.x,d.z),u=e.m.userData;
-   let sl=(P.dom5>0||P.tf?0:1);if(P.dom4>0&&l<12)sl=0;if(P.lt>0&&DC&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){sl=0;e.hp-=60*dt*dmgMul()/3}if(P.ap>0){sl=0;if(apN)e.hp-=1000000*apN}   // Đệ Ngũ: NGƯNG ĐỘNG THỜI GIAN (quái đứng im hoàn toàn)
+   let sl=(P.dom5>0||P.tf?0:1);if(P.dom4>0&&l<12)sl=0;if(P.lt>0&&DC&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){sl=0}if(P.ap>0){sl=0;if(apN)e.hp-=1000000*apN}   // Đệ Ngũ: NGƯNG ĐỘNG THỜI GIAN (quái đứng im hoàn toàn)
    if(sl>0&&!e.dummy){e.m.rotation.y=ang;e.cd-=dt;
     if(l>1.9){e.m.position.add(d.normalize().multiplyScalar(3.4*dt));e.wind=0;e.ph+=dt*8;
      u.lL.rotation.x=Math.sin(e.ph)*.7;u.lR.rotation.x=-Math.sin(e.ph)*.7;u.aL.rotation.x=u.aR.rotation.x=-1.45+Math.sin(e.ph)*.15}
@@ -385,6 +386,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
  show(S.f3,P.form==3,o=>{o.position.set(pp.x,pp.y+1.2,pp.z);o.children.forEach((m,i)=>{const a=i*1.57+T*3;m.position.set(Math.cos(a)*2.6,Math.sin(a)*.6,Math.sin(a)*2.6);m.rotation.y=-a+1.57;animBeast(m,T)})});
  show(S.dom4,P.dom4>0,o=>{at(o);o.rotation.z=T*.3});show(S.dom5,P.dom5>0,o=>{at(o);o.rotation.z=-T*.2});
  S.dancers.forEach((m,i)=>show(m,P.dom4>0,o=>{const a=i*2.09+T;o.position.set(pp.x+Math.cos(a)*5,Math.abs(Math.sin(T*5+i))*.8,pp.z+Math.sin(a)*5);o.rotation.z=Math.sin(T*6+i)*.3}));
+ if(P.lt>0&&domeG.parent){domeG.position.set(pp.x-Math.sin(yaw)*6,pp.y+4.5,pp.z-Math.cos(yaw)*6);domeG.scale.setScalar(.1);domeG.lookAt(cam.position);domeG.rotateZ(T*.5)}
  show(S.law,P.dom5>0,o=>{o.position.set(pp.x-Math.sin(yaw)*3.5,pp.y+3.8,pp.z-Math.cos(yaw)*3.5);o.lookAt(cam.position);o.rotateZ(T*.5)});
  show(S.gap,P.ap>0,o=>{o.position.set(pp.x-Math.sin(yaw)*9,pp.y,pp.z-Math.cos(yaw)*9);const[ax,az]=target();o.rotation.y=Math.atan2(ax-o.position.x,az-o.position.z)});
  if(shake>0){shake*=.9;if(shake<.2)shake=0}
@@ -392,7 +394,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
  if(P.cut>0){const k=1-P.cut/(P.cutMax||100),d=3.4-k*1.6;cam.up.set(0,1,0);cam.position.set(pp.x+Math.sin(yaw)*d,pp.y+1.9,pp.z+Math.cos(yaw)*d);cam.lookAt(pp.x,pp.y+1.65,pp.z)}else{const cp=Math.cos(camPitch),sn=Math.sin(camPitch),D=12.1;cam.up.set(-Math.sin(camYaw)*sn,cp,-Math.cos(camYaw)*sn);cam.position.set(pp.x+Math.sin(camYaw)*cp*D+sx,pp.y+1.5+sn*D,pp.z+Math.cos(camYaw)*cp*D+sz);cam.lookAt(pp.x,pp.y+1.5,pp.z)}skyM.position.copy(cam.position);gr.position.set(pp.x,0,pp.z);gtex.offset.set(pp.x/10,-pp.z/10);
  sX('hp','scaleX('+(Math.max(0,Math.min(1,P.hp/100))).toFixed(3)+')');sX('st','scaleX('+(Math.max(0,Math.min(1,P.st/100))).toFixed(3)+')');sT('hpT',Math.max(0,Math.round(P.hp)));sT('stT',Math.round(P.st));
  sT('killT',kills+' | ĐỢT '+wave+' (kỷ lục '+Math.max(best,wave)+')');sT('bStyle','KIẾM PHÁP: '+STYLES[P.sty].toUpperCase());sT('bSword','KIẾM: '+SWORDS[P.sw][0].toUpperCase());
- const tg=[['Kiếm Hồn',P.kh],['Thiên Địa',P.td],['Xích Giáp',P.xich],['Đệ Tứ',P.dom4>0],['Đệ Ngũ: Ngưng Thời Gian',P.dom5>0],['Áp Chế',P.ap>0],['Lãnh Địa',P.lt>0],['Hình thái '+P.form,P.form],['Hấp thụ '+Math.round(P.absorb),P.absorb>0],['Đỡ đòn',P.block]];
+ const tg=[['Kiếm Hồn',P.kh],['Thiên Địa',P.td],['Xích Giáp',P.xich],['Đệ Tứ',P.dom4>0],['Đệ Ngũ: Ngưng Thời Gian',P.dom5>0],['Áp Chế',P.ap>0],['Lãnh Địa',P.lt>0],['Hình thái '+P.form,P.form],['Hấp thụ '+Math.round(P.absorb),P.absorb>0],['Đỡ đòn',P.block],['Bất Tử (không tốn thể lực)',P.nost>0]];
  {const bh=tg.filter(x=>x[1]).map(x=>`<span>${x[0]}</span>`).join('');if(bh!==bhC){bhC=bh;$('buffs').innerHTML=bh}}
  for(const k in bt){const sp=SK[P.sty][k.toLowerCase()];if(sp){const c=P.cd[P.sty+(sp.cdk||k.toLowerCase())]||0;bt[k].classList.toggle('cd',c>0);const be=bt[k].firstChild,tx=c>0?(c>=10?Math.ceil(c):c.toFixed(1)):k;if(be.textContent!==tx)be.textContent=tx}const on={R:P.kh,T:P.td,Y:P.xich,H:P.ap>0,E:P.block}[k];if(k in{R:1,T:1,Y:1,H:1,E:1})bt[k].classList.toggle('on',!!on)}
  
