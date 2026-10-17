@@ -16,7 +16,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
 #banner{position:fixed;bottom:51px;left:50%;transform:translateX(-50%);max-width:90%;text-align:center;font-size:clamp(12px,2.5vw,19px);font-weight:900;color:#ffd700;text-shadow:0 0 10px #f80,0 0 4px #000;pointer-events:none;opacity:0;transition:opacity .25s;z-index:99}
 #toast{position:fixed;top:30%;width:100%;text-align:center;color:#f88;pointer-events:none;font-size:13px;text-shadow:0 0 4px #000;z-index:99}
 #flash{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .15s;z-index:5}
-#popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,360px);max-height:88vh;overflow:auto;background:rgba(8,2,22,.97);border:2px solid #9945ff;border-radius:14px;padding:14px;display:none;z-index:900;box-shadow:0 0 30px #9945ff88}
+#popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,360px);max-height:88vh;overflow:auto;background:rgba(8,2,22,.97);border:2px solid #9945ff;border-radius:14px;padding:14px;display:none;z-index:900;box-shadow:0 0 12px #9945ff88}
 #ptitle{color:#9945ff;font-weight:900;text-align:center;margin-bottom:10px;letter-spacing:1px}
 #popts button{display:block;width:100%;margin:7px 0;padding:11px;font:bold 13px 'Courier New',monospace;text-align:left;background:rgba(255,204,0,.12);color:#fc0;border:2px solid #fc0;border-radius:8px}
 #popts button.on{background:#fc0;color:#000}
@@ -50,7 +50,7 @@ button{font-family:'Courier New',monospace}
  body{position:fixed;top:0;left:100vw;width:100vh;height:100vw;transform-origin:0 0;transform:rotate(90deg)}
 }
 
-#guide{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(94vw,540px);display:none;flex-direction:column;background:rgba(8,2,22,.98);border:2px solid #9945ff;border-radius:14px;padding:10px;z-index:950;box-shadow:0 0 30px #9945ff88}
+#guide{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(94vw,540px);display:none;flex-direction:column;background:rgba(8,2,22,.98);border:2px solid #9945ff;border-radius:14px;padding:10px;z-index:950;box-shadow:0 0 12px #9945ff88}
 #gtabs{display:flex;gap:4px;margin-bottom:8px}
 #gtabs button{flex:1;padding:8px 2px;font:bold 11px 'Courier New',monospace;background:#1b053a;color:#c8a0ff;border:1px solid #9945ff;border-radius:6px}
 #gtabs button.on{background:#9945ff;color:#000}
@@ -77,8 +77,8 @@ button{font-family:'Courier New',monospace}
 /* cột trái lùi xuống 30px */
 #colL{bottom:82px}
 /* GPU: đẩy lên lớp compositor, thanh máu dùng transform thay vì width */
-canvas{transform:translateZ(0);will-change:transform;backface-visibility:hidden}
-#top,.col,#btns,#dmg,#eh,#tp,#banner,#toast,#flash,#joy,#buffs{will-change:transform,opacity;backface-visibility:hidden}
+/* will-change chỉ cho phần tử thật sự đổi transform/opacity mỗi khung hình (ít lớp GPU hơn để máy yếu không mất hình) */
+#dmg,#eh{will-change:transform,opacity}
 .hpb i,.stb i{transform-origin:0 50%;will-change:transform}
 #ehF{transform-origin:0 50%;will-change:transform}
 #eh{left:0;top:0}
@@ -86,7 +86,17 @@ canvas{transform:translateZ(0);will-change:transform;backface-visibility:hidden}
 #tp input[readonly]{opacity:.7;background:#0a0618;border-color:#555}
 
 #tpM{cursor:pointer;border-color:#9945ff}
-#kp{position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:161;display:none;grid-template-columns:repeat(5,46px);gap:4px;background:rgba(10,5,25,.95);border:1px solid #9945ff;border-radius:8px;padding:6px;will-change:transform}
+#kp{position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:161;display:none;grid-template-columns:repeat(5,46px);gap:4px;background:rgba(10,5,25,.95);border:1px solid #9945ff;border-radius:8px;padding:6px}
 #kp button{height:34px;background:#1a0f38;color:#fff;border:1px solid #6a3fd0;border-radius:5px;font:bold 13px 'Courier New',monospace;padding:0}
 #kp button.w2{grid-column:span 2;font-size:11px}
 #kp button:active{background:#9945ff}
+
+/* Popup 1,2,Map,M2: cho vuốt cuộn (bất kể máy đang xoay dọc/ngang) */
+#popup,#popup *{touch-action:pan-x pan-y}
+#popup{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;max-height:88vh}
+#guide{max-height:92vh}
+#gbody{min-height:0;flex:1 1 auto}
+@media (orientation:portrait){
+ #popup{max-height:88vw;width:min(92vh,360px)}
+ #guide{max-height:92vw;width:min(94vh,540px)}
+}
