@@ -30,19 +30,21 @@
  addEventListener('touchmove',e=>{if(!two(e)||!pd)return;e.preventDefault();e.stopImmediatePropagation();
   const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;camDist=cl(pz*pd/d);lastX=lastY=null},{passive:false,capture:true});
  addEventListener('touchend',e=>{if(e.touches.length<2)pd=0},{passive:true,capture:true});
- const ob=buildBtns;
- // Hàng trên nút Q (cột phải): [nút tròn khoá tâm] [＋] [－]. － nằm ngay trên Q (cách 6px = gap cột).
- let aimOn=false;
+ // Hàng nút [🔒/🔓] [＋] [－] nằm dưới HUD kiếm pháp / kiếm (cách 10px, nằm trong #hudR nên không bao giờ chèn HUD).
+ // Phím tắt: O = ＋ (gần), P = － (xa), Shift = bật/tắt tâm.
+ let aimOn=false,zk=0;
  const zb=(t,lb,k)=>{const b=document.createElement('button');b.className='c4';b.innerHTML='<b>'+t+'</b><i>'+lb+'</i>';let iv=0;
   const stop=()=>{clearInterval(iv);iv=0};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
- // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm = chấm trắng cố định giữa màn hình + nhân vật tự xoay theo hướng camera (như Roblox shift-lock)
+ // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm = tâm ngắm cố định giữa màn hình + nhân vật tự xoay theo hướng camera (như Roblox shift-lock)
  const aim=document.createElement('div');aim.style.cssText='position:fixed;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff;z-index:120;pointer-events:none;display:none';
  document.body.appendChild(aim);
- const lockBtn=()=>{const b=document.createElement('button');b.setAttribute('aria-label','Bật/tắt tâm');
-  const paint=()=>{b.textContent=aimOn?'🔒':'🔓';aim.style.display=aimOn?'block':'none';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)};
-  paint();b.addEventListener('pointerdown',e=>{e.preventDefault();aimOn=!aimOn;paint()});return b};
+ const lockB=document.createElement('button');lockB.setAttribute('aria-label','Bật/tắt tâm (Shift)');
+ const setAim=v=>{aimOn=v;paint()};
+ function paint(){const b=lockB;b.textContent=aimOn?'🔒':'🔓';aim.style.display=aimOn?'block':'none';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)}
+
+ paint();lockB.addEventListener('pointerdown',e=>{e.preventDefault();setAim(!aimOn)});
  // Khi bật tâm: người chơi luôn quay mặt theo hướng camera (xoay cam = xoay người); chiêu đánh vào quái gần tâm nhất
  const _rd=ren.render.bind(ren);
  ren.render=function(sc,c){if(aimOn&&!paused&&P.hp>0&&!(P.busy>0)&&!(P.cut>0)){yaw=wrapP(camYaw+Math.PI);player.rotation.y=yaw}_rd(sc,c)};
@@ -50,11 +52,15 @@
  target=function(){if(!aimOn)return ot();const fx=Math.sin(yaw),fz=Math.cos(yaw),pp=player.position;let b=null,ba=.6;
   enemies.forEach(e=>{if(e.hp<=0)return;const dx=e.m.position.x-pp.x,dz=e.m.position.z-pp.z,d=Math.hypot(dx,dz);if(d>60||d<.01)return;const an=Math.acos(Math.max(-1,Math.min(1,(dx*fx+dz*fz)/d)));if(an<ba){ba=an;b=e}});
   return b?[b.m.position.x,b.m.position.z]:[pp.x+fx*12,pp.z+fz*12]};
- buildBtns=function(){ob();
-  const R=$('colR'),row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end';
-  R.style.alignItems='flex-end'; // Q, Nhảy, E, M2 thẳng hàng ngay dưới nút －
-  row.append(lockBtn(),zb('＋','Zoom gần',.97),zb('－','Zoom xa',1.03));R.insertBefore(row,R.firstChild)};
- buildBtns();
+
+ const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px;pointer-events:auto';
+ row.append(lockB,zb('＋','Zoom gần (O)',.97),zb('－','Zoom xa (P)',1.03));$('hudR').appendChild(row);
+ addEventListener('keydown',e=>{const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
+  if(e.code==='KeyO')zk=-1;else if(e.code==='KeyP')zk=1;
+  else if((e.code==='ShiftLeft'||e.code==='ShiftRight')&&!e.repeat)setAim(!aimOn)},true);
+ addEventListener('keyup',e=>{if((e.code==='KeyO'&&zk<0)||(e.code==='KeyP'&&zk>0))zk=0},true);
+ addEventListener('blur',()=>{zk=0});
+ (function zkl(){requestAnimationFrame(zkl);if(zk)camDist=cl(camDist*(zk<0?.97:1.03))})();
  // cột trái lùi xuống 15px, cột phải lùi xuống 8px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
  let _k='';
  (function lay(){requestAnimationFrame(lay);
