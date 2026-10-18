@@ -5,7 +5,6 @@ const STYLES=['Cửu Ngũ Chí Tôn Kiếm','Thiên Mệnh Kiếm Pháp','Tứ T
 const STCOL=[GOLD,GOLD,0x50e696,PURP,0xff9632];
 const SWORDS=[['Titan Sword (Common)',1],['Taichi Sword (Genies)',1.25],['Thiên Mệnh Kiếm (History)',1.7]];
 const BUFFN={R:'Kiếm Hồn Cửu Ngũ Chí Tôn',T:'Thiên Địa Chi Cảnh',Y:'Thiên Mệnh Xích Giáp',U:'Phản Hồi Sát Thương'};
-const RULES=['Giảm trọng lực','Làm chậm kẻ địch','Sát thương x2','Hồi máu & thể lực'];
 const F=1000/60,wait=f=>new Promise(r=>setTimeout(r,f*F));
 const P={hp:100,st:100,sw:2,sty:1,vy:0,ground:true,cd:{},kh:0,td:0,xich:0,pwr:0,dom4:0,dom5:0,form:0,law:0,rule:[0,0,0,0],guard:0,inv:0,fat:0,fly:0,absorb:0,busy:0,block:0,dashT:0,flyN:0,flyH:8,swing:0,mv:0,dvx:0,dvz:0,lk:0,lt:0};
 let enemies=[],fx=[],keys={},joy={x:0,y:0},kills=0,wave=0,paused=false,shake=0,yaw=0,camYaw=0,camPitch=.427,camDist=12.1,DC=null;
@@ -161,13 +160,13 @@ async function run(sp,k0){
  if(sp.skyfly)await wait(30);
  if(k=='counter'){P.guard=100;say(sp.n);FXK('ring',{r:6,life:20,col});await wait(100);return}
  if(k=='dom4'){P.dom4=1;say('Thái Cực Hình Ý — Vô Địch Chi Cảnh',2000);await wait(30);return}
- if(k=='dom5'){P.dom5=1;say('Đệ Ngũ Thức — Thao Túng Quy Luật Vạn Vật',2200);flash(PURP);await wait(30);return}
+ if(k=='dom5'){P.dom5=1;say('Đệ Ngũ Thức — Ngưng Động Thời Gian! Thao Túng Quy Luật Vạn Vật',2200);flash(PURP);await wait(30);return}
  if(k&&k.startsWith('form')){const v=+k[4];P.form=P.form==v?0:v;say(sp.n+(P.form?' — BẬT':' — TẮT'),1200);await wait(20);return}
  if(k=='rewrite'){P.inv=3600;P.nost=3600;flash(PURP);FXK('ring',{r:40,life:40,col:GOLD})}
  if(k=='guard2')P.inv=60;if(sp.inv)P.inv=sp.inv;
  const lines=sp.lines||[];if(!lines.length)say(sp.n,1000);
  for(const t of lines){say(t,sp.ld?600:700);await wait(sp.ld||24)}
- if(sp.domain){domainOpen();say('',1400);flash(PURP);shake=Math.max(shake,16);FXK('ring',{r:DR/1.2,life:50,col:GOLD});await wait(40)}
+ if(sp.domain){domainOpen();say('LÃNH ĐỊA — Nhất Trảm Độc Tôn Vực!',1400);flash(PURP);shake=Math.max(shake,16);FXK('ring',{r:DR/1.2,life:50,col:GOLD});await wait(40)}
  if(sp.bagua){if(!sp.nogr)FXK('bagua',{r:8,life:100,col});FXK('back',{tex:texBagua,size:9,life:100})}
  if(sp.n.includes('Cửu Cung'))FXK('floor',{tex:texTaiji,size:10,life:100});
  if(sp.ring)[0x50e696,0xf5f5ff,0xff6e28,0x468cff].forEach((c,i)=>FXK('ring',{r:3+i*3,life:40,col:c}));
@@ -209,20 +208,6 @@ function buff(k){
  if(k=='U'){if(P.absorb<=0)return toast('Chưa hấp thụ sát thương (bật Y rồi chịu đòn)');
   const d=P.absorb*2;P.absorb=0;P.pwr=600;FXK('boom',{x:player.position.x,z:player.position.z,r:14,col:GOLD});hit(player.position.x,player.position.z,14,d*3,2);shake=12;return}
  const key={R:'kh',T:'td',Y:'xich'}[k];P[key]=P[key]?0:1;if(key=='kh'&&!P.kh)P.ap=0;say(P[key]?BUFFN[k]+' — BẬT':BUFFN[k]+' — TẮT',1000);if(P[key])flash(GOLD)}
-function lawMenu(){
- if(castBusy())return;
- if(!P.kh)return toast('H cần bật R (Kiếm Hồn Cửu Ngũ Chí Tôn) trước');
- popup('Quy luật — Kiếm Hồn',['Vạn Kiếm','Thiên Trảm','Áp Chế (bật/tắt, mỗi 5ms 100.000.000 sát thương gốc)'],-1,i=>ruleSkill(['van','tru','ap'][i]))}
-// Sát thương gốc Quy Luật (chưa nhân Kiếm Hồn; hit()/strike() tự chia 3 rồi nhân dmgMul(), nên truyền x3)
-//  Vạn Kiếm 4.500.000/quái (4 nhát x 1.125.000) · Thiên Trảm 9.000.000/quái (tia trời 6.000.000 + nổ 3.000.000) · Áp Chế 100.000.000 mỗi 5ms
-const RULE_VAN_HIT=1125000,RULE_VAN_N=4,RULE_TRU_SKY=6000000,RULE_TRU_BOOM=3000000,AP_BASE=100000000;
-async function ruleSkill(k){
- if(!P.kh)return;
- if(k=='ap'){if(P.ap>0){P.ap=0;return say('Hủy Áp Chế',900)}P.ap=1;say('Áp Chế — Thiên Địa Quy Luật, chúng sinh quỵ xuống!',2200);return flash(GOLD)}
- FXK('soul',{col:GOLD});
- if(k=='van'){say('Quy Luật — Vạn Kiếm Giáng Thế!',1600);await wait(30);
-  enemies.slice(0,12).forEach((e,i)=>{for(let j=0;j<RULE_VAN_N;j++)setTimeout(()=>{if(e.hp<=0)return;const p=e.m.position,x=p.x+Math.random()*2-1,z=p.z+Math.random()*2-1;FXK('blade',{x,z,col:GOLD});setTimeout(()=>hit(x,z,3,RULE_VAN_HIT*3),200)},(i*4+j)*80)})}
- if(k=='tru'){say('Quy Luật — Thiên Trảm!',1600);await wait(40);const[tx,tz]=target();strike('sky',0,0,RULE_TRU_SKY*3,0,GOLD);strike('boom',tx,tz,RULE_TRU_BOOM*3,14,GOLD)}}
 function popup(title,opts,cur,fn){paused=true;$('ptitle').textContent=title;const o=$('popts');o.innerHTML='';
  opts.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;if(i==cur)b.className='on';b.onclick=()=>{fn(i);close()};o.appendChild(b)});
  const x=document.createElement('button');x.textContent='Đóng';x.onclick=close;o.appendChild(x);$('popup').style.display='block';
@@ -419,3 +404,4 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
   else eh.style.display='none'}
  ren.render(scene,cam)}
 loop();
+
