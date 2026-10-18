@@ -33,7 +33,7 @@
  // Hàng nút [🔒/🔓] [＋] [－] nằm dưới HUD kiếm pháp / kiếm (cách 10px, nằm trong #hudR nên không bao giờ chèn HUD).
  // Phím tắt: O = ＋ (gần), P = － (xa), Shift = bật/tắt tâm.
  let aimOn=false,zk=0;
- const zb=(t,lb,k)=>{const b=document.createElement('button');b.className='c4';b.innerHTML='<b>'+t+'</b><i>'+lb+'</i>';let iv=0;
+ const zb=(t,lb,k)=>{const b=document.createElement('button');b.className='c4';b.style.cssText='width:54px;height:38px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;padding:0';b.innerHTML='<b style="font-size:13px">'+t+'</b><i style="font-size:7px;font-style:normal;color:#aaa;white-space:nowrap">'+lb+'</i>';let iv=0;
   const stop=()=>{clearInterval(iv);iv=0};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
