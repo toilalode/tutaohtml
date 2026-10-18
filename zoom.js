@@ -82,14 +82,16 @@
  addEventListener('keyup',e=>{if((e.code==='KeyO'&&zk<0)||(e.code==='KeyP'&&zk>0))zk=0},true);
  addEventListener('blur',()=>{zk=0});
  (function zkl(){requestAnimationFrame(zkl);if(zk)camDist=cl(camDist*(zk<0?.97:1.03))})();
- // cột trái lùi xuống 15px, cột phải lùi xuống 8px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
+ // Cột trái lùi xuống 15px (bottom 67), cột phải lùi xuống 15px so với trước (bottom 84): nút Q/Nhảy/E/M2 luôn cùng cỡ 1/2/?/Map (54x38).
+ // Thiếu chỗ (HUD / hàng chiêu) thì thu hẹp khoảng cách giữa các nút trước, chỉ thu nhỏ nút khi đã hết cách.
+ const fit=(C,bottom,hud)=>{const n=C.children.length||1,a=VH()-(hud.offsetHeight+8)-bottom-6;
+  let g=n>1?(a-n*38)/(n-1):6;g=Math.max(1,Math.min(6,g));return[g,Math.max(.55,Math.min(1,a/(n*38+(n-1)*g)))]};
  let _k='';
  (function lay(){requestAnimationFrame(lay);
-  const h=$('btns').offsetHeight,bl=Math.max(67,h+27),br=Math.max(99,h+21),L=$('colL'),R=$('colR');
-  const aL=VH()-($('hudL').offsetHeight+8)-bl-6,aR=VH()-($('hudR').offsetHeight+8)-br-6;
-  const sL=Math.max(.55,Math.min(1,aL/(L.offsetHeight||1))),sR=Math.max(.55,Math.min(1,aR/(R.offsetHeight||1)));
-  const k=[bl,br,sL.toFixed(3),sR.toFixed(3)].join();if(k===_k)return;_k=k;
-  L.style.bottom=bl+'px';R.style.bottom=br+'px';
+  const h=$('btns').offsetHeight,bl=Math.max(67,h+27),br=Math.max(84,h+38),L=$('colL'),R=$('colR');
+  const[gL,sL]=fit(L,bl,$('hudL')),[gR,sR]=fit(R,br,$('hudR'));
+  const k=[bl,br,L.children.length,R.children.length,gL.toFixed(2),gR.toFixed(2),sL.toFixed(3),sR.toFixed(3)].join();if(k===_k&&R.style.bottom===br+'px'&&L.style.bottom===bl+'px')return;_k=k;
+  L.style.bottom=bl+'px';R.style.bottom=br+'px';L.style.gap=gL+'px';R.style.gap=gR+'px';
   L.style.transformOrigin='left bottom';R.style.transformOrigin='right bottom';
   L.style.transform=sL<1?'scale('+sL+')':'';R.style.transform=sR<1?'scale('+sR+')':'';
  })();
