@@ -37,20 +37,25 @@
   const stop=()=>{clearInterval(iv);iv=0};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
- // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm (tâm ngắm bám theo mục tiêu mà chiêu sẽ đánh vào)
- const aim=document.createElement('div');aim.style.cssText='position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid #ff3b3b;border-radius:50%;z-index:120;pointer-events:none;display:none;box-shadow:0 0 6px #f00;will-change:transform';
- aim.innerHTML='<i style="position:absolute;left:50%;top:-8px;bottom:-8px;width:2px;margin-left:-1px;background:#ff3b3b"></i><i style="position:absolute;top:50%;left:-8px;right:-8px;height:2px;margin-top:-1px;background:#ff3b3b"></i>';
+ // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm = tâm ngắm cố định giữa màn hình + nhân vật tự xoay theo hướng camera (như Roblox shift-lock)
+ const aim=document.createElement('div');aim.style.cssText='position:fixed;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:2px solid #ff3b3b;border-radius:50%;z-index:120;pointer-events:none;display:none;box-shadow:0 0 6px #f00,inset 0 0 4px #f00';
+ aim.innerHTML='<i style="position:absolute;left:50%;top:-9px;bottom:-9px;width:2px;margin-left:-1px;background:#ff3b3b"></i><i style="position:absolute;top:50%;left:-9px;right:-9px;height:2px;margin-top:-1px;background:#ff3b3b"></i><i style="position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff"></i>';
  document.body.appendChild(aim);
  const lockBtn=()=>{const b=document.createElement('button');b.setAttribute('aria-label','Bật/tắt tâm');
-  const paint=()=>{b.textContent=aimOn?'🔒':'🔓';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)};
-  paint();b.addEventListener('pointerdown',e=>{e.preventDefault();aimOn=!aimOn;paint();if(!aimOn)aim.style.display='none'});return b};
+  const paint=()=>{b.textContent=aimOn?'🔒':'🔓';aim.style.display=aimOn?'block':'none';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)};
+  paint();b.addEventListener('pointerdown',e=>{e.preventDefault();aimOn=!aimOn;paint()});return b};
+ // Khi bật tâm: người chơi luôn quay mặt theo hướng camera (xoay cam = xoay người); chiêu đánh vào quái gần tâm nhất
+ const _rd=ren.render.bind(ren);
+ ren.render=function(sc,c){if(aimOn&&!paused&&P.hp>0&&!(P.busy>0)&&!(P.cut>0)){yaw=wrapP(camYaw+Math.PI);player.rotation.y=yaw}_rd(sc,c)};
+ const ot=target;
+ target=function(){if(!aimOn)return ot();const fx=Math.sin(yaw),fz=Math.cos(yaw),pp=player.position;let b=null,ba=.6;
+  enemies.forEach(e=>{if(e.hp<=0)return;const dx=e.m.position.x-pp.x,dz=e.m.position.z-pp.z,d=Math.hypot(dx,dz);if(d>60||d<.01)return;const an=Math.acos(Math.max(-1,Math.min(1,(dx*fx+dz*fz)/d)));if(an<ba){ba=an;b=e}});
+  return b?[b.m.position.x,b.m.position.z]:[pp.x+fx*12,pp.z+fz*12]};
  buildBtns=function(){ob();
   const R=$('colR'),row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end';
+  R.style.alignItems='flex-end'; // Q, Nhảy, E, M2 thẳng hàng ngay dưới nút －
   row.append(lockBtn(),zb('＋','Zoom gần',.97),zb('－','Zoom xa',1.03));R.insertBefore(row,R.firstChild)};
  buildBtns();
- (function aimLoop(){requestAnimationFrame(aimLoop);if(!aimOn||paused||P.hp<=0)return;
-  const t=target(),v=_v.set(t[0],1.5,t[1]).project(cam);
-  if(v.z<1&&Math.abs(v.x)<1.2&&Math.abs(v.y)<1.2){aim.style.display='block';aim.style.transform='translate('+((v.x*.5+.5)*VW()).toFixed(0)+'px,'+((-v.y*.5+.5)*VH()).toFixed(0)+'px)'}else aim.style.display='none'})();
  // cột trái lùi xuống 15px, cột phải lùi xuống 8px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
  let _k='';
  (function lay(){requestAnimationFrame(lay);
