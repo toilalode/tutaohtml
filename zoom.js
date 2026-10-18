@@ -45,27 +45,26 @@
  function paint(){const b=lockB;b.textContent=aimOn?'🔒':'🔓';aim.style.display=aimOn?'block':'none';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)}
 
  paint();lockB.addEventListener('pointerdown',e=>{e.preventDefault();setAim(!aimOn)});
- // ===== MAP TEST: nút "Tấn công" cạnh nút "Đầy" — bật: quái bù nhìn đuổi + đánh người chơi, bấm lại: quái đứng im (bị choáng) =====
+ // ===== MAP TEST: nút "Tấn công" cạnh nút "Đầy" — bật: quái bù nhìn đứng yên tại chỗ và đánh người chơi, bấm lại: quái đứng im (bị choáng) =====
  const ab=document.createElement('button');ab.textContent='Tấn công';$('tpFull').after(ab);
  const dummy=()=>MAP==='test'?enemies.find(x=>x.dummy):null;
- ab.addEventListener('click',()=>{const e=dummy();if(!e)return;e.atk=!e.atk;e.wind=0;e.cd=.8;const u=e.m.userData;u.lL.rotation.x=u.lR.rotation.x=0;if(e.stars)e.stars.visible=!e.atk});
+ ab.addEventListener('click',()=>{const e=dummy();if(!e)return;e.atk=!e.atk;e.wind=0;e.cd=.8;e.hx=e.m.position.x;e.hz=e.m.position.z;const u=e.m.userData;u.lL.rotation.x=u.lR.rotation.x=0;if(e.stars)e.stars.visible=!e.atk});
  let lt=performance.now(),abOn=null;
  function dummyStep(){const now=performance.now(),dt=Math.min(.05,(now-lt)/1000);lt=now;
   const e=dummy();if(!e)return;const on=!!e.atk;if(on!==abOn){abOn=on;ab.style.background=on?'#e03030':'';ab.style.boxShadow=on?'0 0 6px #f44':''}
   if(!on)return;
   e.stars&&(e.stars.visible=false);e.m.rotation.z=0;
+  const ep=e.m.position;if(e.hx===undefined){e.hx=ep.x;e.hz=ep.z}ep.x=e.hx;ep.z=e.hz; // quái đứng yên tại chỗ, không di chuyển (kể cả bị đánh lùi)
   if(paused||P.hp<=0||e.hp<=0)return;
-  const u=e.m.userData,pp=player.position,ep=e.m.position,dx=pp.x-ep.x,dz=pp.z-ep.z,l=Math.hypot(dx,dz)||.001;
+  const u=e.m.userData,pp=player.position,dx=pp.x-ep.x,dz=pp.z-ep.z,l=Math.hypot(dx,dz)||.001;
   let sl=(P.dom5>0||P.tf?0:1);if(P.dom4>0&&l<12)sl=0;if(P.lt>0&&DC&&Math.hypot(ep.x-DC.x,ep.z-DC.z)<DR)sl=0;if(P.ap>0)sl=0;
   if(sl<=0)return;
-  e.m.rotation.y=Math.atan2(dx,dz);e.cd-=dt;
-  if(l>1.9){ep.x+=dx/l*3.4*dt;ep.z+=dz/l*3.4*dt;e.wind=0;e.ph+=dt*8;
-   u.lL.rotation.x=Math.sin(e.ph)*.7;u.lR.rotation.x=-Math.sin(e.ph)*.7;u.aL.rotation.x=u.aR.rotation.x=-1.45+Math.sin(e.ph)*.15}
-  else{u.lL.rotation.x=u.lR.rotation.x=0;
-   if(e.wind>0){e.wind-=dt;u.aL.rotation.x=u.aR.rotation.x=-2.7;
-    if(e.wind<=0){if(l<2.6&&pp.y<3.5)hurt(12);e.cd=1.7;u.aL.rotation.x=u.aR.rotation.x=-.7}}
-   else if(e.cd<=0&&pp.y<3.5)e.wind=.6;
-   else u.aL.rotation.x=u.aR.rotation.x=e.cd>1.2?-.7:-1.45}}
+  e.m.rotation.y=Math.atan2(dx,dz);e.cd-=dt;u.lL.rotation.x=u.lR.rotation.x=0;
+  // đánh tại chỗ: gồng 0.6s rồi vung; chỉ trúng khi người chơi trong tầm (2.6) và không bay quá cao
+  if(e.wind>0){e.wind-=dt;u.aL.rotation.x=u.aR.rotation.x=-2.7;
+   if(e.wind<=0){if(l<2.6&&pp.y<3.5)hurt(12);e.cd=1.7;u.aL.rotation.x=u.aR.rotation.x=-.7}}
+  else if(e.cd<=0)e.wind=.6;
+  else u.aL.rotation.x=u.aR.rotation.x=e.cd>1.2?-.7:-1.45}
  // Khi bật tâm: người chơi luôn quay mặt theo hướng camera (xoay cam = xoay người); chiêu đánh vào quái gần tâm nhất
  const _rd=ren.render.bind(ren);
  ren.render=function(sc,c){dummyStep();if(aimOn&&!paused&&P.hp>0&&!(P.busy>0)&&!(P.cut>0)){yaw=wrapP(camYaw+Math.PI);player.rotation.y=yaw}_rd(sc,c)};
