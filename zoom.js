@@ -31,19 +31,30 @@
   const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;camDist=cl(pz*pd/d);lastX=lastY=null},{passive:false,capture:true});
  addEventListener('touchend',e=>{if(e.touches.length<2)pd=0},{passive:true,capture:true});
  const ob=buildBtns;
- // nút ＋ (dưới Map, cột trái) và － (dưới E, cột phải): cùng cỡ nút Map (54x38)
+ // Hàng trên nút Q (cột phải): [nút tròn khoá tâm] [＋] [－]. － nằm ngay trên Q (cách 6px = gap cột).
+ let aimOn=false;
  const zb=(t,lb,k)=>{const b=document.createElement('button');b.className='c4';b.innerHTML='<b>'+t+'</b><i>'+lb+'</i>';let iv=0;
   const stop=()=>{clearInterval(iv);iv=0};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
+ // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm (tâm ngắm bám theo mục tiêu mà chiêu sẽ đánh vào)
+ const aim=document.createElement('div');aim.style.cssText='position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid #ff3b3b;border-radius:50%;z-index:120;pointer-events:none;display:none;box-shadow:0 0 6px #f00;will-change:transform';
+ aim.innerHTML='<i style="position:absolute;left:50%;top:-8px;bottom:-8px;width:2px;margin-left:-1px;background:#ff3b3b"></i><i style="position:absolute;top:50%;left:-8px;right:-8px;height:2px;margin-top:-1px;background:#ff3b3b"></i>';
+ document.body.appendChild(aim);
+ const lockBtn=()=>{const b=document.createElement('button');b.setAttribute('aria-label','Bật/tắt tâm');
+  const paint=()=>{b.textContent=aimOn?'🔒':'🔓';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)};
+  paint();b.addEventListener('pointerdown',e=>{e.preventDefault();aimOn=!aimOn;paint();if(!aimOn)aim.style.display='none'});return b};
  buildBtns=function(){ob();
-  $('colL').appendChild(zb('＋','Zoom gần',.97));
-  const R=$('colR');R.insertBefore(zb('－','Zoom xa',1.03),R.children[3]||null)};
+  const R=$('colR'),row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end';
+  row.append(lockBtn(),zb('＋','Zoom gần',.97),zb('－','Zoom xa',1.03));R.insertBefore(row,R.firstChild)};
  buildBtns();
- // cột trái lùi xuống 15px, cột phải lên 15px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
+ (function aimLoop(){requestAnimationFrame(aimLoop);if(!aimOn||paused||P.hp<=0)return;
+  const t=target(),v=_v.set(t[0],1.5,t[1]).project(cam);
+  if(v.z<1&&Math.abs(v.x)<1.2&&Math.abs(v.y)<1.2){aim.style.display='block';aim.style.transform='translate('+((v.x*.5+.5)*VW()).toFixed(0)+'px,'+((-v.y*.5+.5)*VH()).toFixed(0)+'px)'}else aim.style.display='none'})();
+ // cột trái lùi xuống 15px, cột phải lùi xuống 8px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
  let _k='';
  (function lay(){requestAnimationFrame(lay);
-  const h=$('btns').offsetHeight,bl=Math.max(67,h+27),br=Math.max(107,h+29),L=$('colL'),R=$('colR');
+  const h=$('btns').offsetHeight,bl=Math.max(67,h+27),br=Math.max(99,h+21),L=$('colL'),R=$('colR');
   const aL=VH()-($('hudL').offsetHeight+8)-bl-6,aR=VH()-($('hudR').offsetHeight+8)-br-6;
   const sL=Math.max(.55,Math.min(1,aL/(L.offsetHeight||1))),sR=Math.max(.55,Math.min(1,aR/(R.offsetHeight||1)));
   const k=[bl,br,sL.toFixed(3),sR.toFixed(3)].join();if(k===_k)return;_k=k;
