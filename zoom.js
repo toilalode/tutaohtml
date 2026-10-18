@@ -31,12 +31,24 @@
   const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;camDist=cl(pz*pd/d);lastX=lastY=null},{passive:false,capture:true});
  addEventListener('touchend',e=>{if(e.touches.length<2)pd=0},{passive:true,capture:true});
  const ob=buildBtns;
+ // nút ＋ (dưới Map, cột trái) và － (dưới E, cột phải): cùng cỡ nút Map (54x38)
+ const zb=(t,lb,k)=>{const b=document.createElement('button');b.className='c4';b.innerHTML='<b>'+t+'</b><i>'+lb+'</i>';let iv=0;
+  const stop=()=>{clearInterval(iv);iv=0};
+  b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
+  b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
  buildBtns=function(){ob();
-  const row=document.createElement('div');row.style.cssText='display:flex;gap:4px';
-  [['＋',.97],['－',1.03]].forEach(([t,k])=>{const b=document.createElement('button');b.innerHTML='<b>'+t+'</b>';b.style.cssText='width:25px;height:38px';let iv=0;
-   const stop=()=>{clearInterval(iv);iv=0};
-   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
-   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);row.appendChild(b)});
-  $('colL').appendChild(row)};
+  $('colL').appendChild(zb('＋','Zoom gần',.97));
+  const R=$('colR');R.insertBefore(zb('－','Zoom xa',1.03),R.children[3]||null)};
  buildBtns();
+ // cột trái lùi xuống 15px, cột phải lên 15px; thu nhỏ cả cột nếu không đủ chỗ (không chèn HUD / hàng chiêu)
+ let _k='';
+ (function lay(){requestAnimationFrame(lay);
+  const h=$('btns').offsetHeight,bl=Math.max(67,h+27),br=Math.max(107,h+29),L=$('colL'),R=$('colR');
+  const aL=VH()-($('hudL').offsetHeight+8)-bl-6,aR=VH()-($('hudR').offsetHeight+8)-br-6;
+  const sL=Math.max(.55,Math.min(1,aL/(L.offsetHeight||1))),sR=Math.max(.55,Math.min(1,aR/(R.offsetHeight||1)));
+  const k=[bl,br,sL.toFixed(3),sR.toFixed(3)].join();if(k===_k)return;_k=k;
+  L.style.bottom=bl+'px';R.style.bottom=br+'px';
+  L.style.transformOrigin='left bottom';R.style.transformOrigin='right bottom';
+  L.style.transform=sL<1?'scale('+sL+')':'';R.style.transform=sR<1?'scale('+sR+')':'';
+ })();
 })();
