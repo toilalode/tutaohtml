@@ -81,6 +81,15 @@
  addEventListener('keyup',e=>{if((e.code==='KeyO'&&zk<0)||(e.code==='KeyP'&&zk>0))zk=0},true);
  addEventListener('blur',()=>{zk=0});
  (function zkl(){requestAnimationFrame(zkl);if(zk)camDist=cl(camDist*(zk<0?.97:1.03))})();
+ // ===== LÃNH ĐỊA (Nhất Trảm Độc Tôn): gây sát thương NGAY TRONG lãnh địa (mỗi 0,2s) và đòn "vỡ nát" khi lãnh địa đóng =====
+ // Mọi quái trong bán kính DR quanh tâm lãnh địa đều dính, không phụ thuộc vào mục tiêu/tâm ngắm.
+ let dWas=false,dLast=null,dSnap=[],dAcc=0;
+ const dHit=(c,list,m)=>{const k=m*dmgMul();list.forEach(e=>{if(e.hp>0&&Math.hypot(e.m.position.x-c.x,e.m.position.z-c.z)<DR){e.hp-=k;e.hit=8}})};
+ (function domLoop(){requestAnimationFrame(domLoop);const now=performance.now();
+  if(DC){if(!dWas){dWas=true;dAcc=now}dLast={x:DC.x,z:DC.z};dSnap=enemies.slice();
+   if(!paused&&now-dAcc>=200){dAcc=now;dHit(dLast,dSnap,150)}}
+  else if(dWas){dWas=false;if(dLast&&!paused){dHit(dLast,dSnap,1500);try{FXK('blade',{x:dLast.x,z:dLast.z,col:GOLD});flash(GOLD)}catch(_){}}dSnap=[]}
+ })();
  // Cột trái lùi xuống 15px (bottom 67), cột phải lùi xuống 15px so với trước (bottom 84): nút Q/Nhảy/E/M2 luôn cùng cỡ 1/2/?/Map (54x38).
  // Thiếu chỗ (HUD / hàng chiêu) thì thu hẹp khoảng cách giữa các nút trước, chỉ thu nhỏ nút khi đã hết cách.
  const fit=(C,bottom,hud)=>{const n=C.children.length||1,a=VH()-(hud.offsetHeight+8)-bottom-6;
