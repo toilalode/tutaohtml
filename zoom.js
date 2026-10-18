@@ -20,4 +20,23 @@
   if(DC)domeM.material.opacity=camDist>DR*.85?.15:.82;
  })();
  try{GUIDE['Điều khiển']=GUIDE['Điều khiển'].replace('thu phóng gần/xa để xem chiêu rõ hơn.','thu phóng gần/xa (xa tới 220) để xem toàn bộ chiêu bao quanh.')}catch(_){}
+
+ // ===== ĐIỆN THOẠI: chụm 2 ngón để thu phóng + 2 nút ＋ － (giữ để zoom liên tục) =====
+ const cl=v=>Math.max(ZMIN,Math.min(ZMAX,v));
+ let pd=0,pz=0;
+ const cvs=ren.domElement;
+ const two=e=>e.touches.length>=2&&e.touches[0].target===cvs&&e.touches[1].target===cvs;
+ addEventListener('touchstart',e=>{if(two(e)){const a=e.touches[0],b=e.touches[1];pd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);pz=camDist;lastX=lastY=null}},{passive:true,capture:true});
+ addEventListener('touchmove',e=>{if(!two(e)||!pd)return;e.preventDefault();e.stopImmediatePropagation();
+  const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;camDist=cl(pz*pd/d);lastX=lastY=null},{passive:false,capture:true});
+ addEventListener('touchend',e=>{if(e.touches.length<2)pd=0},{passive:true,capture:true});
+ const ob=buildBtns;
+ buildBtns=function(){ob();
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:4px';
+  [['＋',.97],['－',1.03]].forEach(([t,k])=>{const b=document.createElement('button');b.innerHTML='<b>'+t+'</b>';b.style.cssText='width:25px;height:38px';let iv=0;
+   const stop=()=>{clearInterval(iv);iv=0};
+   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
+   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);row.appendChild(b)});
+  $('colL').appendChild(row)};
+ buildBtns();
 })();
