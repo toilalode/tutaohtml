@@ -37,9 +37,8 @@
   const stop=()=>{clearInterval(iv);iv=0};
   b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}stop();camDist=cl(camDist*k);iv=setInterval(()=>{camDist=cl(camDist*k)},16)});
   b.addEventListener('pointerup',stop);b.addEventListener('pointercancel',stop);return b};
- // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm = tâm ngắm cố định giữa màn hình + nhân vật tự xoay theo hướng camera (như Roblox shift-lock)
- const aim=document.createElement('div');aim.style.cssText='position:fixed;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:2px solid #ff3b3b;border-radius:50%;z-index:120;pointer-events:none;display:none;box-shadow:0 0 6px #f00,inset 0 0 4px #f00';
- aim.innerHTML='<i style="position:absolute;left:50%;top:-9px;bottom:-9px;width:2px;margin-left:-1px;background:#ff3b3b"></i><i style="position:absolute;top:50%;left:-9px;right:-9px;height:2px;margin-top:-1px;background:#ff3b3b"></i><i style="position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff"></i>';
+ // Nút tròn có khoá: 🔓 tắt tâm · 🔒 bật tâm = chấm trắng cố định giữa màn hình + nhân vật tự xoay theo hướng camera (như Roblox shift-lock)
+ const aim=document.createElement('div');aim.style.cssText='position:fixed;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff;z-index:120;pointer-events:none;display:none';
  document.body.appendChild(aim);
  const lockBtn=()=>{const b=document.createElement('button');b.setAttribute('aria-label','Bật/tắt tâm');
   const paint=()=>{b.textContent=aimOn?'🔒':'🔓';aim.style.display=aimOn?'block':'none';b.style.cssText='width:38px;height:38px;border-radius:50%;padding:0;font-size:17px;display:flex;align-items:center;justify-content:center;border:2px solid '+(aimOn?'#fa0':'#667')+';background:'+(aimOn?'#5a3a00':'#0a0a1a')+';opacity:'+(aimOn?1:.75)};
