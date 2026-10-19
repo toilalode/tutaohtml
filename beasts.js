@@ -1,4 +1,3 @@
-// Mô hình Tứ Thánh Thú (dựng từ khối hình cơ bản, không cần ảnh)
 function buildBeast(type){
  const g=new THREE.Group(),M=(geo,c,o=.95)=>{const m=new THREE.Mesh(geo,mat(c,o));g.add(m);return m};
  g.userData.type=type;
