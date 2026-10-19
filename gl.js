@@ -25,3 +25,11 @@ function SafeRenderer(params){
 SafeRenderer.prototype=Orig.prototype;
 THREE.WebGLRenderer=SafeRenderer;
 })();
+(function(){
+if(!/[?&]debug\b/.test(location.search))return;
+const s=document.createElement('script');
+s.src='https://cdn.jsdelivr.net/npm/eruda@3.4.3/eruda.js';
+s.onload=()=>{try{eruda.init()}catch(err){console.error(err)}};
+s.onerror=()=>console.error('Không tải được Eruda (cần Internet khi dùng ?debug)');
+document.head.appendChild(s);
+})();
