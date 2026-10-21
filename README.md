@@ -10,15 +10,16 @@ Game đã gói sẵn three.js trong `lib/` nên KHÔNG cần Internet.
 - `lib/three.min.js` — thư viện 3D, chạy offline.
 - `sw.js` — service worker, cho phép cài game như app và chạy không mạng.
 
-## Cách 1 (khuyên dùng): localhost
-1. Giải nén zip, mở terminal trong thư mục `thienmenh`.
-2. Chạy:  `python3 -m http.server 8000`
-3. Mở trình duyệt: http://localhost:8000
-Điện thoại khác máy: cùng Wi-Fi, mở http://IP-máy:8000 (xem IP bằng `ifconfig` / `ip a`).
-Termux: `pkg install python` → `cd thienmenh` → `python -m http.server 8000` → mở Chrome http://localhost:8000
+## Cách 1 : Github Pages
+- Vào web tại :
+- https://toilalode.github.io/tutaohtml
+- Debug thêm đuôi ?debug vào cuối
 
-## Cách 2: không có Python
-`npx serve .`  hoặc  `npx http-server -p 8000`
+## Cách 2 : Localhost
+- Tải pkg install nodejs
+- Chạy lệnh gitclone https://github.com/toilalode/tutaohtml.git
+- Chạy tiếp npm install
+- Cuối cùng thì npm start PORT=8000
 
 ## Nếu màn hình đen
 - Phải mở `index.html` TRONG thư mục có `lib/three.min.js` (đừng tách file ra).
