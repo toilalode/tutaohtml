@@ -232,10 +232,10 @@ function buildBtns(){const bot=$('btns'),L=$('colL'),R=$('colR');bot.innerHTML=L
  'ZXCVBNMJFG'.split('').forEach(k=>{const sp=SK[P.sty][k.toLowerCase()];if(sp)ad(bot,k,sp.n.replace(/^Đệ (\S+) Thức[:\s—-]*/,'Đệ$1 ').slice(0,11),()=>cast(k))});placeCols()}
 let lastX=null,lastY=null;addEventListener('touchmove',e=>{const t=e.touches[e.touches.length-1],cx=VP()?t.clientY:t.clientX,cy=VP()?-t.clientX:t.clientY;if(cx>VW()*.45&&t.target==ren.domElement){if(lastX!=null){camYaw-=(cx-lastX)*.01*(Math.cos(camPitch)<0?-1:1);camPitch=wrapP(camPitch+(cy-lastY)*.01)}lastX=cx;lastY=cy}});addEventListener('touchend',()=>{lastX=lastY=null});
 addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#guide,#popup'))return;e.preventDefault();camDist=Math.max(3,Math.min(80,camDist*Math.exp(e.deltaY*.0015)))},{passive:false});
-let tp=null,tpT=0;const cv=ren.domElement;
-cv.addEventListener('pointerdown',e=>{if(paused)return;if(e.button==2){lawMenu();return}if(e.button>0)return;tp={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,hold:0};clearTimeout(tpT);tpT=setTimeout(()=>{if(tp&&!tp.mv){tp.hold=1;heldM1=1}},240)});
+let tp=null,tpT=0,mvYaw=null;const cv=ren.domElement;
+cv.addEventListener('pointerdown',e=>{if(paused)return;if(e.button==2){lawMenu();return}if(e.button>0)return;tp={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,hold:0};mvYaw=P.mv?camYaw:null;clearTimeout(tpT);tpT=setTimeout(()=>{if(tp&&!tp.mv){tp.hold=1;heldM1=1}},240)});
 cv.addEventListener('pointermove',e=>{if(!tp||e.pointerId!=tp.id)return;if(!tp.mv&&Math.hypot(e.clientX-tp.x,e.clientY-tp.y)>12){tp.mv=1;if(tp.hold){heldM1=0;tp.hold=0}}if(tp.mv&&e.pointerType=='mouse'){camYaw-=e.movementX*.01*(Math.cos(camPitch)<0?-1:1);camPitch=wrapP(camPitch+e.movementY*.01)}});
-const tpEnd=ok=>e=>{if(!tp||e.pointerId!=tp.id)return;clearTimeout(tpT);if(ok&&!tp.mv&&!tp.hold)atk();heldM1=0;tp=null};
+const tpEnd=ok=>e=>{if(!tp||e.pointerId!=tp.id)return;clearTimeout(tpT);if(ok&&!tp.mv&&!tp.hold)atk();heldM1=0;tp=null;mvYaw=null};
 cv.addEventListener('pointerup',tpEnd(1));cv.addEventListener('pointercancel',tpEnd(0));
 let tsOn='';
 function fit(){pdone=false;cam.aspect=VW()/VH();cam.updateProjectionMatrix();ren.setSize(VW(),VH(),false);placeCols()}
@@ -313,7 +313,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
   {const ar=2.2*dt;if(keys.ArrowLeft)camYaw+=ar;if(keys.ArrowRight)camYaw-=ar;if(keys.ArrowUp)camPitch=wrapP(camPitch-ar);if(keys.ArrowDown)camPitch=wrapP(camPitch+ar)}
   const lkf=P.lk>0?0:1,mx=((keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x)*lkf,mz=((keys.KeyS?1:0)-(keys.KeyW?1:0)+joy.y)*lkf;
   P.mv=0;if(P.lk>0)P.dashT=0;if(P.dashT>0){P.dashT-=dt;P.mv=1;player.position.x+=P.dvx*dt;player.position.z+=P.dvz*dt}
-  else if(mx||mz){const c=Math.cos(camYaw),s=Math.sin(camYaw),dx=c*mx+s*mz,dz=-s*mx+c*mz,l=Math.hypot(dx,dz)||1,sp=P.block?4.5:9;
+  else if(mx||mz){const my=mvYaw??camYaw,c=Math.cos(my),s=Math.sin(my),dx=c*mx+s*mz,dz=-s*mx+c*mz,l=Math.hypot(dx,dz)||1,sp=P.block?4.5:9;
    player.position.x+=dx/l*sp*dt;player.position.z+=dz/l*sp*dt;yaw=Math.atan2(dx,dz);P.mv=1}
   const[tx0,tz0]=target();if(P.busy)yaw=Math.atan2(tx0-player.position.x,tz0-player.position.z);player.rotation.y=yaw;
   P.vy-=(P.rule[0]?10:26)*dt;player.position.y+=P.vy*dt;
