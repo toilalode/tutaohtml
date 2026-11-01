@@ -100,3 +100,4 @@ button{font-family:'Courier New',monospace}
  #popup{max-height:88vw;width:min(92vh,360px)}
  #guide{max-height:92vw;width:min(94vh,540px)}
 }
+#top,#btns,#joy,.col{will-change:transform}
