@@ -104,3 +104,4 @@ button{font-family:'Courier New',monospace}
 @media (orientation:portrait){
  @supports (height:100dvh){body{width:100dvh}}
 }
+#popup,#guide,#toast,#banner,#tp,#kp{will-change:transform}
