@@ -101,3 +101,6 @@ button{font-family:'Courier New',monospace}
  #guide{max-height:92vw;width:min(94vh,540px)}
 }
 #top,#btns,#joy,.col{will-change:transform}
+@media (orientation:portrait){
+ @supports (height:100dvh){body{width:100dvh}}
+}
