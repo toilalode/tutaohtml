@@ -1,7 +1,7 @@
 'use strict';
 (function(){
 const NAMES={'Càn':'乾','Khôn':'坤','Chấn':'震','Tốn':'巽','Khảm':'坎','Ly':'離','Cấn':'艮','Đoài':'兌'};
-const ORDER=Object.keys(NAMES),RING=3,BACK=3.6,VBACK=8;
+const ORDER=Object.keys(NAMES),RX=6.2,RY=2.6,BACK=6,VBACK=10;
 const CS={on:0,t0:0,convT:0,endT:0,pulseT:0};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),now=()=>performance.now();
 const cvs=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return[c,c.getContext('2d')]};
@@ -59,7 +59,7 @@ function begin(){
   dome.position.copy(player.position);dome.rotation.y=(now()-CS.t0)/9000;
   if(f.life<=0){gr.visible=true;shadow.visible=true;cv.style.filter='';CS.on=0}});
  [[20,1,1.3],[34,.55,-.8]].forEach(([sz,op,sp])=>{
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(sz,sz),new THREE.MeshBasicMaterial({map:vortexTex(),transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:THREE.DoubleSide}));
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(sz*1.4,sz*1.4),new THREE.MeshBasicMaterial({map:vortexTex(),transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:THREE.DoubleSide}));
   m.renderOrder=-.2;
   add(m,life,()=>{
    const b=basis();m.position.set(b.pp.x-b.dx*VBACK,b.pp.y+1.7,b.pp.z-b.dz*VBACK);
@@ -77,25 +77,26 @@ function begin(){
  add(pts,life,f=>{
   const b=basis(),T=(now()-CS.t0)/1000,cx=b.pp.x-b.dx*VBACK,cy=b.pp.y+1.7,cz=b.pp.z-b.dz*VBACK;
   for(let i=0;i<N;i++){
-   const s=seed[i],r=((s[1]+T*.35*s[2])%1)*13,ca=Math.cos(s[0]+T*.6),sa=Math.sin(s[0]+T*.6);
+   const s=seed[i],r=((s[1]+T*.35*s[2])%1)*16,ca=Math.cos(s[0]+T*.6),sa=Math.sin(s[0]+T*.6);
    pos[i*3]=cx+b.rx*ca*r;pos[i*3+1]=cy+sa*r*.8;pos[i*3+2]=cz+b.rz*ca*r}
   geo.attributes.position.needsUpdate=true;
   if(f.life<=0){geo.dispose();pm.dispose()}})}
 function spawn(k){
  flash([0xffd646,0xff9a1f,0xff5030,0x7dff6a][k%4]);shake=Math.max(shake,5+k*.6);
- const a0=Math.PI/2-(k+.5)*Math.PI/4,mt=mat(0xfff2c0,.92),g=roblox({mat:mt}),u=g.userData;
+ const a0=Math.PI/2-(k+.5)*Math.PI/4,g=roblox({skin:0xffdcb8,shirt:0xffffff,pants:0x8a9099}),u=g.userData,hair=new THREE.Mesh(new THREE.BoxGeometry(.5,.24,.5),new THREE.MeshBasicMaterial({color:0x111111}));
+ hair.position.set(0,1.93,0);g.add(hair);
  u.aL.rotation.x=-1.2-Math.random()*1.4;u.aR.rotation.x=-1.2-Math.random()*1.4;
  u.lL.rotation.x=Math.random()*.7-.35;u.lR.rotation.x=Math.random()*.7-.35;
- const h=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.4),new THREE.MeshBasicMaterial({map:hanzi(NAMES[ORDER[k]]),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,fog:false,side:THREE.DoubleSide}));
+ const h=new THREE.Mesh(new THREE.PlaneGeometry(3.2,3.2),new THREE.MeshBasicMaterial({map:hanzi(NAMES[ORDER[k]]),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,fog:false,side:THREE.DoubleSide}));
  h.renderOrder=5;
  const grp=new THREE.Group();grp.add(g,h);
  add(grp,Math.max(P.cut,1),f=>{
   const b=basis(),T=(now()-CS.t0)/1000,pop=clamp((f.max-f.life)/8,0,1);
   const cp=CS.convT?clamp((now()-CS.convT)/650,0,1):0,e=cp*cp,gone=CS.endT?clamp((now()-CS.endT)/250,0,1):0;
   const s=Math.max(pop*(1-.97*e)*(1-gone),.001),a=a0-T*.22,ca=Math.cos(a),sa=Math.sin(a);
-  const cx=b.pp.x-b.dx*BACK,cy=b.pp.y+1.7,cz=b.pp.z-b.dz*BACK,r=RING*(1-e),r2=r+1.9;
-  g.position.set(cx+b.rx*ca*r,cy+sa*r-1.3*s,cz+b.rz*ca*r);g.rotation.y=yaw;g.scale.setScalar(1.1*s);
-  h.position.set(cx+b.rx*ca*r2,cy+sa*r2,cz+b.rz*ca*r2);h.lookAt(cam.position);h.scale.setScalar(s*(1+.12*Math.sin(T*6+k)))})}
+  const cx=b.pp.x-b.dx*BACK,cy=b.pp.y+1.7,cz=b.pp.z-b.dz*BACK,k1=1-e,k2=k1*1.3;
+  g.position.set(cx+b.rx*ca*RX*k1,cy+sa*RY*k1-1.7*s,cz+b.rz*ca*RX*k1);g.rotation.y=yaw;g.scale.setScalar(1.5*s);
+  h.position.set(cx+b.rx*ca*RX*k2,cy+sa*RY*k2,cz+b.rz*ca*RX*k2);h.lookAt(cam.position);h.scale.setScalar(s*(1+.12*Math.sin(T*6+k)))})}
 const baseSay=say;
 say=function(t,ms){
  const r=baseSay(t,ms),b=$('banner');
