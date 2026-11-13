@@ -47,7 +47,7 @@ function owned(){
  if(DG.style&&STYLES.length<6){STYLES.push('Chung Yên Kiếm Pháp');STCOL.push(RED)}
  if(!DG.style&&P.sty==5){P.sty=1;syncRT()}}
 
-const dialog=(title,opts,fn)=>{popup(title,opts,-1,fn);$('popts').lastChild.textContent='Hủy Popup'};
+const dialog=(title,opts,fn)=>{popup(title,opts,-1,fn);const o=$('popts');o.lastChild.textContent='Hủy Popup';o.style.pointerEvents='none';setTimeout(()=>{o.style.pointerEvents=''},450)};
 const ITEMS=[['fused','Thiên Mệnh Kiếm — Dung Hợp Chung Yên','power',70],['style','Chung Yên Kiếm Pháp','power',30],['khItem','Kiếm Hồn Chung Yên (nút R)','hon',40],['vq','Vạn Quái Cận Kiến + Vạn Quái Quy Nhất','bone',100000]],CN={power:'lõi sức mạnh',hon:'lõi kiếm hồn',bone:'xương quái'};
 function bossNpc(){dialog('Chung Yên Tận Diệt',['Khiêu chiến Chung Yên Hoàng Đế','Xem chiến tích','Chế độ Cực Hạn: '+(DG.extreme?'BẬT':'TẮT')],i=>{if(i==0)startFight();else if(i==1)setTimeout(stats,0);else toggleExt()})}
 function stats(){dialog('Chiến tích Chung Yên',['Boss đã hạ: '+DG.kills,'Lõi sức mạnh: '+DG.power,'Lõi kiếm hồn: '+DG.hon,'Xương quái ngoài hành tinh: '+DG.bone],()=>{})}
