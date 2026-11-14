@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const KEY='tm_dungeon_v1',RED=0xff2a2a;
+const KEY='tm_dungeon_v1',RED=0xff2a2a,VIO=0xb050ff;
 const DG={power:0,hon:0,bone:0,kills:0,fused:0,style:0,khItem:0,vq:0,extreme:0,eq:0};
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)for(const k in DG)if(Number.isFinite(d[k])&&d[k]>=0)DG[k]=d[k]}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DG))}catch(e){}};
@@ -10,7 +10,6 @@ const MAXST=500000;let realSw=P.sw,st=MAXST;
 Object.defineProperty(P,'st',{get:()=>st,set:v=>{if(v===100&&st>100)return;st=v},configurable:true,enumerable:true});
 Object.defineProperty(P,'sw',{get:()=>realSw==3?2:realSw,set:v=>{realSw=v},configurable:true,enumerable:true});
 if(DG.fused&&DG.eq)realSw=3;
-let tk=0;const tc=()=>(tk^=1)?GOLD:RED;
 const hyp=Math.hypot,now=()=>performance.now(),pl=()=>player.position;
 const fusedOn=()=>!!DG.fused&&realSw==3,bigSty=()=>P.sty==0||P.sty==1||P.sty==5,boosted=()=>fusedOn()&&bigSty(),soulOn=()=>!!DG.khItem&&P.kh>0&&boosted();
 const frozen=()=>P.dom5>0||P.tf>0||P.ap>0;
@@ -79,13 +78,13 @@ const stunAt=(x,z,r,sec)=>{enemies.forEach(e=>{if(hyp(e.m.position.x-x,e.m.posit
 function stunStep(dt,T){enemies.forEach(e=>{if(!(e.stunT>0))return;e.stunT-=dt;if(e.stk)e.stk.children.forEach((s,i)=>{const a=T*3+i*1.57;s.position.set(Math.cos(a)*.7,Math.sin(T*5+i)*.08,Math.sin(a)*.7)});if(e.stunT<=0||e.hp<=0){e.stunT=0;if(e.sk){e.sk=0;e.dummy=0;e.cd=Math.max(e.cd,.6)}dropStars(e)}})}
 function canKien(){
  endArmy(false);const[tx,tz]=target(),n=10000;
- FXK('hole',{x:tx,z:tz,r:6,col:GOLD});flash(GOLD);
+ baseMk('hole',{x:tx,z:tz,r:6,col:VIO});flash(VIO);
  const ox=new Float32Array(n),oz=new Float32Array(n),ph=new Float32Array(n),pos=new Float32Array(n*3),cols=new Float32Array(n*3);
- for(let i=0;i<n;i++){const c=i%2?[1,.84,.27]:[1,.16,.16];cols.set(c,i*3)}
+ for(let i=0;i<n;i++){const c=i%2?[.69,.31,1]:[.48,.19,.75];cols.set(c,i*3)}
  for(let i=0;i<n;i++){const r=Math.sqrt(Math.random())*22,a=Math.random()*6.283;ox[i]=Math.cos(a)*r;oz[i]=Math.sin(a)*r;ph[i]=Math.random()*6.283}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
  const pts=new THREE.Points(geo,new THREE.PointsMaterial({vertexColors:true,size:1.2,transparent:true,opacity:.9,depthWrite:false}));pts.frustumCulled=false;scene.add(pts);
- const figs=[];for(let i=0;i<18;i++){const f=roblox({angry:1,skin:0xffd646,shirt:0xff2a2a,pants:0xb07800});f.scale.setScalar(1.8);scene.add(f);figs.push(f)}
+ const figs=[];for(let i=0;i<18;i++){const f=roblox({angry:1,skin:0x7a30c0,shirt:0x2a0a40,pants:0x120020});f.scale.setScalar(1.8);scene.add(f);figs.push(f)}
  army={x:tx,z:tz,n,n0:n,t:0,life:25,acc:0,ox,oz,ph,pos,geo,pts,figs}}
 function armyStep(dt,T){
  const a=army;if(!a)return;
@@ -98,12 +97,12 @@ function armyStep(dt,T){
  if(a.t>=a.life||a.n<=0)endArmy(true)}
 function endArmy(ex){
  const a=army;if(!a)return;army=null;
- if(ex&&a.n>0){stunAt(a.x,a.z,140,STUN);foe(a.n*1e8,a.x,a.z,140);baseMk('boom',{x:a.x,z:a.z,r:24,col:tc()});baseMk('boom',{x:a.x,z:a.z,r:18,col:tc()});flash(GOLD);shake=Math.max(shake,18)}
+ if(ex&&a.n>0){stunAt(a.x,a.z,140,STUN);foe(a.n*1e8,a.x,a.z,140);baseMk('boom',{x:a.x,z:a.z,r:24,col:VIO});baseMk('boom',{x:a.x,z:a.z,r:18,col:0x7a30c0});flash(VIO);shake=Math.max(shake,18)}
  scene.remove(a.pts);a.geo.dispose();a.pts.material.dispose();a.figs.forEach(f=>{scene.remove(f);freeObj(f)})}
 function quyNhat(){
  const[tx,tz]=target(),a=army||{x:tx,z:tz};endArmy(false);
- const g=roblox({angry:1,skin:0xffd646,shirt:0xff2a2a,pants:0xb07800,sword:2});g.scale.setScalar(9);g.position.set(a.x,0,a.z);scene.add(g);
- giant={g,x:a.x,z:a.z,hp:1e5,t:0,life:14,acc:0};FXK('ring',{r:20,life:30,col:GOLD});FXK('ring',{r:14,life:30,col:RED});flash(GOLD);shake=Math.max(shake,12)}
+ const g=roblox({angry:1,skin:0x7a30c0,shirt:0x2a0a40,pants:0x120020,sword:2});g.scale.setScalar(9);g.position.set(a.x,0,a.z);scene.add(g);
+ giant={g,x:a.x,z:a.z,hp:1e5,t:0,life:14,acc:0};baseMk('ring',{r:20,life:30,col:VIO});baseMk('ring',{r:14,life:30,col:0x7a30c0});flash(VIO);shake=Math.max(shake,12)}
 function giantStep(dt,T){
  const g=giant;if(!g)return;
  g.t+=dt;const f=nearFoe(g.x,g.z),q=pl(),tx=f?f.e.m.position.x:q.x,tz=f?f.e.m.position.z:q.z,d=hyp(tx-g.x,tz-g.z);
@@ -114,7 +113,7 @@ function giantStep(dt,T){
  if(g.t>=g.life||g.hp<=0)endGiant(true)}
 function endGiant(ex){
  const g=giant;if(!g)return;giant=null;
- if(ex){stunAt(g.x,g.z,150,STUN);foe(1e11,g.x,g.z,150);baseMk('boom',{x:g.x,z:g.z,r:30,col:tc()});baseMk('boom',{x:g.x,z:g.z,r:22,col:tc()});flash(GOLD);shake=Math.max(shake,22)}
+ if(ex){stunAt(g.x,g.z,150,STUN);foe(1e11,g.x,g.z,150);baseMk('boom',{x:g.x,z:g.z,r:30,col:VIO});baseMk('boom',{x:g.x,z:g.z,r:22,col:0x7a30c0});flash(VIO);shake=Math.max(shake,22)}
  scene.remove(g.g);freeObj(g.g)}
 function armyHit(x,z,r,d){
  if(army&&hyp(army.x-x,army.z-z)<r+army.r){const lost=Math.min(army.n,Math.ceil(d*80));army.n-=lost;foe(lost*1e8,army.x,army.z,120)}
@@ -289,7 +288,7 @@ addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U K L).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập). Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả.`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả.`;
 
 mkUI();owned();$('stT').nextSibling.textContent='/'+MAXST;buildBtns();
 let last=now();
