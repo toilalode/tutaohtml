@@ -165,7 +165,8 @@ function chargeShow(k){
  const kids=$('btns').children;if(!kids.length)return;
  let l=1e9,r=0,t=1e9;
  for(const b of kids){const q=b.getBoundingClientRect();l=Math.min(l,q.left);r=Math.max(r,q.right);t=Math.min(t,q.top)}
- charge.style.left=l+'px';charge.style.width=(r-l)+'px';charge.style.top=(t-10)+'px';charge.style.display='block';
+ const bn=$('banner').getBoundingClientRect();
+ charge.style.left=l+'px';charge.style.width=(r-l)+'px';charge.style.top=((bn.height>0?bn.top:t)-12)+'px';charge.style.display='block';
  chargeFill.style.width=(k*100).toFixed(1)+'%'}
 const chargeHide=()=>{charge.style.display='none';chargeFill.style.width='0%'};
 function makeClone(){const g=roblox({mat:mat(0xeee8ff,.55),sword:1.5});scene.add(g);return g}
