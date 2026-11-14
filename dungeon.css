@@ -4,5 +4,4 @@
 #dgBossF{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ffb000,#ff2a2a);will-change:transform}
 #dgBossT{position:relative;height:100%;display:flex;align-items:center;justify-content:center;font:bold 12px 'Courier New',monospace;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap}
 .dgBtn{position:fixed;display:none;z-index:210;padding:8px 12px;font:bold 12px 'Courier New',monospace;border-radius:8px;border:2px solid #ff2a2a;color:#ffd646;background:rgba(40,0,10,.9)}
-#dgExit{left:8px;top:122px}
 #dgTalk{left:50%;top:92px;transform:translateX(-50%);border-color:#ffd646}

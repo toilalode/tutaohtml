@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const KEY='tm_dungeon_v1',RED=0xff2a2a,VIO=0xb050ff;
+const KEY='tm_dungeon_v1',RED=0xff2a2a;
 const DG={power:0,hon:0,bone:0,kills:0,fused:0,style:0,khItem:0,vq:0,extreme:0,eq:0};
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)for(const k in DG)if(Number.isFinite(d[k])&&d[k]>=0)DG[k]=d[k]}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DG))}catch(e){}};
@@ -10,6 +10,7 @@ const MAXST=500000;let realSw=P.sw,st=MAXST;
 Object.defineProperty(P,'st',{get:()=>st,set:v=>{if(v===100&&st>100)return;st=v},configurable:true,enumerable:true});
 Object.defineProperty(P,'sw',{get:()=>realSw==3?2:realSw,set:v=>{realSw=v},configurable:true,enumerable:true});
 if(DG.fused&&DG.eq)realSw=3;
+let tk=0;const tc=()=>(tk^=1)?GOLD:RED;
 const hyp=Math.hypot,now=()=>performance.now(),pl=()=>player.position;
 const fusedOn=()=>!!DG.fused&&realSw==3,bigSty=()=>P.sty==0||P.sty==1||P.sty==5,boosted=()=>fusedOn()&&bigSty(),soulOn=()=>!!DG.khItem&&P.kh>0&&boosted();
 const frozen=()=>P.dom5>0||P.tf>0||P.ap>0;
@@ -17,12 +18,13 @@ const fmt=n=>n>=1e9?(n/1e9).toFixed(2)+' tỷ':n>=1e6?(n/1e6).toFixed(1)+' tr':M
 let swOv=0,prev='main',B=null,world=null,npcs=[],near=null,dfx=[],souls=[],army=null,giant=null,origSky=null,dgSkyT=null,leaving=0,m2T=0,tw=0,tone=false,lunge=null,pose={k:'',t:0},xb={};
 
 const refill=()=>{st=MAXST};
-const baseDmg=dmgMul,baseCost=costMul,baseHit=hit,baseMk=mk,baseCast=cast,baseSet=setMap,baseResp=respawn,baseBuild=buildBtns,baseSay=say,baseRule=ruleSkill,baseBuff=buff,baseSync=syncRT;
+const baseDmg=dmgMul,baseCost=costMul,baseHit=hit,baseMk=mk,baseCast=cast,baseSet=setMap,baseResp=respawn,baseBuild=buildBtns,baseSay=say,baseRule=ruleSkill,baseBuff=buff,baseSync=syncRT,baseStyle=setStyle;
 dmgMul=function(){let m=baseDmg();if(boosted()){m*=50;if(soulOn())m*=20;if(DG.khItem&&(P.ap>0||now()<m2T))m*=5}return m};
 costMul=function(){const c=baseCost();return fusedOn()?{cd:c.cd*.01,st:c.st*.01}:c};
 hit=function(x,z,r,d,kb){return baseHit(x,z,boosted()?r*15:r,d,kb)};
-mk=function(kind,o){if(fusedOn()&&o&&o.col!==undefined&&o.col!==0xffffff&&o.col!==0x9fd8ff){tw^=1;o=Object.assign({},o,{col:tw?GOLD:RED})}return baseMk(kind,o)};
-cast=function(k){const lk=k.toLowerCase(),sp=(SK[P.sty]||{})[lk],ck=sp&&P.sty+(sp.cdk||lk),was=ck?P.cd[ck]||0:0;baseCast(k);if(B&&B.ext&&ck&&!(was>0)&&P.cd[ck]>0)P.cd[ck]*=1.05};
+mk=function(kind,o){if(fusedOn()&&o&&o.col!==undefined&&o.col!==0xffffff&&o.col!==0x9fd8ff){if(P.sty==5)o=Object.assign({},o,{col:RED});else if(P.sty<2){tw^=1;o=Object.assign({},o,{col:tw?GOLD:RED})}}return baseMk(kind,o)};
+cast=function(k){if(P.sty==5&&!fusedOn())return;const lk=k.toLowerCase(),sp=(SK[P.sty]||{})[lk],ck=sp&&P.sty+(sp.cdk||lk),was=ck?P.cd[ck]||0:0;baseCast(k);if(B&&B.ext&&ck&&!(was>0)&&P.cd[ck]>0)P.cd[ck]*=1.05};
+setStyle=function(n){if(n==5&&!fusedOn())return toast('Chung Yên Kiếm Pháp chỉ dùng với Thiên Mệnh Kiếm — Dung Hợp Chung Yên');baseStyle(n)};
 ruleSkill=function(k){m2T=now()+8000;return baseRule(k)};
 const khCY=()=>fusedOn()&&!!DG.khItem&&P.sty==1&&rtyuOk();
 syncRT=function(){const k=P.kh,a=P.ap,ok=khCY();baseSync();if(ok){P.kh=k;P.ap=a}};
@@ -69,12 +71,13 @@ const foe=(d,x,z,r)=>{enemies.forEach(e=>{if(e.hp>0&&hyp(e.m.position.x-x,e.m.po
 const nearFoe=(x,z)=>{let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=hyp(e.m.position.x-x,e.m.position.z-z);if(d<bd){bd=d;b=e}}});return b?{e:b,d:bd}:null};
 function canKien(){
  endArmy(false);const[tx,tz]=target(),n=10000;
- FXK('hole',{x:tx,z:tz,r:6,col:VIO});flash(VIO);
- const ox=new Float32Array(n),oz=new Float32Array(n),ph=new Float32Array(n),pos=new Float32Array(n*3);
+ FXK('hole',{x:tx,z:tz,r:6,col:GOLD});flash(GOLD);
+ const ox=new Float32Array(n),oz=new Float32Array(n),ph=new Float32Array(n),pos=new Float32Array(n*3),cols=new Float32Array(n*3);
+ for(let i=0;i<n;i++){const c=i%2?[1,.84,.27]:[1,.16,.16];cols.set(c,i*3)}
  for(let i=0;i<n;i++){const r=Math.sqrt(Math.random())*22,a=Math.random()*6.283;ox[i]=Math.cos(a)*r;oz[i]=Math.sin(a)*r;ph[i]=Math.random()*6.283}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
- const pts=new THREE.Points(geo,new THREE.PointsMaterial({color:VIO,size:1.2,transparent:true,opacity:.9,depthWrite:false}));pts.frustumCulled=false;scene.add(pts);
- const figs=[];for(let i=0;i<18;i++){const f=roblox({angry:1,skin:0x7a30c0,shirt:0x2a0a40,pants:0x120020});f.scale.setScalar(1.8);scene.add(f);figs.push(f)}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
+ const pts=new THREE.Points(geo,new THREE.PointsMaterial({vertexColors:true,size:1.2,transparent:true,opacity:.9,depthWrite:false}));pts.frustumCulled=false;scene.add(pts);
+ const figs=[];for(let i=0;i<18;i++){const f=roblox({angry:1,skin:0xffd646,shirt:0xff2a2a,pants:0xb07800});f.scale.setScalar(1.8);scene.add(f);figs.push(f)}
  army={x:tx,z:tz,n,n0:n,t:0,life:25,acc:0,ox,oz,ph,pos,geo,pts,figs}}
 function armyStep(dt,T){
  const a=army;if(!a)return;
@@ -87,12 +90,12 @@ function armyStep(dt,T){
  if(a.t>=a.life||a.n<=0)endArmy(true)}
 function endArmy(ex){
  const a=army;if(!a)return;army=null;
- if(ex&&a.n>0){foe(a.n*1e8,a.x,a.z,140);baseMk('boom',{x:a.x,z:a.z,r:24,col:VIO});flash(VIO);shake=Math.max(shake,18)}
+ if(ex&&a.n>0){foe(a.n*1e8,a.x,a.z,140);baseMk('boom',{x:a.x,z:a.z,r:24,col:tc()});baseMk('boom',{x:a.x,z:a.z,r:18,col:tc()});flash(GOLD);shake=Math.max(shake,18)}
  scene.remove(a.pts);a.geo.dispose();a.pts.material.dispose();a.figs.forEach(f=>{scene.remove(f);freeObj(f)})}
 function quyNhat(){
  const[tx,tz]=target(),a=army||{x:tx,z:tz};endArmy(false);
- const g=roblox({angry:1,skin:0x7a30c0,shirt:0x2a0a40,pants:0x120020,sword:2});g.scale.setScalar(9);g.position.set(a.x,0,a.z);scene.add(g);
- giant={g,x:a.x,z:a.z,hp:1e5,t:0,life:14,acc:0};FXK('ring',{r:20,life:30,col:VIO});flash(VIO);shake=Math.max(shake,12)}
+ const g=roblox({angry:1,skin:0xffd646,shirt:0xff2a2a,pants:0xb07800,sword:2});g.scale.setScalar(9);g.position.set(a.x,0,a.z);scene.add(g);
+ giant={g,x:a.x,z:a.z,hp:1e5,t:0,life:14,acc:0};FXK('ring',{r:20,life:30,col:GOLD});FXK('ring',{r:14,life:30,col:RED});flash(GOLD);shake=Math.max(shake,12)}
 function giantStep(dt,T){
  const g=giant;if(!g)return;
  g.t+=dt;const f=nearFoe(g.x,g.z),q=pl(),tx=f?f.e.m.position.x:q.x,tz=f?f.e.m.position.z:q.z,d=hyp(tx-g.x,tz-g.z);
@@ -103,7 +106,7 @@ function giantStep(dt,T){
  if(g.t>=g.life||g.hp<=0)endGiant(true)}
 function endGiant(ex){
  const g=giant;if(!g)return;giant=null;
- if(ex){foe(1e11,g.x,g.z,150);baseMk('boom',{x:g.x,z:g.z,r:30,col:VIO});flash(VIO);shake=Math.max(shake,22)}
+ if(ex){foe(1e11,g.x,g.z,150);baseMk('boom',{x:g.x,z:g.z,r:30,col:tc()});baseMk('boom',{x:g.x,z:g.z,r:22,col:tc()});flash(GOLD);shake=Math.max(shake,22)}
  scene.remove(g.g);freeObj(g.g)}
 function armyHit(x,z,r,d){
  if(army&&hyp(army.x-x,army.z-z)<r+army.r){const lost=Math.min(army.n,Math.ceil(d*80));army.n-=lost;foe(lost*1e8,army.x,army.z,120)}
@@ -243,7 +246,7 @@ const show=(el,on)=>{if(el._v!==on){el._v=on;el.style.display=on?'block':'none'}
 function mkUI(){
  const b=document.createElement('div');b.id='dgBoss';b.innerHTML='<div id="dgBossN"></div><div id="dgBossBar"><i id="dgBossF"></i><span id="dgBossT"></span></div>';document.body.appendChild(b);
  const btn=(id,t,fn)=>{const x=document.createElement('button');x.id=id;x.className='dgBtn';x.textContent=t;x.addEventListener('pointerdown',e=>{e.preventDefault();fn()});document.body.appendChild(x)};
- btn('dgExit','Ra map cũ',()=>{if(paused||castBusy())return;setMap(prev)});btn('dgTalk','Nói chuyện (I)',talk)}
+ btn('dgTalk','Nói chuyện (I)',talk)}
 function extra(){
  const bot=$('btns');xb={};
  const addBtn=(l,n,fn,cls)=>{const b=document.createElement('button');b.innerHTML='<b>'+l+'</b><i>'+n+'</i>';b.className=cls;b.addEventListener('pointerdown',e=>{e.preventDefault();fn()});bot.appendChild(b);return b};
@@ -258,26 +261,27 @@ function dungeonStep(dt,T){
  if(!DC)scene.fog.color.setHex(0x2a0a14);
  const q=pl(),d=hyp(q.x,q.z);if(d>96){q.x*=96/d;q.z*=96/d}
  near=null;npcs.forEach(n=>{n.g.rotation.y=Math.atan2(q.x-n.x,q.z-n.z);n.g.userData.aR.rotation.x=-.35+Math.sin(T*2+n.x)*.08;if(hyp(q.x-n.x,q.z-n.z)<9)near=n});
- show($('dgTalk'),!!near&&!paused);show($('dgExit'),true);show($('dgBoss'),!!B);
+ show($('dgTalk'),!!near&&!paused);show($('dgBoss'),!!B);
  if(B){bossStep(dt,T);if(B){sT('dgBossN','CHUNG YÊN HOÀNG ĐẾ — DẠNG '+B.form+(B.ext?' — CỰC HẠN':''));sX('dgBossF','scaleX('+Math.max(0,Math.min(1,B.e.hp/B.max)).toFixed(3)+')');sT('dgBossT',fmt(Math.max(0,B.e.hp))+' / '+fmt(B.max))}}
  fxStep(dt);
  if(P.hp<=0&&!leaving){leaving=1;say('Bạn đã gục — trở về map cũ',2000);setTimeout(()=>{leaving=0;if(MAP=='dungeon')setMap(prev)},1200)}}
 function step(dt){
- const T=now()/1000,t=fusedOn();
+ const T=now()/1000,t=fusedOn()&&P.sty!=5;
  if(t!==tone){tone=t;setTone(t)}
  DG.eq=realSw==3?1:0;
+ if(P.sty==5&&!fusedOn()){setStyle(1);toast('Chung Yên Kiếm Pháp cần kiếm Dung Hợp Chung Yên')}
 
  if(!P.block&&st<MAXST)st=Math.min(MAXST,st+MAXST*.02*(P.td>0?2:1)*dt);
  if(realSw==3){sT0('KIẾM: '+SWORDS[3][0].toUpperCase());swOv=1}else if(swOv){swOv=0;sT0('KIẾM: '+SWORDS[P.sw][0].toUpperCase())}
  if(lunge){const q=pl();q.x+=lunge.vx*dt;q.z+=lunge.vz*dt;lunge.t-=dt;if(lunge.t<=0)lunge=null}
  xbUpdate();armyStep(dt,T);giantStep(dt,T);
- if(MAP=='dungeon')dungeonStep(dt,T);else{show($('dgTalk'),false);show($('dgExit'),false);show($('dgBoss'),false)}}
+ if(MAP=='dungeon')dungeonStep(dt,T);else{show($('dgTalk'),false);show($('dgBoss'),false)}}
 
 addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Nút <b>Ra map cũ</b> luôn có trong phó bản; chết cũng bị đưa về map cũ.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập).`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U K L).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập).`;
 
 mkUI();owned();$('stT').nextSibling.textContent='/'+MAXST;buildBtns();
 let last=now();
