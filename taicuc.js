@@ -2,7 +2,7 @@
 (function(){
 const ST=3,LINES=['Âm Dương Vô Cực','Nhất Kiếm Vô Thùy','Nhất Niệm Vị Sinh!'];
 const FLY=300,CONV=54,DROP=9,AFTER=44,BLAST=44,SPARKS=1600,STORM=6e9,SLAM=12e9,BOOM=12e9,TAIJI=5e10;
-const HOLD=30,CHARGE=240,CLONE_GAP=10,TAP_HIT=1e10,CLONE_HIT=1e11,FINAL_HIT=5e11,FORBID_SLASH=1e11,FORBID_BOOM=1.5e11,FAR_EXTRA=90,INK=0x16161c,PAPER=0xffffff,HB_FORBID=[120,200],HB_SUP=[260,280,320,420];
+const HOLD=30,CHARGE=240,CLONE_GAP=10,TAP_HIT=1e10,CLONE_HIT=1e11,FINAL_HIT=5e11,FORBID_SLASH=1e11,FORBID_BOOM=1.5e11,FAR_EXTRA=90,INK=0x16161c,PAPER=0xffffff,HB_FORBID=[240,400],HB_SUP=[520,560,640,840];
 SK[ST].g={n:'Tối Cao Áo Nghĩa',cd:2400,sp:'supreme',sta:80,tot:(STORM+SLAM+BOOM)/3+TAIJI};
 NOTE[ST].g='Đồ hình Thái Cực khổng lồ hiện dưới chân, niệm 3 câu chú. Thiên Mệnh Kiếm đổi màu, tự bay lên uốn lượn, mỗi giây tung hàng nghìn nhát chém Thái Cực. Sau đó Thái Cực khổng lồ hiện trên trời, kiếm hội tụ sức mạnh chém xuống đất tạo hố Thái Cực khổng lồ và vụ nổ siêu mạnh. Cuối cùng là vụ nổ Thái Cực 50 tỷ sát thương, thanh kiếm đổi màu âm dương đen trắng.';
 NOTE[ST].n='Bấm nhẹ: 1 nhát chém 10 tỷ. Giữ hơn 0,5 giây: hiện thanh tích luỹ tinh tuý trên hàng chiêu, phân thân chém liên tục (tổng khoảng 100 tỷ); tích luỹ đầy thì cùng phân thân chém 500 tỷ, chưa đầy thì sát thương theo phần trăm tích luỹ.';
@@ -156,9 +156,9 @@ async function forbid(){
   flash(PAPER);shake=Math.max(shake,40);
   hit(tx,tz,HB_FORBID[0],FORBID_SLASH*3,3);
   await wait(12);
-  FXK('boom',{x:tx,z:tz,r:80,col:PAPER});FXK('boom',{x:tx,z:tz,r:60,col:INK});
-  flatDisc(tx,tz,texBagua,300,60,.08);flatDisc(tx,tz,texBaguaP,220,50,-.1);flatDisc(tx,tz,texTaiji,140,44,.12);
-  FXK('ring',{r:130,life:40,col:PAPER});
+  FXK('boom',{x:tx,z:tz,r:130,col:PAPER});FXK('boom',{x:tx,z:tz,r:100,col:INK});
+  flatDisc(tx,tz,texBagua,480,60,.08);flatDisc(tx,tz,texBaguaP,350,50,-.1);flatDisc(tx,tz,texTaiji,220,44,.12);
+  FXK('ring',{r:220,life:40,col:PAPER});
   flash(GOLD);shake=Math.max(shake,52);
   hit(tx,tz,HB_FORBID[1],FORBID_BOOM*3,6);
   await wait(44)
