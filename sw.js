@@ -1,5 +1,5 @@
-const V='thienmenh-v10';
-const CORE=['./','index.html','style.css','dungeon.css','skills.js','chungyen.js','beasts.js','rule.js','game.js','hp.js','zoom.js','cutscene.js','dungeon.js','manifest.json','lib/three.min.js','gl.js',
+const V='thienmenh-v11';
+const CORE=['./','index.html','style.css','dungeon.css','skills.js','chungyen.js','beasts.js','rule.js','game.js','hp.js','zoom.js','cutscene.js','dungeon.js','taicuc.js','manifest.json','lib/three.min.js','gl.js',
   'icons/icon-192.png','icons/icon-512.png','icons/maskable-192.png','icons/maskable-512.png','icons/apple-touch-icon.png','icons/favicon-48.png'];
 const STATIC=/\/(lib\/three\.min\.js|icons\/[^/]+)$/;
 self.addEventListener('install',e=>{
