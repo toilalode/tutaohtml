@@ -380,4 +380,4 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
    if(v.z<1&&Math.abs(v.x)<1.3){const hpv=Math.max(0,Math.ceil(d0.hp)),pc=d0.inf?100:Math.max(0,Math.min(100,hpv/d0.max*100));eh.style.display='block';sX('eh','translate('+((v.x*.5+.5)*VW()).toFixed(0)+'px,'+((-v.y*.5+.5)*VH()).toFixed(0)+'px) translate(-50%,-100%)');sX('ehF','scaleX('+(pc/100).toFixed(3)+')');const tcv=d0.inf?'∞':fmtHp(hpv);if($('tpC').value!==tcv)$('tpC').value=tcv;if(!tpEdit){const tmv=d0.inf?'∞':fmtHp(d0.max);if($('tpM').value!==tmv)$('tpM').value=tmv}sT('ehT',d0.inf?'∞ / ∞':fmtNum(hpv)+' / '+fmtNum(d0.max))}else eh.style.display='none'}
   else eh.style.display='none'}
  ren.render(scene,cam)}
-requestAnimationFrame(loop);
+addEventListener('DOMContentLoaded',()=>requestAnimationFrame(loop));
