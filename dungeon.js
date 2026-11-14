@@ -248,7 +248,7 @@ const show=(el,on)=>{if(el._v!==on){el._v=on;el.style.display=on?'block':'none'}
 function mkUI(){
  const b=document.createElement('div');b.id='dgBoss';b.innerHTML='<div id="dgBossN"></div><div id="dgBossBar"><i id="dgBossF"></i><span id="dgBossT"></span></div>';document.body.appendChild(b);
  const btn=(id,t,fn)=>{const x=document.createElement('button');x.id=id;x.className='dgBtn';x.textContent=t;x.addEventListener('pointerdown',e=>{e.preventDefault();fn()});document.body.appendChild(x)};
- btn('dgExit','Ra map cũ',()=>{if(paused||castBusy())return;setMap(prev)});btn('dgTalk','Nói chuyện (I)',talk)}
+ btn('dgTalk','Nói chuyện (I)',talk)}
 function extra(){
  const bot=$('btns');xb={};
  const addBtn=(l,n,fn,cls)=>{const b=document.createElement('button');b.innerHTML='<b>'+l+'</b><i>'+n+'</i>';b.className=cls;b.addEventListener('pointerdown',e=>{e.preventDefault();fn()});bot.appendChild(b);return b};
@@ -263,7 +263,7 @@ function dungeonStep(dt,T){
  if(!DC)scene.fog.color.setHex(0x2a0a14);
  const q=pl(),d=hyp(q.x,q.z);if(d>96){q.x*=96/d;q.z*=96/d}
  near=null;npcs.forEach(n=>{n.g.rotation.y=Math.atan2(q.x-n.x,q.z-n.z);n.g.userData.aR.rotation.x=-.35+Math.sin(T*2+n.x)*.08;if(hyp(q.x-n.x,q.z-n.z)<9)near=n});
- show($('dgTalk'),!!near&&!paused);show($('dgExit'),true);show($('dgBoss'),!!B);
+ show($('dgTalk'),!!near&&!paused);show($('dgBoss'),!!B);
  if(B){bossStep(dt,T);if(B){sT('dgBossN','CHUNG YÊN HOÀNG ĐẾ — DẠNG '+B.form+(B.ext?' — CỰC HẠN':''));sX('dgBossF','scaleX('+Math.max(0,Math.min(1,B.e.hp/B.max)).toFixed(3)+')');sT('dgBossT',fmt(Math.max(0,B.e.hp))+' / '+fmt(B.max))}}
  fxStep(dt);
  if(P.hp<=0&&!leaving){leaving=1;say('Bạn đã gục — trở về map cũ',2000);setTimeout(()=>{leaving=0;if(MAP=='dungeon')setMap(prev)},1200)}}
@@ -274,13 +274,13 @@ function step(dt){
  if(realSw==3){sT0('KIẾM: '+SWORDS[3][0].toUpperCase());swOv=1}else if(swOv){swOv=0;sT0('KIẾM: '+SWORDS[P.sw][0].toUpperCase())}
  if(lunge){const q=pl();q.x+=lunge.vx*dt;q.z+=lunge.vz*dt;lunge.t-=dt;if(lunge.t<=0)lunge=null}
  xbUpdate();stunStep(dt,T);armyStep(dt,T);giantStep(dt,T);
- if(MAP=='dungeon')dungeonStep(dt,T);else{show($('dgTalk'),false);show($('dgExit'),false);show($('dgBoss'),false)}}
+ if(MAP=='dungeon')dungeonStep(dt,T);else{show($('dgTalk'),false);show($('dgBoss'),false)}}
 
 addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Nút <b>Ra map cũ</b> luôn có trong phó bản; chết cũng bị đưa về map cũ.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập). Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả.`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Muốn rời phó bản, mở nút 🗺 Map rồi chọn map khác; chết cũng bị đưa về map cũ.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập). Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả.`;
 
 mkUI();owned();buildBtns();
 let last=now();
