@@ -93,7 +93,7 @@ function armyStep(dt,T){
  const a=army;if(!a)return;
  a.t+=dt;const f=nearFoe(a.x,a.z),q=pl(),tx=f?f.e.m.position.x:q.x+8,tz=f?f.e.m.position.z:q.z+8,d=hyp(tx-a.x,tz-a.z);
  if(d>(f?9:2)){const s=Math.min(d,16*dt);a.x+=(tx-a.x)/d*s;a.z+=(tz-a.z)/d*s}
- if(f){a.acc+=dt;while(a.acc>=.5){a.acc-=.5;stunAt(a.x,a.z,90,STUN);foe(a.n*1e6*VQM,a.x,a.z,90)}}else a.acc=0;
+ if(f){stunAt(a.x,a.z,90,STUN);foe(a.n*1e6*VQM*2*dt,a.x,a.z,90)}
  for(let i=0;i<a.n0;i++){const j=i*3;a.pos[j]=a.x+a.ox[i]+Math.sin(T*3+a.ph[i])*.6;a.pos[j+1]=.5+Math.abs(Math.sin(T*6+a.ph[i]))*.8;a.pos[j+2]=a.z+a.oz[i]+Math.cos(T*3+a.ph[i])*.6}
  a.geo.attributes.position.needsUpdate=true;a.geo.setDrawRange(0,Math.max(1,Math.ceil(a.n)));
  a.figs.forEach((f2,i)=>{const an=i*.349+T*.5,w=Math.sin(T*10+i);f2.position.set(a.x+Math.cos(an)*(6+i%3*4),0,a.z+Math.sin(an)*(6+i%3*4));f2.rotation.y=Math.atan2(tx-f2.position.x,tz-f2.position.z);const u=f2.userData;u.lL.rotation.x=w*.7;u.lR.rotation.x=-w*.7;u.aL.rotation.x=u.aR.rotation.x=-1.4+w*.3});
@@ -110,7 +110,7 @@ function giantStep(dt,T){
  const g=giant;if(!g)return;
  g.t+=dt;const f=nearFoe(g.x,g.z),q=pl(),tx=f?f.e.m.position.x:q.x,tz=f?f.e.m.position.z:q.z,d=hyp(tx-g.x,tz-g.z);
  if(d>10){const s=Math.min(d,28*dt);g.x+=(tx-g.x)/d*s;g.z+=(tz-g.z)/d*s}
- if(f){g.acc+=dt;stunAt(g.x,g.z,22,STUN);let n=0;while(g.acc>=.05&&n++<3){g.acc-=.05;foe(1e8*VQM,g.x,g.z,22)}}else g.acc=0;
+ if(f){stunAt(g.x,g.z,22,STUN);foe(1e8*VQM*20*dt,g.x,g.z,22)}
  g.g.position.set(g.x,0,g.z);g.g.rotation.y=Math.atan2(tx-g.x,tz-g.z);
  const u=g.g.userData,w=Math.sin(T*10);u.aL.rotation.x=u.aR.rotation.x=-1.4+w*.3;u.lL.rotation.x=w*.6;u.lR.rotation.x=-w*.6;
  }
@@ -118,7 +118,10 @@ function endGiant(ex){
  const g=giant;if(!g)return;giant=null;
  if(ex){stunAt(g.x,g.z,150,STUN);foe(1e11*VQM,g.x,g.z,150);baseMk('boom',{x:g.x,z:g.z,r:30,col:VIO});baseMk('boom',{x:g.x,z:g.z,r:22,col:0x7a30c0});flash(VIO);shake=Math.max(shake,22)}
  scene.remove(g.g);freeObj(g.g)}
-function armyHit(){}
+function armyHit(x,z,r,d){
+ const w=Math.ceil(d*80)*1e8*VQM;
+ if(army&&hyp(army.x-x,army.z-z)<r+22)foe(w,army.x,army.z,120);
+ if(giant&&hyp(giant.x-x,giant.z-z)<r+8)foe(w,giant.x,giant.z,120)}
 
 const fxAdd=(m,sec,upd)=>{scene.add(m);dfx.push({m,t:0,max:sec,upd})};
 function fxStep(dt){dfx=dfx.filter(f=>{f.t+=dt;if(f.upd)f.upd(Math.min(1,f.t/f.max));if(f.t>=f.max){scene.remove(f.m);freeObj(f.m);return false}return true})}
@@ -289,7 +292,7 @@ addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ.`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1 tỷ máu. Hết máu sẽ hóa Dạng 2: 1,5 tỷ máu. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ. Quái gây sát thương liên tục và phản sát thương khi bị boss đánh trúng.`;
 
 mkUI();owned();$('stT').nextSibling.textContent='/'+MAXST;buildBtns();
 let last=now();
