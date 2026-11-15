@@ -226,12 +226,17 @@ ren.render=function(s,c){
   const pp=player.position,k=1-P.cut/(P.cutMax||1),a=yaw+.9,d=15-k*4;
   c.up.set(0,1,0);c.position.set(pp.x+Math.sin(a)*d,pp.y+3.4,pp.z+Math.cos(a)*d);c.lookAt(pp.x+Math.sin(yaw)*3,pp.y+2.8,pp.z+Math.cos(yaw)*3)}
  return baseRender(s,c)};
+const MUL=new Map(),SMUL=[1e7,1e8,1e8,1e5,1e8,1e9],act=[],baseHit=hit;
+SK.forEach((set,si)=>Object.keys(set).forEach(k=>{const m=si==3?('zxcv'.includes(k)?SMUL[3]:0):SMUL[si];if(m){MUL.set(set[k],m);if(typeof set[k].tot==='number')set[k].tot*=m}}));
+hit=function(x,z,r,d,kb){return baseHit(x,z,r,act.length?d*act[act.length-1]:d,kb)};
 const baseRun=run;
 run=function(sp,k0){
  if(sp.sp==='supreme')return supreme();
  if(sp.sp==='baquai')return baquai(sp);
  if(sp.sp==='forbid')return forbid();
+ const m=MUL.get(sp);if(m)act.push(m);
  const r=baseRun(sp,k0);
+ if(m){const done=()=>{const i=act.lastIndexOf(m);if(i>=0)act.splice(i,1)};r.then(done,done)}
  if(sp.cutfar){P.cut+=FAR_EXTRA;P.cutMax=P.cut;P.cutFar=1;r.finally(()=>{P.cutFar=0})}
  return r};
 buildBtns();
