@@ -1,13 +1,14 @@
 'use strict';
 (function(){
 const ST=3,LINES=['Âm Dương Vô Cực','Nhất Kiếm Vô Thùy','Nhất Niệm Vị Sinh!'];
-const FLY=300,CONV=54,DROP=9,AFTER=44,BLAST=44,SPARKS=1600,STORM=4.5e11,SLAM=9e11,BOOM=9e11,TAIJI=5e10;
-const HOLD=30,CHARGE=240,CLONE_GAP=10,TAP_HIT=1e10,CLONE_HIT=1e11,FINAL_HIT=5e11,FORBID_DRAW=4e10,FORBID_SLASH=8e10,FORBID_BOOM=1.3e11,FAR_EXTRA=90,INK=0x16161c,PAPER=0xffffff,HB_FORBID=[240,400],HB_SUP=[520,560,640,840];
+const FLY=300,CONV=54,DROP=9,AFTER=44,BLAST=44,SPARKS=1600,STORM=4.5e11,SLAM=9e11,BOOM=9e11,TAIJI=5e11;
+const HOLD=30,CHARGE=240,CLONE_GAP=10,TAP_HIT=1e10,CLONE_HIT=1e11,FINAL_HIT=5e11,FORBID_DRAW=5e10,FORBID_SLASH=1e11,FORBID_BOOM=1.5e11,FAR_EXTRA=90,INK=0x16161c,PAPER=0xffffff,HB_FORBID=[240,400],HB_SUP=[520,560,640,840];
 SK[ST].g={n:'Tối Cao Áo Nghĩa',cd:2400,sp:'supreme',sta:80,tot:(STORM+SLAM+BOOM)/3+TAIJI};
-NOTE[ST].g='Đồ hình Thái Cực khổng lồ hiện dưới chân, niệm 3 câu chú. Thiên Mệnh Kiếm đổi màu, tự bay lên uốn lượn, mỗi giây tung hàng nghìn nhát chém Thái Cực. Sau đó Thái Cực khổng lồ hiện trên trời, kiếm hội tụ sức mạnh chém xuống đất tạo hố Thái Cực khổng lồ và vụ nổ siêu mạnh. Cuối cùng là vụ nổ Thái Cực 50 tỷ sát thương, thanh kiếm đổi màu âm dương đen trắng.';
+NOTE[ST].g='Đồ hình Thái Cực khổng lồ hiện dưới chân, niệm 3 câu chú. Thiên Mệnh Kiếm đổi màu, tự bay lên uốn lượn, mỗi giây tung hàng nghìn nhát chém Thái Cực. Sau đó Thái Cực khổng lồ hiện trên trời, kiếm hội tụ sức mạnh chém xuống đất tạo hố Thái Cực khổng lồ và vụ nổ siêu mạnh. Cuối cùng là vụ nổ Thái Cực 500 tỷ sát thương, thanh kiếm đổi màu âm dương đen trắng.';
 NOTE[ST].n='Bấm nhẹ: 1 nhát chém 10 tỷ. Giữ hơn 0,5 giây: hiện thanh tích luỹ tinh tuý trên hàng chiêu, phân thân chém liên tục (tổng khoảng 100 tỷ); tích luỹ đầy thì cùng phân thân chém 500 tỷ, chưa đầy thì sát thương theo phần trăm tích luỹ.';
 NOTE[ST].j='Cutscene quay từ xa, thấy rõ mặt nhân vật và trọn cả chiêu, niệm 8 quẻ rồi Thái Cực Thần Trảm 1000 tỷ sát thương.';
-NOTE[ST].f='Chém ra những đường nét Thái Cực, niệm 4 câu chú, bay lên tung nhát chém Nhất Họa Khai Thiên kèm vụ nổ Bát Quái siêu mạnh, tổng 250 tỷ; hitbox siêu to.';
+NOTE[ST].f='Chém ra những đường nét Thái Cực, niệm 4 câu chú, bay lên tung nhát chém Nhất Họa Khai Thiên kèm vụ nổ Bát Quái siêu mạnh, tổng 300 tỷ (vẽ 50 tỷ, chém 100 tỷ, nổ 150 tỷ); hitbox siêu to.';
+Object.assign(SK[ST].f,{tot:FORBID_DRAW+FORBID_SLASH+FORBID_BOOM});delete SK[ST].f.fat;
 GUIDE['Mẹo']=GUIDE['Mẹo'].replace('cutscene cận mặt nhân vật lúc niệm chú','cutscene quay từ xa, thấy rõ mặt nhân vật và trọn cả chiêu');
 let away=false,craterTex=null;
 const baseLook=swordLook;
