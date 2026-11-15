@@ -196,7 +196,7 @@ async function baquai(sp){
    say(sp.n,900);await wait(14);
    const[ax,az]=target();strike('slash',ax,az,TAP_HIT*3,9,PURP);
    return}
-  say('Tích Luỹ Tinh Tuý',1100);
+  say('Tích Luỹ Tinh Tuý Thái Cực Kiếm Pháp',1100);
   clone=makeClone();
   const u=clone.userData,pp=player.position;
   let c=0;
@@ -210,7 +210,7 @@ async function baquai(sp){
    await wait(1)}
   const k=c/CHARGE,[tx,tz]=target();
   chargeHide();
-  say(k>=1?'Âm Dương Bát Quái Trảm !':'Âm Dương Bát Quái Trảm!',1200);
+  say(k>=1?'Âm Dương Bát Quái Trảm!':'Âm Dương Bát Quái Trảm!',1200);
   FXK('slash',{x:tx,z:tz,r:14+12*k,col:PAPER});FXK('slash',{x:tx,z:tz,r:10+12*k,col:INK});
   FXK('boom',{x:tx,z:tz,r:12+14*k,col:PURP});FXK('ring',{r:14+16*k,life:30,col:PAPER});
   flash(PAPER);shake=Math.max(shake,12+20*k);
