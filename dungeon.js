@@ -14,11 +14,11 @@ const hyp=Math.hypot,now=()=>performance.now(),pl=()=>player.position;
 const fusedOn=()=>!!DG.fused&&realSw==3,bigSty=()=>P.sty==0||P.sty==1||P.sty==5,boosted=()=>fusedOn()&&bigSty(),soulOn=()=>!!DG.khItem&&P.kh>0&&boosted();
 const frozen=()=>P.dom5>0||P.tf>0||P.ap>0;
 const fmt=n=>n>=1e9?(n/1e9).toFixed(2)+' tỷ':n>=1e6?(n/1e6).toFixed(1)+' tr':Math.ceil(n).toLocaleString('vi-VN');
-let swOv=0,prev='main',B=null,world=null,npcs=[],near=null,dfx=[],souls=[],army=null,giant=null,origSky=null,dgSkyT=null,leaving=0,m2T=0,tw=0,tone=false,toneK=false,lunge=null,pose={k:'',t:0},xb={};
+let swOv=0,prev='main',B=null,world=null,npcs=[],near=null,dfx=[],souls=[],army=null,giant=null,origSky=null,dgSkyT=null,leaving=0,m2T=0,tw=0,tone=false,toneK=false,toneR=false,lunge=null,pose={k:'',t:0},xb={};
 
 const refill=()=>{st=MAXST};
 const baseDmg=dmgMul,baseCost=costMul,baseHit=hit,baseMk=mk,baseCast=cast,baseSet=setMap,baseResp=respawn,baseBuild=buildBtns,baseSay=say,baseRule=ruleSkill,baseBuff=buff,baseSync=syncRT,baseStyle=setStyle,basePopup=popup;
-dmgMul=function(){let m=baseDmg();if(boosted()){m*=50;if(soulOn())m*=20;if(DG.khItem&&(P.ap>0||now()<m2T))m*=5}return m};
+dmgMul=function(){let m=baseDmg();if(boosted()){m*=50;if(soulOn())m*=P.sty==0?1000:101000;if(DG.khItem&&(P.ap>0||now()<m2T))m*=5}return m};
 costMul=function(){const c=baseCost();return fusedOn()?{cd:c.cd*.01,st:c.st*.01}:c};
 hit=function(x,z,r,d,kb){return baseHit(x,z,boosted()?r*15:r,d,kb)};
 mk=function(kind,o){if(fusedOn()&&o&&o.col!==undefined&&o.col!==0xffffff&&o.col!==0x9fd8ff){if(P.sty==5)o=Object.assign({},o,{col:RED});else if(P.sty<2){tw^=1;o=Object.assign({},o,{col:tw?GOLD:RED})}}return baseMk(kind,o)};
@@ -45,7 +45,7 @@ function applyPose(){
 {const rd=ren.render.bind(ren);ren.render=function(s,c){applyPose();return rd(s,c)}}
 
 const mG=mat(GOLD,.5),mR=mat(RED,.5);
-function setTone(on,kh){[[S.kh,kh],[S.gap,kh],[S.xich,on]].forEach(([g,o])=>{let i=0;g.traverse(c=>{if(!c.isMesh)return;if(!c.userData.om)c.userData.om=c.material;c.material=o?(i++%2?mR:mG):c.userData.om})});S.td.material.color.setHex(on?0xff7a1a:GOLD)}
+function setTone(on,kh,red){[[S.kh,kh||red],[S.gap,kh||red],[S.xich,on]].forEach(([g,o])=>{let i=0;g.traverse(c=>{if(!c.isMesh)return;if(!c.userData.om)c.userData.om=c.material;c.material=o?(red?mR:(i++%2?mR:mG)):c.userData.om})});S.td.material.color.setHex(on?0xff7a1a:GOLD)}
 
 function owned(){
  if(DG.fused&&SWORDS.length<4)SWORDS.push(['Thiên Mệnh Kiếm — Dung Hợp Chung Yên (Chung Yên)',1.7]);
@@ -277,8 +277,8 @@ function dungeonStep(dt,T){
  fxStep(dt);
  if(P.hp<=0&&!leaving){leaving=1;say('Bạn đã gục — trở về map cũ',2000);setTimeout(()=>{leaving=0;if(MAP=='dungeon')setMap(prev)},1200)}}
 function step(dt){
- const T=now()/1000,t=fusedOn()&&P.sty!=5,kt=t&&!!DG.khItem;
- if(t!==tone||kt!==toneK){tone=t;toneK=kt;setTone(t,kt)}
+ const T=now()/1000,t=fusedOn()&&P.sty!=5,kt=t&&!!DG.khItem,rd=fusedOn()&&P.sty==5&&!!DG.khItem;
+ if(t!==tone||kt!==toneK||rd!==toneR){tone=t;toneK=kt;toneR=rd;setTone(t,kt,rd)}
  DG.eq=realSw==3?1:0;
  if(P.sty==5&&!fusedOn()){setStyle(1);toast('Chung Yên Kiếm Pháp cần kiếm Dung Hợp Chung Yên')}
 
@@ -292,7 +292,7 @@ addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 100 tỷ máu. Hết máu sẽ hóa Dạng 2: 150 tỷ máu. Sát thương boss ×10. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp, sát thương ×20; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ. Quái gây sát thương liên tục và phản sát thương khi bị boss đánh trúng.`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 100 tỷ máu. Hết máu sẽ hóa Dạng 2: 150 tỷ máu. Sát thương boss ×10. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp, sát thương ×101.000, gấp 1000 lần Kiếm Hồn Thiên Mệnh; với Chung Yên Kiếm Pháp Kiếm Hồn và các chiêu Quy Luật đổi sang màu đỏ; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ. Quái gây sát thương liên tục và phản sát thương khi bị boss đánh trúng.`;
 
 mkUI();owned();$('stT').nextSibling.textContent='/'+MAXST;buildBtns();
 let last=now();
