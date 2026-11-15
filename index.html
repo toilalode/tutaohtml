@@ -10,6 +10,9 @@ window.addEventListener('error',function(e){show('LỖI: '+e.message+' ('+(e.fil
 window.addEventListener('unhandledrejection',function(e){show('LỖI PROMISE: '+(e.reason&&e.reason.message||e.reason))});})();
 </script>
 <script>
+(function(){var d=document.documentElement;function f(){d.style.setProperty('--ih',window.innerHeight+'px')}f();addEventListener('resize',f);addEventListener('orientationchange',function(){setTimeout(f,350)})})();
+</script>
+<script>
 // Chống thu phóng khi bấm liên tục / chụm 2 ngón (không đụng tới pointer/touch của joystick và nút chiêu)
 (function(){var last=0;
 document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<350&&e.target.closest&&!e.target.closest('#popup,#guide,#tp,#kp,#start'))e.preventDefault();last=n},{passive:false});

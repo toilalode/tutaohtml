@@ -1,4 +1,4 @@
-#dgBoss{position:fixed;top:40px;left:50%;transform:translateX(-50%);width:min(60vw,460px);display:none;z-index:120;pointer-events:none}
+#dgBoss{position:fixed;top:40px;left:50%;transform:translateX(-50%);width:60vw;max-width:460px;width:min(60vw,460px);display:none;z-index:120;pointer-events:none}
 #dgBossN{text-align:center;font:bold 11px 'Courier New',monospace;color:#ffd646;text-shadow:0 0 4px #000,0 0 6px #f50;margin-bottom:2px}
 #dgBossBar{position:relative;height:22px;background:rgba(10,0,15,.85);border:2px solid #fff;border-radius:6px;overflow:hidden}
 #dgBossF{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ffb000,#ff2a2a);will-change:transform}
