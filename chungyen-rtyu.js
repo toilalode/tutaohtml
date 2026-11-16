@@ -1,5 +1,5 @@
 'use strict';
-// Chung Yên Kiếm Pháp: thêm buff T / Y / U (nút đỏ) và xếp R T Y U bên trái Z X C V.
+// Chung Yên Kiếm Pháp: thêm buff T / Y / U (hiệu ứng đỏ) và xếp R T Y U bên trái Z X C V.
 // Style 5 chỉ dùng được khi cầm Thiên Mệnh Kiếm — Dung Hợp Chung Yên (dungeon.js tự ép), nên chỉ cần kiểm tra P.sty==5.
 (function(){
 const RED=0xff2a2a,cy=()=>P.sty==5;
@@ -15,9 +15,10 @@ buff=function(k){
   if(k=='U'){
    if(P.absorb<=0)return toast('Chưa hấp thụ sát thương (bật Y rồi chịu đòn)');
    const d=P.absorb*2,p=player.position;P.absorb=0;P.pwr=600;
-   FXK('boom',{x:p.x,z:p.z,r:14,col:RED});hit(p.x,p.z,14,d*3,2);shake=12;return}
+   FXK('boom',{x:p.x,z:p.z,r:14,col:RED});FXK('ring',{r:14,life:30,col:RED});hit(p.x,p.z,14,d*3,2);shake=12;flash(RED);return}
   const key=k=='T'?'td':'xich',n=k=='T'?'Thiên Địa Chi Cảnh':'Thiên Mệnh Xích Giáp';
-  P[key]=P[key]?0:1;say(n+(P[key]?' — BẬT':' — TẮT'),1000);if(P[key])flash(RED);return}
+  P[key]=P[key]?0:1;say(n+(P[key]?' — BẬT':' — TẮT'),1000);
+  if(P[key]){flash(RED);FXK('ring',{r:8,life:24,col:RED});FXK('aura',{life:30,col:RED})}return}
  return baseBuffCY(k)};
 
 // Không để syncRT xoá T / Y / U khi đang dùng Chung Yên Kiếm Pháp
@@ -31,7 +32,7 @@ syncRT=function(){
 const baseDmgCY=dmgMul;
 dmgMul=function(){let m=baseDmgCY();if(cy()&&P.td>0)m*=2.3;return m};
 
-// Nút: R T Y U (T Y U màu đỏ) nằm bên trái Z X C V
+// Nút: R T Y U nằm bên trái Z X C V
 const baseBuildCY=buildBtns;
 buildBtns=function(){
  baseBuildCY();
@@ -43,6 +44,14 @@ buildBtns=function(){
  ['T','Y','U'].forEach(k=>{const b=mk(k);bot.insertBefore(b,ref);bt[k]=b});
  placeCols()};
 
-GUIDE['Buff']+='<h3>Chung Yên Kiếm Pháp</h3>Có đủ <b>R T Y U</b> nằm bên trái Z X C V. <b>T</b> Thiên Địa Chi Cảnh, <b>Y</b> Thiên Mệnh Xích Giáp, <b>U</b> Phản Hồi (nút đỏ) dùng như Thiên Mệnh Kiếm Pháp; bật R thì cấm T, Y, U.';
+// Hiệu ứng đang bật (vòng Thiên Địa, xích Xích Giáp, quầng Phản Hồi) đổi sang màu đỏ khi dùng Chung Yên Kiếm Pháp
+let lastRed=null;
+setInterval(()=>{
+ const r=cy();if(r===lastRed)return;lastRed=r;
+ S.td.material.color.setHex(r?RED:GOLD);
+ S.xich.children.forEach(m=>m.material.color.setHex(r?RED:GOLD));
+ S.pwr.material.color.setHex(r?RED:0xff5030)},150);
+
+GUIDE['Buff']+='<h3>Chung Yên Kiếm Pháp</h3>Có đủ <b>R T Y U</b> nằm bên trái Z X C V. <b>T</b> Thiên Địa Chi Cảnh, <b>Y</b> Thiên Mệnh Xích Giáp, <b>U</b> Phản Hồi dùng như Thiên Mệnh Kiếm Pháp nhưng hiệu ứng màu đỏ; bật R thì cấm T, Y, U.';
 buildBtns();
 })();
