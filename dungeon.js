@@ -191,7 +191,7 @@ function reward(x){
 function bossDown(){
  const e=B.e;
  if(B.form==1){
-  B.form=2;B.max=1.5e11*(B.ext?10:1);e.hp=B.max;e.lh=B.max;B.lastHp=B.max;B.inv=3;B.q=[];B.hl=null;B.rush=null;B.busy=0;B.cd=3.4;clearSouls();formTwo();
+  B.form=2;B.max=1.5e11*(B.ext?10:1);e.hp=B.max;e.lh=B.max;B.lastHp=B.max;B.inv=0;B.q=[];B.hl=null;B.rush=null;B.busy=0;B.cd=3.4;clearSouls();formTwo();
   say('Chung Yên Hoàng Đế — Dạng Hai!',2800);flash(GOLD);shake=Math.max(shake,18);burst(e.m.position.x,e.m.position.z,30,GOLD)}
  else{
   scene.remove(e.m);freeObj(e.m);enemies=enemies.filter(x=>x!==e);clearSouls();
