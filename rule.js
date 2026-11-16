@@ -2,8 +2,8 @@ const RULES=['Giảm trọng lực','Làm chậm kẻ địch','Sát thương x2
 function lawMenu(){
  if(castBusy())return;
  if(!P.kh)return toast('H cần bật R (Kiếm Hồn Cửu Ngũ Chí Tôn) trước');
- popup('Quy luật — Kiếm Hồn',['Vạn Kiếm','Thiên Trảm','Áp Chế (bật/tắt, mỗi 5ms 100.000.000 sát thương gốc)'],-1,i=>ruleSkill(['van','tru','ap'][i]))}
-const RULE_VAN_HIT=1125000,RULE_VAN_N=4,RULE_TRU_SKY=6000000,RULE_TRU_BOOM=3000000,AP_BASE=100000000;
+ popup('Quy luật — Kiếm Hồn',['Vạn Kiếm','Thiên Trảm','Áp Chế (bật/tắt, mỗi 5ms 100.000.000 × 1 tỷ sát thương gốc)'],-1,i=>ruleSkill(['van','tru','ap'][i]))}
+const RULE_VAN_HIT=1125000*1e9,RULE_VAN_N=4,RULE_TRU_SKY=6000000*1e9,RULE_TRU_BOOM=3000000*1e9,AP_BASE=100000000*1e9;
 async function ruleSkill(k){
  if(!P.kh)return;
  if(k=='ap'){if(P.ap>0){P.ap=0;return say('Hủy Áp Chế',900)}P.ap=1;say('Áp Chế — Thiên Địa Quy Luật',2200);return flash(GOLD)}
