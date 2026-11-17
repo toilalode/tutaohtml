@@ -78,7 +78,7 @@ window.bossAI=function(ctx){
 // ---- giao diện: nút 3 (kéo thả được) + bảng chỉnh ----
 const css=document.createElement('style');
 css.textContent='#aiBtn{position:fixed;left:8px;top:90px;z-index:101;padding:5px 10px;font:bold 12px "Courier New",monospace;color:#ffd646;background:rgba(10,5,25,.9);border:1px solid #9945ff;border-radius:6px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}#aiBtn.off{color:#888;border-color:#555}#aiBtn.drag{cursor:grabbing;border-color:#ffd646}'
-+'#aiP{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,380px);max-height:88vh;overflow:auto;display:none;z-index:960;background:rgba(8,2,22,.98);border:2px solid #9945ff;border-radius:14px;padding:12px;color:#ddd;font:12px "Courier New",monospace;touch-action:pan-y}'
++'#aiP{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,380px);max-height:88vh;overflow:auto;display:none;z-index:960;background:rgba(8,2,22,.98);border:2px solid #9945ff;border-radius:14px;padding:12px;color:#ddd;font:12px "Courier New",monospace;touch-action:pan-x pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
 +'#aiP h3{margin:0 0 8px;color:#ffd646;font-size:14px}#aiP label{display:block;margin:8px 0 3px;color:#9fd8ff}#aiP select,#aiP textarea{width:100%;box-sizing:border-box;background:#150a2a;color:#fff;border:1px solid #6a3ad0;border-radius:6px;padding:6px;font:13px "Courier New",monospace}#aiP textarea{height:150px;resize:vertical}'
 +'#aiP .row{display:flex;align-items:center;margin-top:8px}#aiP .row input{width:20px;height:20px;margin:0 8px 0 0}#aiP .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}#aiP button{flex:1 1 auto;padding:8px;font:bold 12px "Courier New",monospace;color:#fff;background:#3a1a80;border:1px solid #9945ff;border-radius:6px}'
 +'#aiSt{margin-top:8px;color:#fc0;word-break:break-word}#aiOut{margin-top:6px;color:#aaa;white-space:pre-wrap;word-break:break-word;max-height:90px;overflow:auto}';
@@ -106,7 +106,8 @@ const sel=$$('aiModel');MODELS.forEach(m=>{const o=document.createElement('optio
 let wasPaused=false,isOpen=false;
 function fill(){$$('aiOn').checked=CFG.on;sel.value=CFG.model;$$('aiTh').checked=CFG.thinking;$$('aiPr').value=CFG.prompt;setStatus(status)}
 function apply(){CFG.on=$$('aiOn').checked;CFG.model=sel.value;CFG.thinking=$$('aiTh').checked;CFG.prompt=$$('aiPr').value.trim()||DEF_PROMPT;window.bossAIon=CFG.on;ready=null;fail=0;deadUntil=0;saveCfg();refreshBtn()}
-function open(){if(isOpen)return;isOpen=true;wasPaused=paused;paused=true;fill();P_.style.display='block'}
+function fitP(){P_.style.maxHeight=Math.floor((typeof LH==='function'?LH():innerHeight)*.88)+'px'}
+function open(){if(isOpen)return;isOpen=true;wasPaused=paused;paused=true;fill();fitP();P_.style.display='block'}
 function close(){if(!isOpen)return;isOpen=false;P_.style.display='none';paused=wasPaused}
 const toggle=()=>isOpen?close():open();
 
@@ -166,6 +167,6 @@ btn.addEventListener('pointercancel',endDrag);
 btn.addEventListener('click',e=>{e.preventDefault();if(moved){moved=false;return}toggle()});
 $$('aiPos').addEventListener('click',()=>{pos=null;savePos();place();if(typeof toast==='function')toast('Đã đặt lại vị trí nút 3')});
 
-setInterval(place,250);addEventListener('resize',place);addEventListener('orientationchange',()=>setTimeout(place,350));
+setInterval(place,250);addEventListener('resize',()=>{place();fitP()});addEventListener('orientationchange',()=>setTimeout(place,350));
 refreshBtn();place();
 })();
