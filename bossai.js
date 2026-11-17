@@ -2,12 +2,13 @@
 // AI điều khiển boss Chung Yên Hoàng Đế: chọn chiêu tiếp theo dựa trên tình huống.
 // Gọi API bất đồng bộ — chiêu AI chọn xong sẽ được dùng ở lượt sau; chưa có thì boss chọn ngẫu nhiên như cũ.
 // Nút "3" (hoặc phím 3) mặc định dưới HUD máu, kéo thả được; mở bảng chỉnh model / thinking / prompt.
+// Boss nói một câu mỗi 5 giây (ưu tiên câu AI vừa viết, không có thì dùng câu mẫu theo tình huống).
 (function(){
 const URL='https://my-ai-worker.vudanhquy1002.workers.dev/api/external/chat',KEY='vlx_e0107531b2bb4ce7afeaa38262724d92',LS='tm_bossai_v1';
 const MODELS=[['auto','Tự chọn (auto)'],['gemma-4-31b-it','Gemma 4 31B'],['gemma-4-26b-a4b-it','Gemma 4 26B A4B']];
 const OLD_DEF='Bạn là trí tuệ của boss "Chung Yên Hoàng Đế" trong game kiếm hiệp. Mỗi lượt hãy chọn MỘT chiêu để đánh bại người chơi một cách thông minh: đổi chiêu liên tục (đừng lặp lại chiêu vừa dùng), đọc khoảng cách và máu để chọn chiêu hợp lý, và thỉnh thoảng nói một câu khiêu khích ngắn.';
 const DEF_PROMPT='Bạn là trí tuệ của boss "Chung Yên Hoàng Đế" trong game kiếm hiệp. Mỗi lượt hãy chọn MỘT chiêu để đánh bại người chơi một cách thông minh: đổi chiêu liên tục (đừng lặp lại chiêu vừa dùng), đọc khoảng cách và máu để chọn chiêu hợp lý, và thỉnh thoảng nói một câu khiêu khích ngắn. Khi máu boss dưới 20% thì kêu cứu hoặc hét lên như "Không không không!". Khi máu người chơi dưới 10% thì khiêu khích cực mạnh. Khi thấy người chơi dùng chiêu mạnh (nguoi_choi_dung_chieu_manh là true) thì nói "Ngươi điên rồi!" rồi bỏ chạy (đặt flee là true).';
-const FORMAT='\n\nĐịnh dạng bắt buộc: chỉ trả về JSON một dòng, không giải thích, dạng {"atk":"tên_chiêu","say":"câu nói ngắn dưới 10 từ hoặc rỗng","flee":false}. "atk" phải nằm trong danh sách pool được cho. "flee" là true khi boss bỏ chạy, còn lại là false.';
+const FORMAT='\n\nĐịnh dạng bắt buộc: chỉ trả về JSON một dòng, không giải thích, dạng {"atk":"tên_chiêu","say":"câu nói ngắn dưới 10 từ","flee":false}. "atk" phải nằm trong danh sách pool được cho. "say" luôn có nội dung (boss nói một câu mỗi 5 giây). "flee" là true khi boss bỏ chạy, còn lại là false.';
 const INFO={
  cleave:'chém vòng quanh boss (bán kính 7), hợp khi người chơi đứng sát',
  beams:'các tia kiếm khí thẳng về phía người chơi, hợp khi người chơi ở xa hoặc đứng yên',
@@ -29,8 +30,8 @@ async function askGemma(prompt,{model='auto',thinking=false,systemPrompt='',sign
  if(!r.ok)throw new Error(data.error||'Lỗi gọi API');
  return data.text}
 
-let ready=null,busy=0,lastReq=0,hist=[],status='Chưa gọi lần nào';
-const setStatus=s=>{status=s;const el=document.getElementById('aiSt');if(el)el.textContent='Trạng thái: '+s};
+let ready=null,busy=0,hist=[],status='Chưa gọi lần nào',nReq=0,nOk=0;
+const setStatus=s=>{status=s;const el=document.getElementById('aiSt');if(el)el.textContent='Trạng thái: '+s+'  ['+nOk+'/'+nReq+' lần gọi thành công]'};
 
 // Người chơi đang dùng chiêu mạnh? (Kiếm Hồn, Quy Luật, sức mạnh U, Dom, đóng băng, Vạn Quái làm quái choáng)
 const strong=()=>{try{return !!(P.kh>0||P.ap>0||P.pwr>0||P.dom5>0||P.tf>0||enemies.some(e=>e.stunT>0))}catch(_){return false}};
@@ -56,19 +57,40 @@ function parse(txt,pool){
  if(pool.indexOf(atk)<0)throw new Error('AI trả lời sai định dạng: "'+s.replace(/\s+/g,' ').slice(0,80)+'"');
  return{atk,say:say.slice(0,70),flee}}
 
-// Không còn giới hạn "lỗi 3 lần thì tắt 1 phút": lỗi thì chỉ ghi trạng thái, lượt sau vẫn gọi lại.
-// Chỉ giữ 2 chốt chống spam: không gọi chồng khi đang chờ trả lời, và cách nhau tối thiểu 1,5 giây.
+// Không có giới hạn tần suất hay khoá tạm: mỗi lần boss chọn chiêu là gọi một request mới.
+// Chỉ không gọi chồng khi request trước chưa trả lời (tránh dồn hàng chờ).
 async function request(ctx){
- const t=Date.now();
- if(busy||t-lastReq<1500)return;
- busy=1;lastReq=t;
+ if(busy)return;
+ busy=1;nReq++;
  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),CFG.thinking?20000:8000);
  try{
   const txt=await askGemma(buildPrompt(ctx),{model:CFG.model,thinking:CFG.thinking,systemPrompt:CFG.prompt+FORMAT,signal:ac.signal});
-  ready=parse(txt,ctx.pool);setStatus('OK — chiêu kế tiếp: '+ready.atk+(ready.flee?' (bỏ chạy)':''))}
+  ready=parse(txt,ctx.pool);nOk++;setStatus('OK — chiêu kế tiếp: '+ready.atk+(ready.flee?' (bỏ chạy)':''))}
  catch(e){
   setStatus('lỗi — '+(e&&e.name==='AbortError'?'quá thời gian chờ':(e&&e.message)||e))}
  finally{clearTimeout(to);busy=0}}
+
+// ---- boss nói 5 giây một lần ----
+let lines=[];
+const FB={
+ low:['Không không không!','Cứu ta với!','Không thể nào!','Ta không muốn chết!'],
+ win:['Yếu đuối! Quỳ xuống đi!','Hahaha, ngươi sắp chết rồi!','Đến cả đứng cũng không nổi sao?'],
+ strong:['Ngươi điên rồi!','Sức mạnh gì thế này?!'],
+ norm:['Chịu chết đi!','Ngươi chạy đâu cho thoát?','Chung Yên bất diệt!','Kiếm của ngươi chỉ đến thế thôi sao?']};
+const rnd=a=>a[Math.random()*a.length|0];
+function quip(b){
+ if(lines.length)return lines.shift();
+ const pc=b.hp/(b.max||b.hp||1);
+ if(pc<.2)return rnd(FB.low);
+ if(P.hp<10)return rnd(FB.win);
+ if(strong())return rnd(FB.strong);
+ return rnd(FB.norm)}
+setInterval(()=>{
+ try{
+  const b=enemies.find(e=>e.boss&&e.hp>0);
+  if(!b){lines=[];return}
+  if(paused)return;
+  say('Boss: '+quip(b),2500)}catch(_){}},5000);
 
 // Boss bỏ chạy: chạy ngược hướng người chơi một lúc (dungeon.js vẫn tự đánh bình thường)
 let fleeT=0,lastF=0;
@@ -92,7 +114,7 @@ window.bossAI=function(ctx){
  request(ctx);
  if(!a)return null;
  hist.push(a.atk);if(hist.length>8)hist.shift();
- if(a.say&&typeof say==='function')say(a.say,1800);
+ if(a.say){lines.push(a.say);if(lines.length>3)lines.shift()}
  if(a.flee)fleeT=1.8;
  return a.atk};
 
