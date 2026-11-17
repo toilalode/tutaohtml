@@ -32,13 +32,25 @@ let ready=null,busy=0,fail=0,lastReq=0,deadUntil=0,hist=[],status='Chưa gọi l
 const setStatus=s=>{status=s;const el=document.getElementById('aiSt');if(el)el.textContent='Trạng thái: '+s};
 
 function buildPrompt(ctx){
- return JSON.stringify({dang:ctx.form,mau_boss_phan_tram:Math.round(ctx.boss*100),mau_nguoi_choi_phan_tram:Math.round(ctx.me),khoang_cach:Math.round(ctx.dist),kiem_hon_dang_bay:ctx.souls,chieu_vua_dung:hist.slice(-4),pool:ctx.pool.map(k=>({atk:k,mo_ta:INFO[k]||''}))})}
+ return 'Chọn chiêu tiếp theo cho boss. Chỉ trả về JSON một dòng dạng {"atk":"tên_chiêu","say":"câu ngắn"}, "atk" phải nằm trong pool.\nTình huống: '
+ +JSON.stringify({dang:ctx.form,mau_boss_phan_tram:Math.round(ctx.boss*100),mau_nguoi_choi_phan_tram:Math.round(ctx.me),khoang_cach:Math.round(ctx.dist),kiem_hon_dang_bay:ctx.souls,chieu_vua_dung:hist.slice(-4),pool:ctx.pool.map(k=>({atk:k,mo_ta:INFO[k]||''}))})}
+
+// Đọc trả lời của AI một cách dễ tính: JSON (kể cả bọc ```json hoặc có giải thích), dạng atk: xxx, hoặc chỉ nhắc tên chiêu
 function parse(txt,pool){
- const m=String(txt).match(/\{[\s\S]*?\}/);
- if(!m)throw new Error('AI trả lời sai định dạng');
- const o=JSON.parse(m[0]),atk=String(o.atk||'').trim().toLowerCase();
- if(pool.indexOf(atk)<0)throw new Error('AI chọn chiêu không hợp lệ: '+atk);
- return{atk,say:String(o.say||'').slice(0,70)}}
+ let s=txt;
+ if(s&&typeof s==='object')s=s.text||s.content||JSON.stringify(s);
+ s=String(s==null?'':s);
+ if(!s.trim())throw new Error('AI trả lời rỗng');
+ let atk='',say='';
+ const a=s.indexOf('{'),b=s.lastIndexOf('}');
+ if(a>=0&&b>a){try{const o=JSON.parse(s.slice(a,b+1));atk=String(o.atk||'').trim().toLowerCase();say=String(o.say||'')}catch(_){}}
+ if(pool.indexOf(atk)<0){const m=s.match(/atk["'\s]*[:=]\s*["']?([a-zA-Z_]+)/i);if(m)atk=m[1].toLowerCase()}
+ if(pool.indexOf(atk)<0){
+  const low=s.toLowerCase();let best=null,bi=1e9;
+  pool.forEach(k=>{const i=low.search(new RegExp('\\b'+k+'\\b'));if(i>=0&&i<bi){bi=i;best=k}});
+  if(best)atk=best}
+ if(pool.indexOf(atk)<0)throw new Error('AI trả lời sai định dạng: "'+s.replace(/\s+/g,' ').slice(0,80)+'"');
+ return{atk,say:say.slice(0,70)}}
 
 async function request(ctx){
  const t=Date.now();
