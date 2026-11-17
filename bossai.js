@@ -132,23 +132,27 @@ const LSP=LS+'_pos',clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let pos=null;
 try{const d=JSON.parse(localStorage.getItem(LSP)||'null');if(d&&Number.isFinite(d.x)&&Number.isFinite(d.y))pos=d}catch(e){}
 const savePos=()=>{try{if(pos)localStorage.setItem(LSP,JSON.stringify(pos));else localStorage.removeItem(LSP)}catch(e){}};
-function setXY(x,y){const w=btn.offsetWidth||60,h=btn.offsetHeight||26;x=Math.round(clamp(x,0,Math.max(0,innerWidth-w)));y=Math.round(clamp(y,0,Math.max(0,innerHeight-h)));btn.style.left=x+'px';btn.style.top=y+'px';return{x,y}}
+// Khi máy để dọc, body bị xoay 90° (style.css) nên toạ độ chạm (màn hình) phải đổi sang toạ độ cục bộ của body
+const rot=()=>matchMedia('(orientation:portrait)').matches;
+const toLocal=(sx,sy)=>rot()?{x:sy,y:innerWidth-sx}:{x:sx,y:sy};
+const LW=()=>rot()?innerHeight:innerWidth,LH=()=>rot()?innerWidth:innerHeight;
+function setXY(x,y){const w=btn.offsetWidth||60,h=btn.offsetHeight||26;x=Math.round(clamp(x,0,Math.max(0,LW()-w)));y=Math.round(clamp(y,0,Math.max(0,LH()-h)));btn.style.left=x+'px';btn.style.top=y+'px';return{x,y}}
 function place(){
  if(drag)return;
  if(pos){setXY(pos.x,pos.y);return}
  const h=document.getElementById('hudL');if(!h)return;
  const r=h.getBoundingClientRect();if(!r.width)return;
- setXY(r.left,r.bottom+6)}
+ if(rot())setXY(r.top,innerWidth-r.left+6);else setXY(r.left,r.bottom+6)}
 
 let drag=null,moved=false;
 btn.addEventListener('pointerdown',e=>{
  e.stopPropagation();moved=false;
- const r=btn.getBoundingClientRect();
- drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,bx:r.left,by:r.top};
+ const l=toLocal(e.clientX,e.clientY);
+ drag={id:e.pointerId,sx:l.x,sy:l.y,bx:parseFloat(btn.style.left)||0,by:parseFloat(btn.style.top)||0};
  try{btn.setPointerCapture(e.pointerId)}catch(_){}});
 btn.addEventListener('pointermove',e=>{
  if(!drag||e.pointerId!==drag.id)return;
- const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+ const l=toLocal(e.clientX,e.clientY),dx=l.x-drag.sx,dy=l.y-drag.sy;
  if(!moved&&Math.hypot(dx,dy)<6)return;
  moved=true;btn.classList.add('drag');e.preventDefault();
  pos=setXY(drag.bx+dx,drag.by+dy)});
