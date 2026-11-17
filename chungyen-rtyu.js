@@ -44,12 +44,13 @@ buildBtns=function(){
  ['T','Y','U'].forEach(k=>{const b=mk(k);bot.insertBefore(b,ref);bt[k]=b});
  placeCols()};
 
-// Hiệu ứng đang bật (vòng Thiên Địa, xích Xích Giáp, quầng Phản Hồi) đổi sang màu đỏ khi dùng Chung Yên Kiếm Pháp
-let lastRed=null;
+// Hiệu ứng đang bật (vòng Thiên Địa, xích Xích Giáp, quầng Phản Hồi) đổi sang màu đỏ khi dùng Chung Yên Kiếm Pháp.
+// Lưu ý: dungeon.js đổi vật liệu xích sang mR/mG dùng chung (nửa đỏ nửa vàng) cho kiếm pháp khác;
+// chỉ chỉnh màu trên vật liệu gốc (userData.om), không đụng vào mR/mG, kẻo làm mất nửa đỏ nửa vàng.
 setInterval(()=>{
- const r=cy();if(r===lastRed)return;lastRed=r;
- S.td.material.color.setHex(r?RED:GOLD);
- S.xich.children.forEach(m=>m.material.color.setHex(r?RED:GOLD));
+ const r=cy(),x=S.xich.children[0],tone=!r&&!!x&&!!x.userData.om&&x.material!==x.userData.om;
+ S.td.material.color.setHex(r?RED:tone?0xff7a1a:GOLD);
+ S.xich.children.forEach(m=>(m.userData.om||m.material).color.setHex(r?RED:GOLD));
  S.pwr.material.color.setHex(r?RED:0xff5030)},150);
 
 GUIDE['Buff']+='<h3>Chung Yên Kiếm Pháp</h3>Có đủ <b>R T Y U</b> nằm bên trái Z X C V. <b>T</b> Thiên Địa Chi Cảnh, <b>Y</b> Thiên Mệnh Xích Giáp, <b>U</b> Phản Hồi dùng như Thiên Mệnh Kiếm Pháp nhưng hiệu ứng màu đỏ; bật R thì cấm T, Y, U.';
