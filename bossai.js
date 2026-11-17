@@ -29,7 +29,7 @@ async function askGemma(prompt,{model='auto',thinking=false,systemPrompt='',sign
  if(!r.ok)throw new Error(data.error||'Lỗi gọi API');
  return data.text}
 
-let ready=null,busy=0,fail=0,lastReq=0,deadUntil=0,hist=[],status='Chưa gọi lần nào';
+let ready=null,busy=0,lastReq=0,hist=[],status='Chưa gọi lần nào';
 const setStatus=s=>{status=s;const el=document.getElementById('aiSt');if(el)el.textContent='Trạng thái: '+s};
 
 // Người chơi đang dùng chiêu mạnh? (Kiếm Hồn, Quy Luật, sức mạnh U, Dom, đóng băng, Vạn Quái làm quái choáng)
@@ -56,17 +56,18 @@ function parse(txt,pool){
  if(pool.indexOf(atk)<0)throw new Error('AI trả lời sai định dạng: "'+s.replace(/\s+/g,' ').slice(0,80)+'"');
  return{atk,say:say.slice(0,70),flee}}
 
+// Không còn giới hạn "lỗi 3 lần thì tắt 1 phút": lỗi thì chỉ ghi trạng thái, lượt sau vẫn gọi lại.
+// Chỉ giữ 2 chốt chống spam: không gọi chồng khi đang chờ trả lời, và cách nhau tối thiểu 1,5 giây.
 async function request(ctx){
  const t=Date.now();
- if(busy||t<deadUntil||t-lastReq<1500)return;
+ if(busy||t-lastReq<1500)return;
  busy=1;lastReq=t;
  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),CFG.thinking?20000:8000);
  try{
   const txt=await askGemma(buildPrompt(ctx),{model:CFG.model,thinking:CFG.thinking,systemPrompt:CFG.prompt+FORMAT,signal:ac.signal});
-  ready=parse(txt,ctx.pool);fail=0;setStatus('OK — chiêu kế tiếp: '+ready.atk+(ready.flee?' (bỏ chạy)':''))}
+  ready=parse(txt,ctx.pool);setStatus('OK — chiêu kế tiếp: '+ready.atk+(ready.flee?' (bỏ chạy)':''))}
  catch(e){
-  setStatus('lỗi — '+(e&&e.name==='AbortError'?'quá thời gian chờ':(e&&e.message)||e));
-  if(++fail>=3){fail=0;deadUntil=Date.now()+60000;if(typeof toast==='function')toast('AI boss lỗi — boss tạm dùng chiêu ngẫu nhiên (thử lại sau 1 phút)')}}
+  setStatus('lỗi — '+(e&&e.name==='AbortError'?'quá thời gian chờ':(e&&e.message)||e))}
  finally{clearTimeout(to);busy=0}}
 
 // Boss bỏ chạy: chạy ngược hướng người chơi một lúc (dungeon.js vẫn tự đánh bình thường)
@@ -125,7 +126,7 @@ const sel=$$('aiModel');MODELS.forEach(m=>{const o=document.createElement('optio
 
 let wasPaused=false,isOpen=false;
 function fill(){$$('aiOn').checked=CFG.on;sel.value=CFG.model;$$('aiTh').checked=CFG.thinking;$$('aiPr').value=CFG.prompt;setStatus(status)}
-function apply(){CFG.on=$$('aiOn').checked;CFG.model=sel.value;CFG.thinking=$$('aiTh').checked;CFG.prompt=$$('aiPr').value.trim()||DEF_PROMPT;window.bossAIon=CFG.on;ready=null;fail=0;deadUntil=0;saveCfg();refreshBtn()}
+function apply(){CFG.on=$$('aiOn').checked;CFG.model=sel.value;CFG.thinking=$$('aiTh').checked;CFG.prompt=$$('aiPr').value.trim()||DEF_PROMPT;window.bossAIon=CFG.on;ready=null;saveCfg();refreshBtn()}
 function fitP(){P_.style.maxHeight=Math.floor((typeof LH==='function'?LH():innerHeight)*.88)+'px'}
 function open(){if(isOpen)return;isOpen=true;wasPaused=paused;paused=true;fill();fitP();P_.style.display='block'}
 function close(){if(!isOpen)return;isOpen=false;P_.style.display='none';paused=wasPaused}
