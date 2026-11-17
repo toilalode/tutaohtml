@@ -161,7 +161,7 @@ function pick(){
  if(B.healCd<=0&&e.hp<B.max*.9)return ATK.heal();
  if(f2&&B.ultCd<=0&&e.hp<B.max*.3)return ATK.ult();
  const pool=d<18?['cleave','cleave','nova','rain','beams','souls']:['beams','rain','souls','dash','nova'];if(f2)pool.push('wave','dash');
- let k=pool[Math.random()*pool.length|0];if(k=='souls'&&souls.length)k='rain';
+ let k=pool[Math.random()*pool.length|0];if(window.bossAI){let a=null;try{a=window.bossAI({form:B.form,boss:e.hp/B.max,dist:d,pool:pool.slice(),me:P.hp,souls:souls.length})}catch(_){}if(a&&pool.includes(a))k=a}if(k=='souls'&&souls.length)k='rain';
  ATK[k]();B.cd=f2?.8:1.6}
 function spawnSouls(){
  const n=B.form==1?3:5;
