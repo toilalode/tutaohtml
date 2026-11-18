@@ -4,7 +4,8 @@
 (function(){
 const el=id=>document.getElementById(id);
 
-/* 1) Thanh máu quái Test + boss: đọc scaleX của phần fill gốc -> đặt biến --p trên thanh (fill vẽ bằng background) */
+/* 1) Thanh máu quái Test + boss: đọc scaleX của phần fill gốc -> đặt biến --p trên thanh (fill vẽ bằng background).
+      Phần tử boss do dungeon.js tạo MUỘN nên tìm lại mỗi khung hình. */
 try{
  const mirror=(fid,bid)=>{
   let last=null;
@@ -38,20 +39,19 @@ try{
  }
 }catch(e){console.error('fix.js #2',e)}
 
-/* 3) Nút Nói chuyện: luôn hiện khi ở phó bản (mờ nếu còn xa NPC) */
+/* 3) Nút Nói chuyện: dungeon.js tạo nút này MUỘN (khi vào phó bản) => phải tìm lại mỗi khung hình.
+      Luôn hiện khi ở phó bản, mờ nếu còn xa NPC. */
 try{
- const tk=el('dgTalk');
- if(tk){
-  const NPC=[[-8,-7],[8,-7]],R=9;
-  const near=()=>{const p=player.position;return NPC.some(n=>Math.hypot(p.x-n[0],p.z-n[1])<R)};
-  tk.addEventListener('click',()=>{if(MAP==='dungeon'&&!paused&&!near())toast('Lại gần NPC (Chung Yên Tận Diệt / Thương Nhân) rồi bấm Nói chuyện')});
-  (function loop(){requestAnimationFrame(loop);
-   const on=MAP==='dungeon'&&!paused;
-   const d=on?'block':'none';
-   if(tk.style.display!==d)tk.style.display=d;
-   if(on){try{tk.classList.toggle('far',!near())}catch(_){}}
-  })();
- }
+ const NPC=[[-8,-7],[8,-7]],R=9;
+ const near=()=>{const p=player.position;return NPC.some(n=>Math.hypot(p.x-n[0],p.z-n[1])<R)};
+ (function loop(){requestAnimationFrame(loop);
+  const tk=el('dgTalk');if(!tk)return;
+  if(!tk._fx){tk._fx=1;tk.addEventListener('click',()=>{if(MAP==='dungeon'&&!paused&&!near())toast('Lại gần NPC (Chung Yên Tận Diệt / Thương Nhân) rồi bấm Nói chuyện')})}
+  const on=MAP==='dungeon'&&!paused;
+  const d=on?'block':'none';
+  if(tk.style.display!==d)tk.style.display=d;
+  if(on){try{tk.classList.toggle('far',!near())}catch(_){}}
+ })();
 }catch(e){console.error('fix.js #3',e)}
 
 /* 4) Nút "3 · AI": nếu chưa có vị trí người chơi tự kéo thì dịch sang phải để khỏi bị nút "1" che (xem fix.css mục 6) */

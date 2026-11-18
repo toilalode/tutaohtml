@@ -1,6 +1,9 @@
 /* fix.css - vá lỗi hiển thị (iOS). Nạp SAU style.css và dungeon.css.
-   Lưu ý: KHÔNG tắt will-change của #top,#btns,#joy,.col,... trong style.css — trên iOS chúng chính là thứ
-   ép HUD/nút nằm trên canvas 3D; tắt đi là HUD và nút biến mất. */
+   QUY TẮC iOS: mọi phần tử UI position:fixed nằm ĐÈ LÊN canvas 3D phải có will-change:transform (ép thành lớp riêng).
+   Thiếu là bị canvas che mất. Tuyệt đối KHÔNG tắt will-change của HUD/nút. */
+
+/* 0) Các phần tử UI do JS tạo (thanh tích lỹ, nút Nói chuyện, thanh boss, nút 3 AI, bảng AI) đều cần lớp riêng */
+#chargeBar,#dgBoss,.dgBtn,#aiBtn,#aiP,#eh{will-change:transform}
 
 /* 1) Thanh máu quái Test (#eh) + boss phó bản (#dgBossBar):
       phần máu vẽ bằng background CỦA CHÍNH thanh (biến --p do fix.js cập nhật),
