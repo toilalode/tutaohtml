@@ -33,7 +33,7 @@ try{
    if(!on)return;
    const w=sf.style.width,t=st.textContent,b=(btns.offsetHeight+44)+'px';
    if(w!==w0){w0=w;bar.style.setProperty('--p',w||'0%')}
-   if(t!==t0){t0=t;bar.textContent=t?'TÍCH LỰC '+t:''}
+   if(t!==t0){t0=t;bar.textContent=t?'☯ TÍCH LỰC '+t+' ☯':''}
    if(b!==b0){b0=b;bar.style.bottom=b}
   })();
  }
@@ -62,4 +62,15 @@ try{
   upd();setInterval(upd,400);
  }
 }catch(e){console.error('fix.js #4',e)}
+
+/* 5) Panel MÁU QUÁI (map Test): thu gọn, chỉ hiện chip nhỏ; bấm chip để mở/đóng */
+try{
+ const tp=el('tp');
+ if(tp){
+  const chip=document.createElement('div');chip.id='tpTog';chip.textContent='⚙ MÁU QUÁI';document.body.appendChild(chip);
+  ['touchstart','touchend','mousedown'].forEach(t=>chip.addEventListener(t,e=>e.stopPropagation(),{passive:true}));
+  chip.addEventListener('click',()=>{const o=tp.classList.toggle('tpOpen');chip.textContent=(o?'✖ ':'⚙ ')+'MÁU QUÁI'});
+  setInterval(()=>{const d=getComputedStyle(tp).display!=='none'?'block':'none';if(chip.style.display!==d)chip.style.display=d},300);
+ }
+}catch(e){console.error('fix.js #5',e)}
 })();
