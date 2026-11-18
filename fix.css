@@ -1,9 +1,17 @@
-/* fix.css - vá lỗi hiển thị. Nạp SAU style.css và dungeon.css */
+/* fix.css - vá lỗi hiển thị (iOS). Nạp SAU style.css và dungeon.css */
 
-/* 1) Chữ trên thanh máu quái Test và boss phải nằm TRÊN thanh màu.
-      Lỗi cũ: thanh màu có will-change:transform nên iOS vẽ đè lên chữ. */
-#ehF,#dgBossF{will-change:auto;z-index:0}
-#ehT,#dgBossT{position:relative;z-index:2;will-change:transform}
+/* 0) iOS + body xoay 90°: quá nhiều lớp will-change làm chữ / nút / thanh biến mất.
+      Tắt will-change ở toàn bộ UI tĩnh (chỉ #eh và #dmg còn giữ vì di chuyển mỗi khung hình). */
+#top,#btns,#joy,.col,#popup,#guide,#toast,#banner,#tp,#kp,#dgBoss,.dgBtn,.hpb i,.stb i{will-change:auto!important}
+
+/* 1) Thanh máu quái Test (#eh) + boss phó bản (#dgBossBar):
+      phần máu vẽ bằng background CỦA CHÍNH thanh (biến --p do fix.js cập nhật),
+      không còn phần tử fill riêng => chữ luôn nằm trên, không bị iOS vẽ đè. */
+#eh,#dgBossBar{background-color:rgba(10,0,15,.85);background-repeat:no-repeat;background-size:var(--p,100%) 100%}
+#eh{background-image:linear-gradient(90deg,#d00040,#ff6a00)}
+#dgBossBar{background-image:linear-gradient(90deg,#ffb000,#ff2a2a)}
+#ehF,#dgBossF{display:none!important}
+#ehT,#dgBossT{position:relative;z-index:1;will-change:auto}
 
 /* 2) Panel MÁU QUÁI: không bị co dòng (nút Tấn công), không đè lên HUD HP / thể lực / kills */
 #tp{top:108px;left:70px;transform:none;width:max-content;max-width:calc(100% - 78px);flex-wrap:nowrap;white-space:nowrap}
@@ -15,12 +23,14 @@
 #dgBoss{top:108px;width:min(52%,420px)}
 
 /* 4) Nút Nói chuyện: to hơn, nằm dưới thanh boss, luôn ở lớp trên */
-.dgBtn{z-index:300;padding:10px 18px;font-size:14px;white-space:nowrap;will-change:transform;box-shadow:0 0 10px rgba(255,214,70,.7)}
+.dgBtn{z-index:300;padding:10px 18px;font-size:14px;white-space:nowrap;box-shadow:0 0 10px rgba(255,214,70,.7);pointer-events:auto}
 #dgTalk{top:156px}
 #dgTalk.far{opacity:.55}
 
-/* 5) Thanh tích luỹ (giữ N): fix.js dựng thanh sạch #chargeBar, ẩn thanh gốc */
+/* 5) Thanh tích luỹ (giữ N): fix.js dựng #chargeBar, ẩn thanh gốc.
+      Phần tích luỹ cũng vẽ bằng background của thanh (--p) để chữ luôn hiện. */
 #charge{display:none!important}
-#chargeBar{position:fixed;display:none;left:50%;bottom:88px;width:min(70%,420px);height:20px;transform:translateX(-50%);background:rgba(0,0,0,.72);border:2px solid #fff;border-radius:6px;overflow:hidden;z-index:400;pointer-events:none;box-shadow:0 0 10px rgba(200,160,255,.9);will-change:transform;font:bold 12px/16px 'Courier New',monospace;text-align:center;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
-#chargeBar>i{position:absolute;left:0;top:0;height:100%;width:0%;background:linear-gradient(90deg,#c8a0ff,#fff,#c8a0ff);opacity:.9}
-#chargeBar>span{position:relative;z-index:2;will-change:transform}
+#chargeBar{position:fixed;display:none;left:50%;bottom:88px;width:min(70%,420px);height:22px;transform:translateX(-50%);
+ background-color:rgba(0,0,0,.72);background-image:linear-gradient(90deg,#c8a0ff,#fff,#c8a0ff);background-repeat:no-repeat;background-size:var(--p,0%) 100%;
+ border:2px solid #fff;border-radius:6px;overflow:hidden;z-index:400;pointer-events:none;box-shadow:0 0 10px rgba(200,160,255,.9);
+ font:bold 12px/18px 'Courier New',monospace;text-align:center;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap}
