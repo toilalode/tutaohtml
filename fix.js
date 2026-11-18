@@ -39,18 +39,17 @@ try{
  }
 }catch(e){console.error('fix.js #2',e)}
 
-/* 3) Nút Nói chuyện: dungeon.js tạo nút này MUỘN (khi vào phó bản) => phải tìm lại mỗi khung hình.
-      Luôn hiện khi ở phó bản, mờ nếu còn xa NPC. */
+/* 3) Nút Nói chuyện: dungeon.js tạo nút này MUỘN (khi vào phó bản) => tìm lại mỗi khung hình.
+      CHỈ HIỆN khi ở phó bản VÀ đang đứng gần NPC; còn lại ẨN HẮN (display:none), không làm mờ. */
 try{
  const NPC=[[-8,-7],[8,-7]],R=9;
  const near=()=>{const p=player.position;return NPC.some(n=>Math.hypot(p.x-n[0],p.z-n[1])<R)};
  (function loop(){requestAnimationFrame(loop);
   const tk=el('dgTalk');if(!tk)return;
-  if(!tk._fx){tk._fx=1;tk.addEventListener('click',()=>{if(MAP==='dungeon'&&!paused&&!near())toast('Lại gần NPC (Chung Yên Tận Diệt / Thương Nhân) rồi bấm Nói chuyện')})}
-  const on=MAP==='dungeon'&&!paused;
+  let on=false;
+  try{on=MAP==='dungeon'&&!paused&&near()}catch(_){}
   const d=on?'block':'none';
   if(tk.style.display!==d)tk.style.display=d;
-  if(on){try{tk.classList.toggle('far',!near())}catch(_){}}
  })();
 }catch(e){console.error('fix.js #3',e)}
 
