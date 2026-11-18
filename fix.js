@@ -53,4 +53,13 @@ try{
   })();
  }
 }catch(e){console.error('fix.js #3',e)}
+
+/* 4) Nút "3 · AI": nếu chưa có vị trí người chơi tự kéo thì dịch sang phải để khỏi bị nút "1" che (xem fix.css mục 6) */
+try{
+ const ab=el('aiBtn');
+ if(ab){
+  const upd=()=>{let has=false;try{has=!!localStorage.getItem('tm_bossai_v1_pos')}catch(_){}ab.classList.toggle('aiDef',!has)};
+  upd();setInterval(upd,400);
+ }
+}catch(e){console.error('fix.js #4',e)}
 })();

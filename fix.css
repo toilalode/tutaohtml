@@ -34,3 +34,8 @@
  background-color:rgba(0,0,0,.72);background-image:linear-gradient(90deg,#c8a0ff,#fff,#c8a0ff);background-repeat:no-repeat;background-size:var(--p,0%) 100%;
  border:2px solid #fff;border-radius:6px;overflow:hidden;z-index:400;pointer-events:none;box-shadow:0 0 10px rgba(200,160,255,.9);
  font:bold 12px/18px 'Courier New',monospace;text-align:center;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap}
+
+/* 6) Nút "3 · AI" (bossai.js): mặc định bị nút "1 Kiếm pháp" (z-index 200) che mất.
+      Đẩy sang phải cột nút trái + lên lớp trên cùng. Khi người chơi đã kéo nút đi nơi khác (có lưu vị trí) thì không dịch nữa. */
+#aiBtn{z-index:350!important;will-change:auto;pointer-events:auto}
+#aiBtn.aiDef{translate:66px 16px}
