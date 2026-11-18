@@ -12,7 +12,7 @@
 .ui-top{position:fixed;z-index:350;pointer-events:auto;will-change:transform}
 .ui-modal{position:fixed;z-index:950;pointer-events:auto;will-change:transform}
 
+/* === NÚT NÓI CHUYỆN: giữa màn hình, chỉ hiện khi đứng gần NPC (fix.js ẩn hẳn khi xa) === */
+#dgTalk{left:50%;right:auto;top:auto;bottom:100px;transform:translateX(-50%)}
+
 /* === THÊM CSS CỦA BẠN TỪ DÒNG NÀY XUỐNG ================================== */
-#dgBoss{top:4px;width:min(36%,320px)}
-#buffs{top:46px}
-#dgTalk{top:64px;right:8px;left:auto;transform:none;padding:8px 14px;font-size:13px}
