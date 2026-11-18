@@ -1,18 +1,15 @@
 /* custom.css - FILE CSS RIÊNG ĐỂ THÊM CSS MỚI. Nạp CUỐI CÙNG (sau style.css, dungeon.css, fix.css).
-   Thiếu vào đây thay vì sửa style.css => không bị ghi đè, không bị ẩn trên iOS. */
+   Thêm CSS mới vào đây thay vì sửa style.css => không bị ghi đè. */
 
-/* === LỚP BẢO VỆ iOS (đừng xoá) ===========================================
-   iOS + body xoay 90°: phần tử có will-change/transform dễ bị vẽ đè hoặc biến mất.
-   Tắt will-change cho MỌI phần tử (kể cả phần tử thêm sau này), trừ canvas 3D và 2 thứ di chuyển mỗi khung hình. */
-body *:not(canvas):not(#eh):not(#dmg){will-change:auto!important}
-/* Fill thanh (HP, tích lực...) không được nằm đè lên chữ cùng thanh */
-.bar>i,.fillbar>i{z-index:0}
-.bar>span,.bar>b,.fillbar>span,.fillbar>b{position:relative;z-index:1}
+/* === LOGIC iOS (đừng xoá) ==================================================
+   iOS + body xoay 90° + canvas 3D: phần tử UI muốn nằm TRÊN canvas cần z-index cao và (nếu bị biến mất)
+   thêm will-change:transform để ép nó thành lớp riêng. Đừng tắt will-change hàng loạt.
+   Fill của thanh (HP, tích lực...) nên vẽ bằng background của chính thanh thay vì phần tử con để chữ không bị đè. */
 
 /* === LỚP HIỂN THỊ CHO UI MỚI ============================================
    Thêm class "ui-top" vào phần tử mới để nó luôn nằm trên HUD/nút game (z-index 350).
    Menu/popup toàn màn hình dùng "ui-modal" (z-index 950). */
-.ui-top{position:fixed;z-index:350;pointer-events:auto;will-change:auto}
-.ui-modal{position:fixed;z-index:950;pointer-events:auto;will-change:auto}
+.ui-top{position:fixed;z-index:350;pointer-events:auto;will-change:transform}
+.ui-modal{position:fixed;z-index:950;pointer-events:auto;will-change:transform}
 
 /* === THÊM CSS CỦA BẠN TỪ DÒNG NÀY XUỐNG ================================== */

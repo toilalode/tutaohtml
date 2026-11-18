@@ -1,8 +1,6 @@
-/* fix.css - vá lỗi hiển thị (iOS). Nạp SAU style.css và dungeon.css */
-
-/* 0) iOS + body xoay 90°: quá nhiều lớp will-change làm chữ / nút / thanh biến mất.
-      Tắt will-change ở toàn bộ UI tĩnh (chỉ #eh và #dmg còn giữ vì di chuyển mỗi khung hình). */
-#top,#btns,#joy,.col,#popup,#guide,#toast,#banner,#tp,#kp,#dgBoss,.dgBtn,.hpb i,.stb i{will-change:auto!important}
+/* fix.css - vá lỗi hiển thị (iOS). Nạp SAU style.css và dungeon.css.
+   Lưu ý: KHÔNG tắt will-change của #top,#btns,#joy,.col,... trong style.css — trên iOS chúng chính là thứ
+   ép HUD/nút nằm trên canvas 3D; tắt đi là HUD và nút biến mất. */
 
 /* 1) Thanh máu quái Test (#eh) + boss phó bản (#dgBossBar):
       phần máu vẽ bằng background CỦA CHÍNH thanh (biến --p do fix.js cập nhật),
@@ -11,7 +9,7 @@
 #eh{background-image:linear-gradient(90deg,#d00040,#ff6a00)}
 #dgBossBar{background-image:linear-gradient(90deg,#ffb000,#ff2a2a)}
 #ehF,#dgBossF{display:none!important}
-#ehT,#dgBossT{position:relative;z-index:1;will-change:auto}
+#ehT,#dgBossT{position:relative;z-index:1}
 
 /* 2) Panel MÁU QUÁI: không bị co dòng (nút Tấn công), không đè lên HUD HP / thể lực / kills */
 #tp{top:108px;left:70px;transform:none;width:max-content;max-width:calc(100% - 78px);flex-wrap:nowrap;white-space:nowrap}
@@ -37,5 +35,5 @@
 
 /* 6) Nút "3 · AI" (bossai.js): mặc định bị nút "1 Kiếm pháp" (z-index 200) che mất.
       Đẩy sang phải cột nút trái + lên lớp trên cùng. Khi người chơi đã kéo nút đi nơi khác (có lưu vị trí) thì không dịch nữa. */
-#aiBtn{z-index:350!important;will-change:auto;pointer-events:auto}
+#aiBtn{z-index:350!important;pointer-events:auto}
 #aiBtn.aiDef{translate:66px 16px}
