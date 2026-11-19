@@ -72,4 +72,25 @@ try{
   setInterval(()=>{const d=getComputedStyle(tp).display!=='none'?'block':'none';if(chip.style.display!==d)chip.style.display=d},300);
  }
 }catch(e){console.error('fix.js #5',e)}
+
+/* 6) Joystick dùng ĐÁNH CHUỘT: giữ chuột trái trên joystick rồi kéo (cùng công thức với cảm ứng trong game.js).
+      Bỏ qua mousedown giả do iOS sinh ra sau khi chạm. */
+try{
+ const joyEl=el('joy'),kn=el('knob');
+ if(joyEl&&kn){
+  let on=false,tT=0;
+  const upd=e=>{
+   const r=joyEl.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
+   let x=(VP()?dy:dx)/45,y=(VP()?-dx:dy)/45;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}
+   joy.x=x;joy.y=y;kn.style.transform='translate('+(x*35)+'px,'+(y*35)+'px)';
+  };
+  const stop=()=>{if(!on)return;on=false;joy.x=joy.y=0;kn.style.transform=''};
+  ['touchstart','touchend'].forEach(t=>joyEl.addEventListener(t,()=>{tT=Date.now()},{passive:true}));
+  joyEl.addEventListener('mousedown',e=>{if(e.button!==0||Date.now()-tT<800)return;on=true;e.preventDefault();e.stopPropagation();upd(e)});
+  addEventListener('mousemove',e=>{if(on){e.preventDefault();upd(e)}});
+  addEventListener('mouseup',stop);
+  addEventListener('blur',stop);
+  joyEl.style.cursor='grab';
+ }
+}catch(e){console.error('fix.js #6',e)}
 })();
