@@ -1,10 +1,11 @@
 'use strict';
 (function(){
-const ST=3,LINES=['Thái Cực Kiếm Pháp','Lưỡng Cực Vô Lượng','Hào Nạp Tam Thiên Đại Đạo','Nhất Kiếm Quy Nhất'],DRAW=1e12,SLASH=2e12,BOOM=5e12,RISE=70,HB=[240,420],INK=0x16161c,PAPER=0xffffff,SPARKS=window.LOW?500:1600;
+const ST=3,LINES=['Thái Cực Kiếm Pháp','Lưỡng Cực Vô Lượng','Hào Nạp Tam Thiên Đại Đạo','Nhất Kiếm Quy Nhất'],DRAW=1e12,SLASH=2e12,BOOM=5e12,RISE=70,HB=[240,420],INK=0x16161c,PAPER=0xffffff,SPARKS=window.LOW?500:1600,REST_MUL=12.5;
 SK[ST].h={n:'Lưỡng Cực Vô Lượng',cd:900,sta:70,sp:'luongcuc',tot:DRAW+SLASH+BOOM};
 NOTE[ST].h='Thái Cực khổng lồ cùng các vòng hiện sau lưng, niệm chú, chém rồi phi kiếm lên trời. Nhất Kiếm Quy Nhất tạo vết chém trên trời và vụ nổ cực lớn, tổng 8000 tỷ sát thương gốc, hồi chiêu 15 giây.';
 const BOOST=new Map([[SK[ST].j,1e13/SK[ST].j.tot],[SK[ST].g,4e12/SK[ST].g.tot]]);
 SK[ST].j.tot=1e13;SK[ST].g.tot=4e12;
+['z','x','c','v','n','f'].forEach(k=>{const s=SK[ST][k];BOOST.set(s,REST_MUL);if(typeof s.tot==='number')s.tot*=REST_MUL});
 GUIDE['Điều khiển']=GUIDE['Điều khiển'].replace('(H / chuột phải / nút M2)','(chuột phải / nút M2)');
 GUIDE['Mẹo']+='<br>• <b>Lưỡng Cực Vô Lượng</b> (Thái Cực Kiếm Pháp, phím H): Thái Cực và các vòng hiện sau lưng, phi kiếm lên trời rồi Nhất Kiếm Quy Nhất chém xuống tạo vụ nổ. Menu Quy Luật M2 chỉ mở bằng chuột phải hoặc nút M2.';
 let away=false,mul=1;
