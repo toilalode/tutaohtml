@@ -1,7 +1,7 @@
 const RULES=['Giảm trọng lực','Làm chậm kẻ địch','Sát thương x2','Hồi máu & thể lực'];
 function lawMenu(){
  if(castBusy())return;
- if(!P.kh)return toast('H cần bật R (Kiếm Hồn Cửu Ngũ Chí Tôn) trước');
+ if(!P.kh)return toast('M2 cần bật R (Kiếm Hồn Cửu Ngũ Chí Tôn) trước');
  popup('Quy luật — Kiếm Hồn',['Vạn Kiếm','Thiên Trảm','Áp Chế (bật/tắt, mỗi 5ms 100.000.000 × 1 tỷ sát thương gốc)'],-1,i=>ruleSkill(['van','tru','ap'][i]))}
 const RULE_VAN_HIT=1125000*1e9,RULE_VAN_N=4,RULE_TRU_SKY=6000000*1e9,RULE_TRU_BOOM=3000000*1e9,AP_BASE=100000000*1e9;
 async function ruleSkill(k){
