@@ -112,9 +112,11 @@ buildBtns=function(){
  if(bt.H){bt.M2=bt.H;delete bt.H}
  const sp=SK[P.sty].h;
  if(sp){
-  const b=document.createElement('button');b.innerHTML='<b>H</b><i>'+sp.n.slice(0,11)+'</i>';
+  const bot=$('btns'),b=document.createElement('button'),first=bot.querySelector('.rt');
+  b.innerHTML='<b>H</b><i>'+sp.n.slice(0,11)+'</i>';
   b.addEventListener('pointerdown',e=>{e.preventDefault();cast('h')});
-  $('btns').appendChild(b);bt.H=b}
+  if(first)bot.insertBefore(b,first);else bot.appendChild(b);
+  bt.H=b}
  placeCols()};
 setInterval(()=>{if(bt.M2)bt.M2.classList.toggle('on',P.ap>0)},120);
 buildBtns();
