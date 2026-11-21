@@ -22,7 +22,7 @@
 #tp.tpOpen{top:138px}
 #tpTog{position:fixed;top:108px;left:70px;z-index:165;display:none;padding:4px 10px;border-radius:8px;border:1px solid #9945ff;background:rgba(20,8,40,.88);color:#e6d4ff;font:bold 11px 'Courier New',monospace;white-space:nowrap;pointer-events:auto}
 #tp button{white-space:nowrap}
-#kp{top:152px}
+#kp{top:184px}
 
 /* 3) Thanh máu boss phó bản: đưa lên sát mép trên, nhỏ gọn, để không che tầm nhìn giữa màn hình */
 #dgBoss{top:2px;width:min(34%,300px)}
