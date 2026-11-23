@@ -119,6 +119,6 @@ buildBtns=function(){
   if(first)bot.insertBefore(b,first);else bot.appendChild(b);
   bt.H=b}
  placeCols()};
-setInterval(()=>{if(bt.M2)bt.M2.classList.toggle('on',P.ap>0)},120);
+setInterval(()=>{if(bt.M2&&P.sw!=4)bt.M2.classList.toggle('on',P.ap>0)},120);
 buildBtns();
 })();
