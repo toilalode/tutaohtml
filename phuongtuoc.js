@@ -76,7 +76,7 @@ function swordVis(){
  else if(applied){applied=false;if(org){PA.sb.material.color.setHex(org[0]);PA.sg.material.color.setHex(org[1])}if(phx){PA.sb.remove(phx);freeObj(phx);phx=null}}
  const want=P.sty>=6&&P.kh>0&&!!PT.kh;
  if(want!==blk){blk=want;S.kh.traverse(c=>{if(c.isMesh){if(!c.userData.pm)c.userData.pm=c.material;c.material=want?BM:c.userData.pm}})}}
-const syncTTBtn=()=>{const b=bt.H;if(!b||!useTT())return;const on=chain()>0;if(b.classList.contains('on')!==on)b.classList.toggle('on',on)};
+const syncTTBtn=()=>{const b=bt.M2;if(!b||!useTT())return;const on=chain()>0;if(b.classList.contains('on')!==on)b.classList.toggle('on',on)};
 {const rd=ren.render.bind(ren);ren.render=function(s,c){try{swordVis()}catch(e){}try{syncTTBtn()}catch(e){}return rd(s,c)}}
 
 const basePopup=popup;
