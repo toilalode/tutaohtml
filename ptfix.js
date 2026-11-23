@@ -4,29 +4,36 @@ const WHT=0xfff4d0,GLD=0xffd646,BLK=0x111111,rnd=Math.random,now=()=>performance
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
-async function dive(tx,tz,n,slashCol){
- const p=player.position,x0=p.x,z0=p.z;P.flyH=1;
- for(let f=0;f<n;f++){const k=(f+1)/n;p.x=x0+(tx-x0)*k*.85;p.z=z0+(tz-z0)*k*.85;if(slashCol!==undefined&&f%2==0)FXK('slash',{x:p.x,z:p.z,r:6,col:f&2?slashCol:WHT});await wait(1)}}
+let lockFoe=null;
+const baseTarget=target;
+target=function(){if(lockFoe&&lockFoe.hp>0)return[lockFoe.m.position.x,lockFoe.m.position.z];return baseTarget()};
+function lockOn(){let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=e.m.position.distanceTo(player.position);if(d<bd){bd=d;b=e}}});lockFoe=b;return b}
+async function rush(fe,fx,fz,n,keep,step){
+ const p=player.position,x0=p.x,z0=p.z,live=()=>fe&&fe.hp>0?[fe.m.position.x,fe.m.position.z]:[fx,fz];
+ let[ex,ez]=live();const d0=Math.hypot(ex-x0,ez-z0);n=Math.max(n,Math.min(45,Math.ceil(d0/4)));P.flyH=1;
+ for(let f=0;f<n;f++){const k=(f+1)/n;[ex,ez]=live();const d=Math.hypot(ex-x0,ez-z0)||1,r=d>keep?(d-keep)/d:0;p.x=x0+(ex-x0)*k*r;p.z=z0+(ez-z0)*k*r;if(step)step(f);await wait(1)}
+ return live()}
+const dive=(fe,fx,fz,n,slashCol)=>rush(fe,fx,fz,n,2.5,f=>{if(f%2==0)FXK('slash',{x:player.position.x,z:player.position.z,r:6,col:f&2?slashCol:WHT})});
 async function s7(){
- const[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Hoành Quán Vạn Cổ',2000);FXK('ring',{r:16,life:40,col:0xffffff});FXK('ring',{r:10,life:40,col:BLK});await wait(50);
+ const fe=lockOn(),[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Hoành Quán Vạn Cổ',2000);FXK('ring',{r:16,life:40,col:0xffffff});FXK('ring',{r:10,life:40,col:BLK});await wait(50);
  say('Khúc Chung Trảm!',1600);FXK('sky',{col:0xffffff});FXK('sky',{col:BLK});
- await dive(tx,tz,14,BLK);
- for(let i=0;i<6;i++){FXK('slash',{x:tx+rnd()*8-4,z:tz+rnd()*8-4,r:9,col:i&1?BLK:WHT});await wait(2)}
- boom(tx,tz,110,WHT,5.5e14);FXK('boom',{x:tx,z:tz,r:70,col:BLK});await wait(12)}
+ const[ax,az]=await dive(fe,tx,tz,14,BLK);
+ for(let i=0;i<6;i++){FXK('slash',{x:ax+rnd()*8-4,z:az+rnd()*8-4,r:9,col:i&1?BLK:WHT});await wait(2)}
+ boom(ax,az,110,WHT,5.5e14);FXK('boom',{x:ax,z:az,r:70,col:BLK});await wait(12)}
 async function s8(){
- const[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Tung Hoành Thiên Hạ',2000);await wait(30);
- await dive(tx,tz,12,BLK);
- boom(tx,tz,45,WHT,2e14);await wait(10);
+ const fe=lockOn(),[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Tung Hoành Thiên Hạ',2000);await wait(30);
+ const[ax,az]=await dive(fe,tx,tz,12,BLK);
+ boom(ax,az,45,WHT,2e14);await wait(10);
  say('Chúng Sinh Bình Giới Điệu!',1600);
- const p=player.position,s=mkSword(0xffffff,6);
+ const p=player.position,s=mkSword(0xffffff,6),foePos=()=>fe&&fe.hp>0?[fe.m.position.x,fe.m.position.z]:[ax,az];
+ let bx=ax,bz=az;
  try{
   P.flyH=34;
-  for(let f=0;f<26;f++){s.position.set(p.x,p.y+4,p.z);s.lookAt(tx,0,tz);await wait(1)}
-  const x0=p.x,z0=p.z;P.flyH=1;
-  for(let f=0;f<16;f++){const k=(f+1)/16;p.x=x0+(tx-x0)*k*.85;p.z=z0+(tz-z0)*k*.85;s.position.set(p.x,p.y+4,p.z);s.lookAt(tx,0,tz);await wait(1)}
+  for(let f=0;f<26;f++){const[ex,ez]=foePos();s.position.set(p.x,p.y+4,p.z);s.lookAt(ex,0,ez);await wait(1)}
+  [bx,bz]=await rush(fe,ax,az,16,1.2,()=>{const[ex,ez]=foePos();s.position.set(p.x,p.y+4,p.z);s.lookAt(ex,0,ez)})
  }finally{drop(s)}
- boom(tx,tz,130,WHT,5e14);FXK('boom',{x:tx,z:tz,r:80,col:BLK});await wait(12)}
-async function exec(f,fly){P.busy++;P.lk++;P.flyN++;P.flyH=fly;try{await f()}catch(e){console.error(e)}finally{P.busy--;P.lk--;P.flyN--;P.fly=Math.max(P.fly,25)}}
+ boom(bx,bz,130,WHT,5e14);FXK('boom',{x:bx,z:bz,r:80,col:BLK});await wait(12)}
+async function exec(f,fly){P.busy++;P.lk++;P.flyN++;P.flyH=fly;try{await f()}catch(e){console.error(e)}finally{lockFoe=null;P.busy--;P.lk--;P.flyN--;P.fly=Math.max(P.fly,25)}}
 const baseRun=run;
 run=function(sp,k0){
  if(sp&&sp.sp=='pt7')return exec(s7,28);
@@ -59,7 +66,7 @@ const TKEYS=['dinh','thi','tinh','viem','hon','xv'];
 let ttC=0,gold=0,ttCt=0,ttBtn=null;
 const rd1=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0;gold=(d.up&&d.skin)?1:0}catch(e){ttC=0;gold=0}}};
 const ttOn=()=>{rd1();return ttC};
-const hbMul=()=>{rd1();return (gold?1000:50)*(P.kh>0?400:1)};
+const hbMul=()=>{rd1();return (gold?1000:250)*(P.kh>0?750:1)};
 const baseHit=hit;
 hit=function(x,z,r,d,kb){if(P.sw==4&&P.sty>=6)r*=hbMul();return baseHit(x,z,r,d,kb)};
 let gb=false;const BM=mat(0x060608,.6);
@@ -101,6 +108,6 @@ buildBtns=function(){
   if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
   ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.<h3>Hitbox</h3>Skin Đỏ: hitbox x50. Skin Vàng Trắng: hitbox x1.000. Bật Kiếm Hồn Nhất Vương: hitbox nhân thêm x400.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.<h3>Hitbox</h3>Skin Đỏ: hitbox x250. Skin Vàng Trắng: hitbox x1.000. Bật Kiếm Hồn Nhất Vương: hitbox nhân thêm x750.';
 buildBtns();
 })();
