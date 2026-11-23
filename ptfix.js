@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const WHT=0xfff4d0,GLD=0xffd646,BLK=0x111111,rnd=Math.random;
+const WHT=0xfff4d0,GLD=0xffd646,BLK=0x111111,rnd=Math.random,now=()=>performance.now();
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
@@ -51,8 +51,16 @@ popup=function(title,opts,cur,fn){
 const baseSync=syncRT;
 syncRT=function(){const k=P.kh,a=P.ap;baseSync();if(P.sty>=6&&k)P.ap=a};
 
+const own=()=>P.sw==4;
+const TKEYS=['dinh','thi','tinh','viem','hon','xv'];
+let ttC=0,ttCt=0,ttBtn=null;
+const ttOn=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0}catch(e){ttC=0}}return ttC};
 let gb=false;const BM=mat(0x060608,.6);
-{const rd=ren.render.bind(ren);ren.render=function(s,c){try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}}catch(e){}return rd(s,c)}}
+{const rd=ren.render.bind(ren);ren.render=function(s,c){
+ try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}}catch(e){}
+ const r=rd(s,c);
+ try{if(own()){if(bt.M2)bt.M2.classList.toggle('on',P.ap>0);if(ttBtn)ttBtn.classList.toggle('on',ttOn()>0)}}catch(e){}
+ return r}}
 
 (function tick(){
  requestAnimationFrame(tick);
@@ -63,31 +71,28 @@ let gb=false;const BM=mat(0x060608,.6);
  }catch(e){}
 })();
 
-let rT=0,rLong=false,rOn=false;
-function tap(){
- if(!P.kh){P.kh=1;say('Kiếm Hồn Nhất Vương — BẬT',1000);flash(0x202020)}
- else{P.ap=P.ap?0:1;say(P.ap?'Áp Chế Nhất Vương — BẬT (một đòn diệt tất cả)':'Áp Chế Nhất Vương — TẮT',1400);if(P.ap)flash(0x000000)}}
-function rDown(){
- if(rOn)return;rOn=true;rLong=false;
- rT=setTimeout(()=>{rT=0;rLong=true;if(P.kh){P.kh=0;P.ap=0;say('Tắt Kiếm Hồn Nhất Vương',1200)}},350)}
-function rUp(){
- if(!rOn)return;rOn=false;
- if(rT){clearTimeout(rT);rT=0}
- if(!rLong)tap()}
-const hasKH=()=>P.sty>=6&&!!JSON.parse(localStorage.getItem('tm_pt_v1')||'{}').kh;
+const innerLaw=lawMenu;
+function toggleTT(){if(own())innerLaw()}
+function toggleAP(){
+ if(P.sty<6)return toast('Cần dùng Phượng Tước Kiếm Pháp hoặc Nhất Vương Tài Quyết Lục');
+ if(!P.kh)return toast('Bật Kiếm Hồn Nhất Vương (R) trước');
+ P.ap=P.ap?0:1;say(P.ap?'Áp Chế Nhất Vương — BẬT (một đòn diệt tất cả)':'Áp Chế Nhất Vương — TẮT',1400);if(P.ap)flash(0x000000)}
+lawMenu=function(){if(own())return toggleAP();return innerLaw()};
 addEventListener('keydown',e=>{
- if(e.code!=='KeyR'||!hasKH())return;
+ if(e.code!=='KeyT'||!own())return;
  const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
- e.stopImmediatePropagation();if(!e.repeat)rDown()},true);
-addEventListener('keyup',e=>{if(e.code==='KeyR'&&rOn)rUp()},true);
+ e.stopImmediatePropagation();if(!e.repeat)toggleTT()},true);
 const baseBuild=buildBtns;
 buildBtns=function(){
- baseBuild();
- if(hasKH()&&bt.R){
-  const nb=bt.R.cloneNode(true);bt.R.replaceWith(nb);bt.R=nb;
-  nb.addEventListener('pointerdown',e=>{e.preventDefault();try{nb.setPointerCapture(e.pointerId)}catch(_){}rDown()});
-  nb.addEventListener('pointerup',rUp);nb.addEventListener('pointercancel',rUp)}
+ baseBuild();ttBtn=null;
+ if(own()){
+  if(bt.M2)bt.M2.innerHTML='<b>ÁC</b><i>Áp Chế</i>';
+  const bot=$('btns'),b=document.createElement('button');
+  b.innerHTML='<b>T</b><i>Thiên Tướng</i>';b.className='rt rT';
+  b.addEventListener('pointerdown',e=>{e.preventDefault();toggleTT()});
+  if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
+  ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 0,35 giây.<h3>Thiên Tướng</h3>Chỉ một chiêu bật/tắt (nút TT, phím G hoặc chuột phải): bật là nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút ÁC (ô Quy Luật cũ, hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
 buildBtns();
 })();
