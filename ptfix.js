@@ -39,11 +39,29 @@ say=function(t,ms){
  else if(t==='Phượng Tước Kiếm Pháp Chung Chương'&&ms===1200)return;
  return baseSay(t,ms)};
 
+const bp=popup;
+popup=function(title,opts,cur,fn){
+ if(typeof title==='string'&&title.indexOf('Thiên Tướng (bật/tắt')===0){
+  const on=opts.some(o=>o.includes('[BẬT]')),has=opts.some(o=>o.includes('[BẬT]')||o.includes('[TẮT]'));
+  if(!has)toast('Chưa mở khóa Thiên Tướng — hạ Định Vương (Map 3)');
+  else opts.forEach((o,i)=>{if(on?o.includes('[BẬT]'):o.includes('[TẮT]'))fn(i)});
+  bp(title,['.'],-1,()=>{});$('popup').style.display='none';paused=false;return}
+ return bp(title,opts,cur,fn)};
+
 const baseSync=syncRT;
 syncRT=function(){const k=P.kh,a=P.ap;baseSync();if(P.sty>=6&&k)P.ap=a};
 
 let gb=false;const BM=mat(0x060608,.6);
 {const rd=ren.render.bind(ren);ren.render=function(s,c){try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}}catch(e){}return rd(s,c)}}
+
+(function tick(){
+ requestAnimationFrame(tick);
+ try{
+  scene.children.forEach(g=>{const u=g.userData;if(u&&u.aL&&!u.ptTT&&(g.scale.x===2.4||Math.abs(g.scale.x-3.2)<1e-6)){u.ptTT=1;g.scale.setScalar(1.1)}});
+  const arr=scene.children.filter(g=>g.userData&&g.userData.ptTT);
+  arr.forEach((g,i)=>{g.visible=i===arr.length-1})
+ }catch(e){}
+})();
 
 let rT=0,rLong=false,rOn=false;
 function tap(){
@@ -70,6 +88,6 @@ buildBtns=function(){
   nb.addEventListener('pointerdown',e=>{e.preventDefault();try{nb.setPointerCapture(e.pointerId)}catch(_){}rDown()});
   nb.addEventListener('pointerup',rUp);nb.addEventListener('pointercancel',rUp)}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 1 giây.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 1 giây.<h3>Thiên Tướng</h3>Chỉ một chiêu bật/tắt (nút TT, phím G hoặc chuột phải): bật là nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
 buildBtns();
 })();
