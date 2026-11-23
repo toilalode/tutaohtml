@@ -10,7 +10,7 @@ const TIERS=[['dinh',3,'Định Hoàng Thiên Tướng'],['thi',10,'Song Hoàng 
 const unl=i=>!!PT.beat[TIERS[i][0]];
 const chain=()=>{let n=0;while(n<6&&unl(n)&&PT.tt[n])n++;return n};
 const ttMul=()=>{const n=chain();return n?TIERS[n-1][1]:1};
-const own=()=>P.sw==4,skinOn=()=>!!(PT.up&&PT.skin),useTT=()=>P.sty>=6||P.sw==4;
+const own=()=>P.sw==4,skinOn=()=>!!(PT.up&&PT.skin),useTT=()=>own();
 const PW=()=>{let m=own()?(skinOn()?1500:100):1;if(PT.np)m*=40;if(PT.ngoc.dinh)m*=1.5;if(PT.ngoc.thi)m*=2;if(PT.ngoc.tinh)m*=6;m*=ttMul();if(P.kh>0&&PT.kh)m*=1e6;return m};
 
 if(STYLES.length<6){STYLES.push('Chung Yên Kiếm Pháp');STCOL.push(RED)}
@@ -86,7 +86,7 @@ popup=function(title,opts,cur,fn){
   const f=fn,full=(dg.fused&&dg.eq)?3:P.sw;opts=vis.map(i=>opts[i]);fn=j=>f(vis[j]);
   const r=basePopup(title,opts,cur,fn);fixHi(vis.indexOf(full));return r}
  if(title=='Chọn kiếm pháp'){
-  const dg=dgOwn(),vis=[];STYLES.forEach((s,i)=>{if(i==5&&!dg.style)return;if(i==6&&!PT.sword&&!Object.keys(PT.beat).length)return;if(i==7&&!PT.beat.hon)return;vis.push(i)});
+  const dg=dgOwn(),vis=[];STYLES.forEach((s,i)=>{if(i==5&&!dg.style)return;if(i==6&&!own())return;if(i==7&&(!own()||!PT.beat.hon))return;vis.push(i)});
   const f=fn;opts=vis.map(i=>STYLES[i]);cur=vis.indexOf(cur);fn=j=>f(vis[j])}
  return basePopup(title,opts,cur,fn)};
 
@@ -111,7 +111,7 @@ buildBtns=function(){
  const bot=$('btns');
  if(useTT()&&bt.M2){bt.M2.innerHTML='<b>TT</b><i>Thiên Tướng</i>'}
  if(P.sty>=6&&PT.kh){const b=document.createElement('button');b.innerHTML='<b>R</b><i>Hồn Nhất Vương</i>';b.className='rt rR';b.addEventListener('pointerdown',e=>{e.preventDefault();toggleKH()});bot.insertBefore(b,bot.firstChild);bt.R=b}
- if(P.sty>=6&&PT.bone){
+ if(own()&&P.sty>=6&&PT.bone){
   const mk2=(l,n,i)=>{const b=document.createElement('button');b.innerHTML='<b>'+l+'</b><i>'+n+'</i>';b.className='rt '+(i?'rU':'rT');b.style.borderColor='#ff8a1a';b.style.background='rgba(130,55,0,.88)';b.style.color='#ffd0a0';b.addEventListener('pointerdown',e=>{e.preventDefault();castBone(i)});bot.appendChild(b);return b};
   xb.v1=mk2('K','Cận Kiến',0);xb.v2=mk2('L','Quy Nhất',1)}
  placeCols()};
@@ -253,7 +253,7 @@ function armyHit(x,z,r,d){
  if(giant&&hyp(giant.x-x,giant.z-z)<r+8)foe(w,giant.x,giant.z,120)}
 const BONE=[{n:'Vạn Quái Cận Kiến',cd:30,sta:40,fn:canKien},{n:'Vạn Quái Quy Nhất',cd:20,sta:40,fn:quyNhat}];
 function castBone(i){
- if(paused||P.block||P.lk>0||P.sty<6)return;
+ if(paused||P.block||P.lk>0||P.sty<6||!own())return;
  if(!PT.bone)return toast('Chưa mở khóa — hạ Xi Vưu (Map 3) để mở Vạn Quái');
  if(i==0&&army)return endArmy(true);
  if(i==1&&giant)return endGiant(true);
@@ -387,12 +387,15 @@ setMap=function(m){
 const baseResp=respawn;respawn=function(){if(MAP=='pt'){setMap(prev);return}baseResp()};
 mapMenu=function(){if(castBusy())return;popup('Chọn map',['Map chính (đợt quái)','Test (quái bù nhìn)','Phó bản Chung Yên Hoàng Đế','Phó bản Phượng Tước Kiếm'],MAP=='test'?1:MAP=='dungeon'?2:MAP=='pt'?3:0,i=>setMap(['main','test','dungeon','pt'][i]))};
 
-GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 10 quái (1 tỷ máu/con, triệu hồi từng con) trong 5 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2).<h3>Map 2</h3>Đánh Nguyên Phượng (10.000 tỷ máu): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. NPC Đổi Skin Kiếm (có ở mọi map, đứng xa Người Chuyển Đổi) chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Xi Vưu rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
+GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 10 quái (1 tỷ máu/con, triệu hồi từng con) trong 5 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2). Phượng Tước Kiếm Pháp, Nhất Vương Tài Quyết Lục, Thiên Tướng, Vạn Quái Cận Kiến (K) và Quy Nhất (L) chỉ dùng được khi đang cầm Kiếm Phượng Tước.<h3>Map 2</h3>Đánh Nguyên Phượng (10.000 tỷ máu): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. NPC Đổi Skin Kiếm (có ở mọi map, đứng xa Người Chuyển Đổi) chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Xi Vưu rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
 
 buildBtns();
 let last=now();
 (function tick(){requestAnimationFrame(tick);const t=now(),dt=paused?0:Math.min(.05,(t-last)/1000);last=t;try{step(dt,t/1000)}catch(e){console.error(e)}})();
 function step(dt,T){
+ if(!own()){
+  if(army)endArmy(false);if(giant)endGiant(false);
+  if(P.sty>=6){P.sty=0;P.kh=0;P.ap=0;syncRT();buildBtns();toast('Chỉ dùng được khi cầm Kiếm Phượng Tước')}}
  if(phx)flap(phx,T);
  syncFigs();if(figs.length)figsStep(T);
  xbUpdate();stunStep(dt,T);armyStep(dt,T);giantStep(dt,T);
