@@ -32,4 +32,44 @@ run=function(sp,k0){
  if(sp&&sp.sp=='pt7')return exec(s7,28);
  if(sp&&sp.sp=='pt8')return exec(s8,22);
  return baseRun(sp,k0)};
+
+const baseSay=say;
+say=function(t,ms){
+ if(t==='Phụng Tước Bát Điểu, Chung Chương!')t='Phượng Tước Kiếm Pháp Chung Chương!';
+ else if(t==='Phượng Tước Kiếm Pháp Chung Chương'&&ms===1200)return;
+ return baseSay(t,ms)};
+
+const baseSync=syncRT;
+syncRT=function(){const k=P.kh,a=P.ap;baseSync();if(P.sty>=6&&k)P.ap=a};
+
+let gb=false;const BM=mat(0x060608,.6);
+{const rd=ren.render.bind(ren);ren.render=function(s,c){try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}}catch(e){}return rd(s,c)}}
+
+let rT=0,rLong=false,rOn=false;
+function tap(){
+ if(!P.kh){P.kh=1;say('Kiếm Hồn Nhất Vương — BẬT',1000);flash(0x202020)}
+ else{P.ap=P.ap?0:1;say(P.ap?'Áp Chế Nhất Vương — BẬT (một đòn diệt tất cả)':'Áp Chế Nhất Vương — TẮT',1400);if(P.ap)flash(0x000000)}}
+function rDown(){
+ if(rOn)return;rOn=true;rLong=false;
+ rT=setTimeout(()=>{rT=0;rLong=true;if(P.kh){P.kh=0;P.ap=0;say('Tắt Kiếm Hồn Nhất Vương',1200)}},1000)}
+function rUp(){
+ if(!rOn)return;rOn=false;
+ if(rT){clearTimeout(rT);rT=0}
+ if(!rLong)tap()}
+const hasKH=()=>P.sty>=6&&!!JSON.parse(localStorage.getItem('tm_pt_v1')||'{}').kh;
+addEventListener('keydown',e=>{
+ if(e.code!=='KeyR'||!hasKH())return;
+ const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
+ e.stopImmediatePropagation();if(!e.repeat)rDown()},true);
+addEventListener('keyup',e=>{if(e.code==='KeyR'&&rOn)rUp()},true);
+const baseBuild=buildBtns;
+buildBtns=function(){
+ baseBuild();
+ if(hasKH()&&bt.R){
+  const nb=bt.R.cloneNode(true);bt.R.replaceWith(nb);bt.R=nb;
+  nb.addEventListener('pointerdown',e=>{e.preventDefault();try{nb.setPointerCapture(e.pointerId)}catch(_){}rDown()});
+  nb.addEventListener('pointerup',rUp);nb.addEventListener('pointercancel',rUp)}
+ placeCols()};
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 1 giây.';
+buildBtns();
 })();
