@@ -110,7 +110,7 @@ buildBtns=function(){
  baseBuild();xb={};
  const bot=$('btns');
  if(useTT()&&bt.M2){bt.M2.innerHTML='<b>TT</b><i>Thiên Tướng</i>'}
- if(P.sty>=6&&PT.kh){const b=document.createElement('button');b.innerHTML='<b>R</b><i>Hồn Nhất Vương</i>';b.className='rt rR';b.addEventListener('pointerdown',e=>{e.preventDefault();toggleKH()});bot.insertBefore(b,bot.firstChild);bt.R=b}
+ if(P.sty>=6&&PT.kh){const b=document.createElement('button');b.innerHTML='<b>R</b><i>Hồn Nhất Vương</i>';b.className='rt rR';b.addEventListener('pointerdown',e=>{e.preventDefault();toggleKH()});bot.appendChild(b);bt.R=b}
  if(own()&&P.sty>=6&&PT.bone){
   const mk2=(l,n,i)=>{const b=document.createElement('button');b.innerHTML='<b>'+l+'</b><i>'+n+'</i>';b.className='rt '+(i?'rU':'rT');b.style.borderColor='#ff8a1a';b.style.background='rgba(130,55,0,.88)';b.style.color='#ffd0a0';b.addEventListener('pointerdown',e=>{e.preventDefault();castBone(i)});bot.appendChild(b);return b};
   xb.v1=mk2('K','Cận Kiến',0);xb.v2=mk2('L','Quy Nhất',1)}
@@ -396,6 +396,10 @@ function step(dt,T){
  if(!own()){
   if(army)endArmy(false);if(giant)endGiant(false);
   if(P.sty>=6){P.sty=0;P.kh=0;P.ap=0;syncRT();buildBtns();toast('Chỉ dùng được khi cầm Kiếm Phượng Tước')}}
+ {const apOn=P.ap>0&&own()&&P.sty>=6&&P.kh>0&&!!PT.kh;
+  enemies.forEach(e=>{
+   if(apOn){if(e.hp>0){if(e.inf){e.inf=0;e.apInf=1}e.hp=-1;e.hit=8}}
+   else if(e.apInf){e.apInf=0;e.inf=1;e.max=e.hp=e.lh=1e15}})}
  if(phx)flap(phx,T);
  syncFigs();if(figs.length)figsStep(T);
  xbUpdate();stunStep(dt,T);armyStep(dt,T);giantStep(dt,T);
