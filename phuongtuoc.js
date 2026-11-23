@@ -345,7 +345,7 @@ function npc(label,shirt,x,z,fn){
  return{g,sp,fn,x,z}}
 function clearNpcs(){npcs.forEach(n=>{scene.remove(n.g);n.sp.material.map.dispose();n.sp.material.dispose();freeObj(n.g)});npcs=[];near=null}
 function buildNpcs(){
- clearNpcs();npcs.push(npc('Người Chuyển Đổi',0x1a4a8a,-10,-8,convMenu));npcs.push(npc('Đổi Skin Kiếm',0xc0a030,-10,-14,skinMenu));
+ clearNpcs();npcs.push(npc('Người Chuyển Đổi',0x1a4a8a,-10,-8,convMenu));npcs.push(npc('Đổi Skin Kiếm',0xc0a030,38,16,skinMenu));
  if(ptMap==1)npcs.push(npc('Lấy Kiếm Phượng Tước',0xaa2222,10,-8,q1Menu));
  if(ptMap==2){npcs.push(npc('Nguyên Phượng',0xd07010,10,-8,()=>startBoss('np')));npcs.push(npc('Người Đổi Đồ',0xc0a030,0,-14,swapMenu))}
  if(ptMap==3)npcs.push(npc('Khiêu Chiến Vương',0x7a0a14,10,-8,bossMenu))}
@@ -386,7 +386,7 @@ setMap=function(m){
 const baseResp=respawn;respawn=function(){if(MAP=='pt'){setMap(prev);return}baseResp()};
 mapMenu=function(){if(castBusy())return;popup('Chọn map',['Map chính (đợt quái)','Test (quái bù nhìn)','Phó bản Chung Yên Hoàng Đế','Phó bản Phượng Tước Kiếm'],MAP=='test'?1:MAP=='dungeon'?2:MAP=='pt'?3:0,i=>setMap(['main','test','dungeon','pt'][i]))};
 
-GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 1.000 quái (1.000 máu/con, triệu hồi từng con) trong 10 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2).<h3>Map 2</h3>Đánh Nguyên Phượng (10.000 tỷ máu): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. NPC Đổi Skin Kiếm (có ở mọi map) chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Thiên Tướng: nút TT (thay M2) hoặc phím G hoặc chuột phải, bật/tắt từng bậc, các bậc cộng dồn theo thứ tự, nhân sức mạnh theo bậc cao nhất đang bật. Xi Vưu rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, y hệt Kiếm Hồn Thiên Mệnh màu đen, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
+GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 1.000 quái (1.000 máu/con, triệu hồi từng con) trong 10 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2).<h3>Map 2</h3>Đánh Nguyên Phượng (10.000 tỷ máu): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. NPC Đổi Skin Kiếm (có ở mọi map, đứng xa Người Chuyển Đổi) chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Xi Vưu rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
 
 buildBtns();
 let last=now();
