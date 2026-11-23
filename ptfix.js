@@ -69,7 +69,7 @@ function tap(){
  else{P.ap=P.ap?0:1;say(P.ap?'Áp Chế Nhất Vương — BẬT (một đòn diệt tất cả)':'Áp Chế Nhất Vương — TẮT',1400);if(P.ap)flash(0x000000)}}
 function rDown(){
  if(rOn)return;rOn=true;rLong=false;
- rT=setTimeout(()=>{rT=0;rLong=true;if(P.kh){P.kh=0;P.ap=0;say('Tắt Kiếm Hồn Nhất Vương',1200)}},1000)}
+ rT=setTimeout(()=>{rT=0;rLong=true;if(P.kh){P.kh=0;P.ap=0;say('Tắt Kiếm Hồn Nhất Vương',1200)}},350)}
 function rUp(){
  if(!rOn)return;rOn=false;
  if(rT){clearTimeout(rT);rT=0}
@@ -88,6 +88,6 @@ buildBtns=function(){
   nb.addEventListener('pointerdown',e=>{e.preventDefault();try{nb.setPointerCapture(e.pointerId)}catch(_){}rDown()});
   nb.addEventListener('pointerup',rUp);nb.addEventListener('pointercancel',rUp)}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 1 giây.<h3>Thiên Tướng</h3>Chỉ một chiêu bật/tắt (nút TT, phím G hoặc chuột phải): bật là nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương (R)</h3>Bấm R lần đầu: bật Kiếm Hồn (đen, x1.000.000). Bấm R lần nữa: Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, không hồi chiêu; bấm R nữa để tắt Áp Chế. Muốn tắt Kiếm Hồn thì giữ R 0,35 giây.<h3>Thiên Tướng</h3>Chỉ một chiêu bật/tắt (nút TT, phím G hoặc chuột phải): bật là nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
 buildBtns();
 })();
