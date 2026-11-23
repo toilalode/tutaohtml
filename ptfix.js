@@ -86,13 +86,13 @@ const baseBuild=buildBtns;
 buildBtns=function(){
  baseBuild();ttBtn=null;
  if(own()){
-  if(bt.M2)bt.M2.innerHTML='<b>ÁC</b><i>Áp Chế</i>';
+  if(bt.M2)bt.M2.innerHTML='<b>M2</b><i>Áp Chế</i>';
   const bot=$('btns'),b=document.createElement('button');
   b.innerHTML='<b>T</b><i>Thiên Tướng</i>';b.className='rt rT';
   b.addEventListener('pointerdown',e=>{e.preventDefault();toggleTT()});
   if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
   ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút ÁC (ô Quy Luật cũ, hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
 buildBtns();
 })();
