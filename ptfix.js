@@ -51,13 +51,17 @@ popup=function(title,opts,cur,fn){
 const baseSync=syncRT;
 syncRT=function(){const k=P.kh,a=P.ap;baseSync();if(P.sty>=6&&k)P.ap=a};
 
+const baseMk=mk;
+mk=function(k,o){if(k==='beam'&&P.ap>0&&P.sty>=6&&o)o=Object.assign({},o,{col:0x050507});return baseMk(k,o)};
+
 const own=()=>P.sw==4;
 const TKEYS=['dinh','thi','tinh','viem','hon','xv'];
 let ttC=0,ttCt=0,ttBtn=null;
 const ttOn=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0}catch(e){ttC=0}}return ttC};
 let gb=false;const BM=mat(0x060608,.6);
 {const rd=ren.render.bind(ren);ren.render=function(s,c){
- try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}}catch(e){}
+ try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}
+  if(w)enemies.forEach(e=>{if(e.ms&&!(e.hit>0))e.ms.forEach(m=>m.emissive.setHex(0))})}catch(e){}
  const r=rd(s,c);
  try{if(own()){if(bt.M2)bt.M2.classList.toggle('on',P.ap>0);if(ttBtn)ttBtn.classList.toggle('on',ttOn()>0)}}catch(e){}
  return r}}
@@ -93,6 +97,6 @@ buildBtns=function(){
   if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
   ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen, một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
 buildBtns();
 })();
