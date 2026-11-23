@@ -56,8 +56,12 @@ mk=function(k,o){if(k==='beam'&&P.ap>0&&P.sty>=6&&o)o=Object.assign({},o,{col:0x
 
 const own=()=>P.sw==4;
 const TKEYS=['dinh','thi','tinh','viem','hon','xv'];
-let ttC=0,ttCt=0,ttBtn=null;
-const ttOn=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0}catch(e){ttC=0}}return ttC};
+let ttC=0,gold=0,ttCt=0,ttBtn=null;
+const rd1=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0;gold=(d.up&&d.skin)?1:0}catch(e){ttC=0;gold=0}}};
+const ttOn=()=>{rd1();return ttC};
+const hbMul=()=>{rd1();return (gold?1000:50)*(P.kh>0?400:1)};
+const baseHit=hit;
+hit=function(x,z,r,d,kb){if(P.sw==4&&P.sty>=6)r*=hbMul();return baseHit(x,z,r,d,kb)};
 let gb=false;const BM=mat(0x060608,.6);
 {const rd=ren.render.bind(ren);ren.render=function(s,c){
  try{const w=P.sty>=6&&P.ap>0;if(w!==gb){gb=w;S.gap.traverse(o=>{if(o.isMesh){if(!o.userData.pm2)o.userData.pm2=o.material;o.material=w?BM:o.userData.pm2}})}
@@ -97,6 +101,6 @@ buildBtns=function(){
   if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
   ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.<h3>Hitbox</h3>Skin Đỏ: hitbox x50. Skin Vàng Trắng: hitbox x1.000. Bật Kiếm Hồn Nhất Vương: hitbox nhân thêm x400.';
 buildBtns();
 })();
