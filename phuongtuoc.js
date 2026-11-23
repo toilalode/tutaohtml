@@ -76,7 +76,8 @@ function swordVis(){
  else if(applied){applied=false;if(org){PA.sb.material.color.setHex(org[0]);PA.sg.material.color.setHex(org[1])}if(phx){PA.sb.remove(phx);freeObj(phx);phx=null}}
  const want=P.sty>=6&&P.kh>0&&!!PT.kh;
  if(want!==blk){blk=want;S.kh.traverse(c=>{if(c.isMesh){if(!c.userData.pm)c.userData.pm=c.material;c.material=want?BM:c.userData.pm}})}}
-{const rd=ren.render.bind(ren);ren.render=function(s,c){try{swordVis()}catch(e){}return rd(s,c)}}
+const syncTTBtn=()=>{const b=bt.H;if(!b||!useTT())return;const on=chain()>0;if(b.classList.contains('on')!==on)b.classList.toggle('on',on)};
+{const rd=ren.render.bind(ren);ren.render=function(s,c){try{swordVis()}catch(e){}try{syncTTBtn()}catch(e){}return rd(s,c)}}
 
 const basePopup=popup;
 const fixHi=idx=>{const o=$('popts');if(!o)return;const n=o.children.length-1;[...o.children].forEach((b,i)=>{if(i<n)b.className=i==idx?'on':''})};
@@ -131,7 +132,6 @@ function stunAt(x,z,r,sec){enemies.forEach(e=>{if(hyp(e.m.position.x-x,e.m.posit
 function mandala(){
  const g=new THREE.Group(),rs=[];
  for(let i=0;i<10;i++){const m=new THREE.Mesh(G('PTR2',()=>new THREE.RingGeometry(.9,1,48)),mat(i&1?0xff9a20:GLD,.85));m.scale.setScalar(5+i*2.4);m.position.z=-i*.12;g.add(m);rs.push([m,i&1?-.02:.015])}
- const p1=plane(texBagua,44,.5);p1.position.z=-1.6;g.add(p1);rs.push([p1,.01]);
  scene.add(g);return{g,rs}}
 
 async function s1(){
