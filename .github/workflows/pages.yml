@@ -32,6 +32,9 @@ jobs:
         with:
           path: .
 
+      - name: Wait for artifact to be indexed
+        run: sleep 30
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
