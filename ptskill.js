@@ -1,5 +1,5 @@
 'use strict';
-// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (xoay kiếm trước mắt + nổ), Đệ Tam (xoay chém sau lưng + phi kiếm, không nổ), Đệ Ngũ (xoay người, không nổ). Nạp sau ptfix.js.
+// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (xoay kiếm trước mắt + nổ), Đệ Tam (xoay chém sau lưng, KHÔNG quay người, phi kiếm, không nổ), Đệ Ngũ (bánh xe dọc, mỗi 2s xoay chém mạnh 1 lần, không nổ). Nạp sau ptfix.js.
 (function(){
 const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,hyp=Math.hypot,rnd=Math.random;
 const drop=g=>{scene.remove(g);freeObj(g)};
@@ -54,17 +54,16 @@ async function s2(){
 async function s3(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Phượng Tước Kiếm Pháp — Đệ Tam Thức',1000);
- const R=ringV(3.4),sw0=mkSword(RED,.45);let sw=null;hid=true;spinOn=true;
+ const R=ringV(3.4),sw0=mkSword(RED,.45);let sw=null;hid=true;
  try{
   for(let f=0;f<48;f++){
    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l,cx=p.x-fx*3.4,cy=p.y+1.7,cz=p.z-fz*3.4;
-   spinA=f*.42;
    R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz);
    R.arcs.forEach((m,i)=>{m.rotation.z+=(i&1?-1:1)*.42});
    orbit(sw0,cx,cy,cz,fx,fz,3.4,f*.6);
    if(f%4==0){hit(ex,ez,12,4e12*3,.2);shake=Math.max(shake,3)}
    await wait(1)}
-  spinOn=false;drop(R.g);drop(sw0);
+  drop(R.g);drop(sw0);
   say('Mẫn Vạn Tượng — Khai Thiên Kỷ!',1600);
   {const[ex,ez]=live();stunAt(ex,ez,30,3);
    const a=Math.atan2(ex-p.x,ez-p.z),bx=ex+Math.sin(a)*14,bz=ez+Math.cos(a)*14;
@@ -77,20 +76,26 @@ async function s3(){
   for(let i=0;i<10;i++){for(let f=0;f<4;f++){place(reach[f]);if(f==2){const[ex,ez]=live();FXK('slash',{x:ex+rnd()*2-1,z:ez+rnd()*2-1,r:6,col:i&1?RED:WHT});hit(ex,ez,12,8e12*3,.2);shake=Math.max(shake,5)}await wait(1)}}
  } finally{reset();drop(R.g);drop(sw0);if(sw)drop(sw)}}
 
-// Đệ Ngũ: xoay người, vòng chém ngang quanh người và quanh quái (ngay hàng, không loạn xạ) — KHÔNG nổ
+// Đệ Ngũ: bánh xe dọc (xoay trong mặt phẳng đứng, trục ngang) quanh người và quanh quái; mỗi 2 giây xoay thì chém mạnh 1 nhát — KHÔNG nổ
 async function s5(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Đệ Ngũ Thức: Dung Vạn Hắc — Truyền Tân Hỏa!',1800);
- const A=ringH(4.5,RED,GLD),B=ringH(5.5,GLD,RED);spinOn=true;
+ const A=ringV(3.6),B=ringV(6.5),sw=mkSword(RED,.5);hid=true;
+ const wheel=(R,cx,cy,cz,fx,fz,dir)=>{R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz)+Math.PI/2;R.arcs.forEach((m,i)=>{m.rotation.z+=dir*(i&1?-1:1)*.5})};
  try{
-  for(let f=0;f<80;f++){
-   const[ex,ez]=live();spinA=f*.55;
-   A.g.position.set(p.x,p.y+1.1,p.z);B.g.position.set(ex,2,ez);
-   A.ws.forEach((w,i)=>{w.rotation.y+=(i?-1:1)*.5});B.ws.forEach((w,i)=>{w.rotation.y+=(i?1:-1)*.4});
-   if(f%4==0)hit(ex,ez,10,1e12*3,.2);
-   if(f%16==8){hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
-   await wait(1)}
- }finally{reset();drop(A.g);drop(B.g)}}
+  for(let c=0;c<3;c++){
+   for(let f=0;f<120;f++){
+    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l;
+    wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);wheel(B,ex,2.6,ez,fx,fz,1);
+    orbit(sw,p.x,p.y+1.7,p.z,-fz,fx,3.6,-f*.5);
+    if(f%6==0)hit(ex,ez,10,1e12*3,.2);
+    await wait(1)}
+   const[ex,ez]=live();
+   say('Truyền Tân Hỏa — Trảm!',700);
+   for(let k=0;k<3;k++)FXK('slash',{x:ex+rnd()*3-1.5,z:ez+rnd()*3-1.5,r:16,col:k&1?GLD:RED});
+   hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10);flash(RED);
+   await wait(8)}
+ }finally{reset();drop(A.g);drop(B.g);drop(sw)}}
 
 async function exec(f,fly){P.busy++;P.lk++;if(fly){P.flyN++;P.flyH=fly}try{await f()}catch(e){console.error(e)}finally{reset();P.busy--;P.lk--;if(fly){P.flyN--;P.fly=Math.max(P.fly,25)}}}
 const baseRun=run;
