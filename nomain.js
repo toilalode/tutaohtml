@@ -6,4 +6,11 @@ mapMenu=function(){if(castBusy())return;popup('Chọn map',L.map(x=>x[1]),L.find
 const sm=setMap;
 setMap=function(m){return sm(m==='main'?'test':m)};
 setMap('test');
+// Bỏ phần "| ĐỢT n (kỷ lục n)" trên HUD, chỉ giữ số KILLS
+const kt=document.getElementById('killT');
+if(kt){
+ const fix=()=>{const t=kt.textContent,n=t.replace(/\s*\|\s*ĐỢT.*$/,'');if(n!==t)kt.textContent=n};
+ fix();
+ new MutationObserver(fix).observe(kt,{childList:true,characterData:true,subtree:true});
+}
 })();
