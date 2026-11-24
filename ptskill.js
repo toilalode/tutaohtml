@@ -68,7 +68,7 @@ async function s3(){
   {const[ex,ez]=live();stunAt(ex,ez,30,3);
    const a=Math.atan2(ex-p.x,ez-p.z),bx=ex+Math.sin(a)*14,bz=ez+Math.cos(a)*14;
    await fling(RED,3.5,p.x,p.y+1.3,p.z,bx,p.y+1.3,bz,14);
-   const[hx,hz]=live();hit(hx,hz,12,2.5e14*3,.2);shake=Math.max(shake,12)}
+   const[hx,hz]=live();hit(hx,hz,12,1.92e14*3,.2);shake=Math.max(shake,12)}
   sw=mkSword(RED,.38);
   const place=d=>{const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,ux=dx/l,uz=dz/l;p.x=ex-ux*d;p.z=ez-uz*d;sw.position.set(p.x+ux*.6,p.y+1.3,p.z+uz*.6);sw.lookAt(ex,p.y+1.3,ez)};
   for(let f=0;f<10;f++){const[ex,ez]=live(),l=hyp(ex-p.x,ez-p.z);place(l>4.2?l-(l-4.2)/(10-f):l);await wait(1)}
@@ -88,6 +88,7 @@ async function s5(){
    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l;
    wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);wheel(B,ex,2.6,ez,fx,fz,1);
    orbit(sw,p.x,p.y+1.7,p.z,-fz,fx,3.6,-f*.5);
+   spinA=Math.atan2(fx,fz)-f*.5;spinOn=true;
    if(f%6==0)hit(ex,ez,10,1e12*3,.2);
    const t=performance.now();
    if(t>=nx){
