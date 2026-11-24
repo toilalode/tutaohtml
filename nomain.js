@@ -6,6 +6,7 @@ mapMenu=function(){if(castBusy())return;popup('Chọn map',L.map(x=>x[1]),L.find
 const sm=setMap;
 setMap=function(m){return sm(m==='main'?'test':m)};
 setMap('test');
+buildBtns();
 // Bỏ phần "| ĐỢT n (kỷ lục n)" trên HUD, chỉ giữ số KILLS
 const kt=document.getElementById('killT');
 if(kt){
