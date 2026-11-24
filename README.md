@@ -64,7 +64,7 @@ Thiên Mệnh Kiếm Pháp, phím G: mở Lãnh Địa, quái trong vực đứn
 
 ### Phượng Tước Kiếm Pháp & Nhất Vương Tài Quyết Lục
 - **Màu chiêu theo skin** (`ptpalette.js`): skin Đỏ thì chiêu chủ yếu đỏ, thỉnh thoảng có vàng; skin Vàng Trắng thì chủ yếu vàng, thỉnh thoảng có trắng; cả hai chiêu Nhất Vương Tài Quyết Lục (Khúc Chung Trảm, Chúng Sinh Bình Giới Điệu) ở cả hai skin đều chủ yếu đen, thỉnh thoảng có đỏ. Cứ 5 hiệu ứng thì có 1 hiệu ứng mang màu phụ (hằng `ACCENT_EVERY`).
-- **Đệ Ngũ Thức** (`ptskill.js`): hai bánh xe kiếm dọc quay quanh người và quanh quái, mỗi 0,4 giây chém 1 nhát, không nổ. Nhân vật xoay tại chỗ theo đúng chiều quay của thanh kiếm đang bay (mặt hướng về phía kiếm), kết thúc chiêu thì trả lại hướng bình thường.
+- **Đệ Ngũ Thức** (`ptskill.js`): hai bánh xe kiếm dọc quay quanh người và quanh quái, mỗi 0,4 giây chém 1 nhát, không nổ. Nhân vật xoay dọc (lộn vòng trong mặt phẳng đứng hướng về quái, quanh tâm thân người) cùng chiều và cùng tốc độ với thanh kiếm đang bay, nên đầu luôn hướng về phía kiếm. Kết thúc chiêu thì nhân vật đứng thẳng lại như bình thường.
 - **Đệ Tam Thức** (`ptskill.js`): xoay chém sau lưng, phi kiếm xuyên quái, rồi đâm liên hoàn, không nổ. Nhát phi kiếm chiếm **60%** tổng sát thương gốc của chiêu; 40% còn lại chia cho đoạn xoay chém (1,44e14) và đoạn đâm liên hoàn (2,4e14).
 - **Kiếm Hồn Nhất Vương** (nút R, `ptfix.js`): bóng kiếm hồn màu đen, thêm hai mắt đỏ và hai vòng đỏ nhỏ (một vòng hào quang trên đầu, một vòng dưới chân). Phần đỏ chỉ hiện khi Kiếm Hồn đang đen, tức là khi cầm Kiếm Phượng Tước.
 - **Áp Chế Nhất Vương** (nút M2, `ptfix.js`): bóng, tia và quái vẫn đen; cứ 4 tia thì có 1 tia đỏ, và bóng Áp Chế cũng có mắt đỏ cùng hai vòng đỏ như Kiếm Hồn.
@@ -90,7 +90,7 @@ Chạm màn hình "Chạm để vào game" → game vào toàn màn hình và kh
 - Đang thi triển chiêu thì không dùng được chiêu khác. Thái Cực Âm Dương Cửu Cung Trảm đặt dưới chân.
 - Nút "?" mở hướng dẫn chơi (đã cập nhật đầy đủ các mục trên trong tab Điều khiển và Mẹo).
 - Phượng Tước: màu chiêu đổi theo skin (đỏ/vàng, vàng/trắng, Nhất Vương Tài Quyết Lục đen/đỏ).
-- Phượng Tước Đệ Ngũ Thức: nhân vật xoay theo hướng kiếm đang xoay.
+- Phượng Tước Đệ Ngũ Thức: nhân vật xoay dọc (lộn vòng) theo thanh kiếm đang xoay.
 - Phượng Tước Đệ Tam Thức: phi kiếm chiếm 60% tổng sát thương của chiêu.
 - Kiếm Hồn Nhất Vương có mắt và vòng hào quang đỏ; Áp Chế Nhất Vương có tia, mắt và vòng đỏ xen trong màu đen.
 
