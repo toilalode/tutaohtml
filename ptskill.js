@@ -1,7 +1,8 @@
 'use strict';
-// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (xoay kiếm trước mắt + nổ), Đệ Tam (xoay chém sau lưng, KHÔNG quay người, phi kiếm, không nổ), Đệ Ngũ (bánh xe dọc, mỗi 0,4s chém 1 lần, không nổ). Nạp sau ptfix.js.
+// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (xoay kiếm trước mắt + nổ), Đệ Tam (xoay chém sau lưng, KHÔNG quay người, phi kiếm, không nổ), Đệ Ngũ (bánh xe dọc quanh người, mỗi 0,4s chém 1 lần, không nổ). Nạp sau ptfix.js.
 (function(){
 const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,hyp=Math.hypot,rnd=Math.random;
+const NPHP=1e14; // máu Nguyên Phượng: 100.000 tỷ
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
@@ -15,6 +16,8 @@ async function fling(col,sc,x0,y0,z0,x1,y1,z1,n){const s=mkSword(col,sc);try{for
 let spinOn=false,spinA=0,hid=false,flipOn=false,flipA=0,flipY=0;
 {const rd=ren.render.bind(ren);ren.render=function(s,c){
  try{if(spinOn)player.rotation.y=spinA;if(flipOn){player.rotation.order='YXZ';player.rotation.set(flipA,flipY,0);pb.position.set(0,1.1*(Math.cos(flipA)-1),-1.1*Math.sin(flipA))}if(hid){PA.sb.visible=false;PA.sg.visible=false;PA.aR.rotation.x=PA.aL.rotation.x=-1.5}}catch(e){}
+ // Nguyên Phượng (nhận ra bằng cánh 3D): nâng máu lên 100.000 tỷ ngay khi vừa xuất hiện
+ try{for(const x of enemies)if(!x.bigNP&&x.hp>0&&x.m&&x.m.userData&&x.m.userData.wings){x.bigNP=1;x.max=x.hp=x.lh=NPHP}}catch(e){}
  return rd(s,c)}}
 const reset=()=>{spinOn=false;if(flipOn){flipOn=false;try{player.rotation.order='XYZ';player.rotation.x=0;pb.position.set(0,0,0)}catch(e){}}if(hid){hid=false;try{PA.sb.visible=true;PA.sg.visible=true}catch(e){}}};
 
@@ -76,17 +79,17 @@ async function s3(){
   for(let i=0;i<10;i++){for(let f=0;f<4;f++){place(reach[f]);if(f==2){const[ex,ez]=live();FXK('slash',{x:ex+rnd()*2-1,z:ez+rnd()*2-1,r:6,col:i&1?RED:WHT});hit(ex,ez,12,8e12*3,.2);shake=Math.max(shake,5)}await wait(1)}}
  } finally{reset();drop(R.g);drop(sw0);if(sw)drop(sw)}}
 
-// Đệ Ngũ: bánh xe dọc (xoay trong mặt phẳng đứng, trục ngang) quanh người và quanh quái; mỗi 0,4 giây chém 1 nhát — KHÔNG nổ
+// Đệ Ngũ: bánh xe dọc (xoay trong mặt phẳng đứng, trục ngang) quanh người; mỗi 0,4 giây chém 1 nhát — KHÔNG nổ
 async function s5(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Đệ Ngũ Thức: Dung Vạn Hắc — Truyền Tân Hỏa!',1800);
- const A=ringV(3.6),B=ringV(6.5),sw=mkSword(RED,.5);hid=true;
+ const A=ringV(3.6),sw=mkSword(RED,.5);hid=true;
  const wheel=(R,cx,cy,cz,fx,fz,dir)=>{R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz)+Math.PI/2;R.arcs.forEach((m,i)=>{m.rotation.z+=dir*(i&1?-1:1)*.5})};
  try{
   let n=0,nx=performance.now()+400;
   for(let f=0;n<15;f++){
    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l;
-   wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);wheel(B,ex,2.6,ez,fx,fz,1);
+   wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);
    orbit(sw,p.x,p.y+1.7,p.z,-fz,fx,3.6,-f*.5);
    flipY=Math.atan2(fx,fz);flipA=f*.5;flipOn=true;
    if(f%6==0)hit(ex,ez,10,1e12*3,.2);
@@ -97,7 +100,7 @@ async function s5(){
     for(let k=0;k<3;k++)FXK('slash',{x:ex+rnd()*3-1.5,z:ez+rnd()*3-1.5,r:16,col:k&1?GLD:RED});
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
- }finally{reset();drop(A.g);drop(B.g);drop(sw)}}
+ }finally{reset();drop(A.g);drop(sw)}}
 
 async function exec(f,fly){P.busy++;P.lk++;if(fly){P.flyN++;P.flyH=fly}try{await f()}catch(e){console.error(e)}finally{reset();P.busy--;P.lk--;if(fly){P.flyN--;P.fly=Math.max(P.fly,25)}}}
 const baseRun=run;
@@ -109,4 +112,7 @@ const baseAtk=atk;
 atk=function(){m1p=P.sw==4;try{baseAtk()}finally{m1p=false}};
 const baseMul=dmgMul;
 dmgMul=function(){const m=baseMul();return m1p?m*M1P/M1BASE:m};
+
+// Cập nhật hướng dẫn: Nguyên Phượng 100.000 tỷ máu
+try{GUIDE['Phượng Tước']=GUIDE['Phượng Tước'].replace('100 tỷ máu','100.000 tỷ máu')}catch(e){}
 })();
