@@ -1,0 +1,12 @@
+{
+  "name": "tong-hop-kiem-phap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tổng Hợp Kiếm Pháp 3D - game three.js chạy offline",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
