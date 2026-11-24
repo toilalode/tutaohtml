@@ -96,7 +96,7 @@ async function s5(){
    const t=performance.now();
    if(t>=nx){
     nx=t+400;n++;
-    if(n==1){say('Truyền Tân Hỏa — Trảm!',700);flash(RED)}
+    if(n==1)flash(RED);
     for(let k=0;k<3;k++)FXK('slash',{x:ex+rnd()*3-1.5,z:ez+rnd()*3-1.5,r:16,col:k&1?GLD:RED});
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
