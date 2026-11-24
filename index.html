@@ -13,6 +13,10 @@ window.addEventListener('unhandledrejection',function(e){show('LỖI PROMISE: '+
 (function(){var d=document.documentElement;function f(){d.style.setProperty('--ih',window.innerHeight+'px')}f();addEventListener('resize',f);addEventListener('orientationchange',function(){setTimeout(f,350)})})();
 </script>
 <script>
+// Trang web (index) KHÔNG tự vào toàn màn hình khi chạm "vào game". Chế độ toàn màn hình của bản cài PWA vẫn do manifest.json ("display") quyết định, không đụng tới.
+(function(){var n=function(){return Promise.resolve()};['requestFullscreen','webkitRequestFullscreen','webkitRequestFullScreen','mozRequestFullScreen','msRequestFullscreen'].forEach(function(k){try{if(Element.prototype[k])Element.prototype[k]=n}catch(e){}})})();
+</script>
+<script>
 // Chống thu phóng khi bấm liên tục / chụm 2 ngón (không đụng tới pointer/touch của joystick và nút chiêu)
 (function(){var last=0;
 document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<350&&e.target.closest&&!e.target.closest('#popup,#guide,#tp,#kp,#start'))e.preventDefault();last=n},{passive:false});
@@ -28,7 +32,7 @@ document.addEventListener('touchmove',function(e){if(e.scale&&e.scale!==1)e.prev
   <div class="t y">KILLS: <span id="killT">0</span></div></div>
  <div id="hudR"><div class="badge g" id="bStyle">KIẾM PHÁP</div><div class="badge o" id="bSword">KIẾM</div><div id="buffs"></div></div>
 </div>
-<div id="start"><h1>TỔNG HỢP KIẾM PHÁP</h1><p>Chạm để vào game<br><small>(toàn màn hình + tự xoay ngang)</small></p></div>
+<div id="start"><h1>TỔNG HỢP KIẾM PHÁP</h1><p>Chạm để vào game<br><small>(tự xoay ngang)</small></p></div>
 <div id="flash"></div><div id="cb1" class="cb"></div><div id="cb2" class="cb"></div><div id="banner"></div><div id="toast"></div>
 <div id="popup"><div id="ptitle"></div><div id="popts"></div></div>
 <div id="guide"><div id="gtabs"></div><div id="gbody"></div><button id="gclose">Đóng</button></div>
