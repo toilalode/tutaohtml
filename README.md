@@ -1,5 +1,5 @@
 # Tổng Hợp Kiếm Pháp 3D — hướng dẫn chạy (không màn hình đen)
-Game đã gói sẵn three.js trong `lib/` nên KHÔNG cần Internet.
+Game đã gói sẵn three.js trong `lib/` nên chạy được không cần Internet (trừ AI boss và chế độ `?debug`).
 
 ## Cấu trúc file
 - `index.html` — khung giao diện (HUD, nút, popup...), nạp các file dưới theo đúng thứ tự.
@@ -8,7 +8,15 @@ Game đã gói sẵn three.js trong `lib/` nên KHÔNG cần Internet.
 - `game.js` — lõi game: nhân vật, quái, chiêu thức, điều khiển, hướng dẫn trong game.
 - `zoom.js` — thu phóng camera, Tâm (shift-lock), sát thương liên tục trong Lãnh Địa, nút Tấn công ở map Test, bố cục hai cột nút; nạp **sau** `game.js`.
 - `lib/three.min.js` — thư viện 3D, chạy offline.
-- `sw.js` — service worker, cho phép cài game như app và chạy không mạng.
+- `sw.js` — service worker, cho phép cài game như app và chạy không mạng. Khi thêm file `.js`/`.css` mới phải thêm vào danh sách `CORE` và tăng `V`.
+- `hp.js`, `cutscene.js`, `dungeon.js` — hiển thị/hệ số HP, cắt cảnh Bát Quái và phó bản Chung Yên Hoàng Đế.
+- `taicuc.js`, `luongcuc.js` — chiêu Thái Cực và Lưỡng Cực Vô Lượng.
+- `chungyen-rtyu.js` — buff R T Y U của Chung Yên Kiếm Pháp.
+- `bossai.js` — AI chọn chiêu cho boss Chung Yên Hoàng Đế, gọi một API bên ngoài nên cần mạng (không có mạng thì boss chọn chiêu ngẫu nhiên).
+- `phuongtuoc.js`, `ptpre.js`, `ptfix.js`, `ptskill.js` — phó bản Phượng Tước Kiếm.
+- `nomain.js`, `fix.js` — bỏ map chính (vào thẳng Test) và vá hiển thị; nạp sau cùng.
+- `gl.js` — thiết lập WebGL dự phòng; thêm `?debug` vào URL sẽ tải Eruda từ CDN (cần mạng).
+- Thứ tự thẻ `<script>` trong `index.html` quyết định file nào ghi đè hàm của file nào, đừng đổi thứ tự.
 
 ## Cách 1 : Github Pages
 - Vào web tại :
@@ -17,13 +25,13 @@ Game đã gói sẵn three.js trong `lib/` nên KHÔNG cần Internet.
 
 ## Cách 2 : Localhost
 - Tải pkg install nodejs
-- Chạy lệnh gitclone https://github.com/toilalode/tutaohtml.git
-- Chạy tiếp npm install
-- Cuối cùng thì npm start PORT=8000
+- Chạy lệnh gitclone https://github.com/toilalode/tutaohtml.git
+- Chạy tiếp npm install
+- Cuối cùng thì npm start PORT=8000
 
 ## Nếu màn hình đen
 - Phải mở `index.html` TRONG thư mục có `lib/three.min.js` (đừng tách file ra).
-- Lệnh server phải chạy ngay trong thư mục `thienmenh` (có file index.html).
+- Lệnh server phải chạy ngay trong thư mục gốc của repo (nơi có file index.html).
 - Bật WebGL / tăng tốc phần cứng trong trình duyệt. Thử Chrome mới nhất.
 - Ctrl+Shift+R để xoá cache; xem Console (F12) để biết file nào lỗi 404.
 - Trang hiện dòng chữ đỏ báo thiếu three.min.js nếu đường dẫn sai.
@@ -55,7 +63,7 @@ Tứ Thánh: chọn kiếm pháp Tứ Tượng (phím 1) — Z/X Thanh Long, C B
 Thiên Mệnh Kiếm Pháp, phím G: mở Lãnh Địa, quái trong vực đứng im. Suốt lúc Lãnh Địa mở, mọi quái trong vực chịu sát thương liên tục mỗi 0,2 giây (không phụ thuộc Tâm hay mục tiêu). Ngay khi Lãnh Địa đóng (sau nhát chém cuối), toàn bộ quái trong vực chịu thêm đòn Vỡ Nát rất lớn kèm chớp vàng. Đổi map hoặc hồi sinh giữa chừng thì quái mới không dính đòn của Lãnh Địa cũ.
 
 ### Map Test
-Nút 🗺 Map (dưới Hướng dẫn): chọn Map chính hoặc map Test. Map Test có 1 quái bù nhìn, ô sửa máu hiện tại/tối đa (nút Đặt, Đầy), và thanh máu trên đầu quái. Sát thương vừa gây hiện giữa màn hình trong 3,5 giây và cộng dồn.
+Nút 🗺 Map (dưới Hướng dẫn): chọn map Test hoặc một trong hai phó bản (Chung Yên Hoàng Đế, Phượng Tước Kiếm). Game khởi động vào map Test. Map Test có 1 quái bù nhìn, ô sửa máu hiện tại/tối đa (nút Đặt, Đầy), và thanh máu trên đầu quái. Sát thương vừa gây hiện giữa màn hình trong 3,5 giây và cộng dồn.
 Cạnh nút **Đầy** có thêm nút **Tấn công**: bấm để bật thì quái bù nhìn đứng yên tại chỗ (không di chuyển, không bị đánh lùi) và đánh bạn nếu bạn đứng trong tầm; bấm lại để quái trở về trạng thái choáng như mặc định.
 
 ## Màn hình ngang
