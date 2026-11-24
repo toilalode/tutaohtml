@@ -13,7 +13,7 @@ Game đã gói sẵn three.js trong `lib/` nên chạy được không cần Int
 - `taicuc.js`, `luongcuc.js` — chiêu Thái Cực và Lưỡng Cực Vô Lượng.
 - `chungyen-rtyu.js` — buff R T Y U của Chung Yên Kiếm Pháp.
 - `bossai.js` — AI chọn chiêu cho boss Chung Yên Hoàng Đế, gọi một API bên ngoài nên cần mạng (không có mạng thì boss chọn chiêu ngẫu nhiên).
-- `phuongtuoc.js`, `ptpre.js`, `ptfix.js`, `ptskill.js` — phó bản Phượng Tước Kiếm.
+- `phuongtuoc.js`, `ptpre.js`, `ptfix.js`, `ptskill.js`, `ptpalette.js` — phó bản Phượng Tước Kiếm. `ptskill.js` vá Đệ Nhị/Tam/Ngũ; `ptpalette.js` đổi màu chiêu theo skin.
 - `nomain.js`, `fix.js` — bỏ map chính (vào thẳng Test) và vá hiển thị; nạp sau cùng.
 - `gl.js` — thiết lập WebGL dự phòng; thêm `?debug` vào URL sẽ tải Eruda từ CDN (cần mạng).
 - Thứ tự thẻ `<script>` trong `index.html` quyết định file nào ghi đè hàm của file nào, đừng đổi thứ tự.
@@ -62,6 +62,11 @@ Tứ Thánh: chọn kiếm pháp Tứ Tượng (phím 1) — Z/X Thanh Long, C B
 ### Lãnh Địa (Nhất Trảm Độc Tôn)
 Thiên Mệnh Kiếm Pháp, phím G: mở Lãnh Địa, quái trong vực đứng im. Suốt lúc Lãnh Địa mở, mọi quái trong vực chịu sát thương liên tục mỗi 0,2 giây (không phụ thuộc Tâm hay mục tiêu). Ngay khi Lãnh Địa đóng (sau nhát chém cuối), toàn bộ quái trong vực chịu thêm đòn Vỡ Nát rất lớn kèm chớp vàng. Đổi map hoặc hồi sinh giữa chừng thì quái mới không dính đòn của Lãnh Địa cũ.
 
+### Phượng Tước Kiếm Pháp & Nhất Vương Tài Quyết Lục
+- **Màu chiêu theo skin** (`ptpalette.js`): skin Đỏ thì chiêu chủ yếu đỏ, thỉnh thoảng có vàng; skin Vàng Trắng thì chủ yếu vàng, thỉnh thoảng có trắng; cả hai chiêu Nhất Vương Tài Quyết Lục (Khúc Chung Trảm, Chúng Sinh Bình Giới Điệu) ở cả hai skin đều chủ yếu đen, thỉnh thoảng có đỏ. Cứ 5 hiệu ứng thì có 1 hiệu ứng mang màu phụ (hằng `ACCENT_EVERY`).
+- **Đệ Ngũ Thức** (`ptskill.js`): hai bánh xe kiếm dọc quay quanh người và quanh quái, mỗi 0,4 giây chém 1 nhát, không nổ. Nhân vật xoay tại chỗ theo đúng chiều quay của thanh kiếm đang bay (mặt hướng về phía kiếm), kết thúc chiêu thì trả lại hướng bình thường.
+- **Đệ Tam Thức** (`ptskill.js`): xoay chém sau lưng, phi kiếm xuyên quái, rồi đâm liên hoàn, không nổ. Nhát phi kiếm chiếm **60%** tổng sát thương gốc của chiêu; 40% còn lại chia cho đoạn xoay chém (1,44e14) và đoạn đâm liên hoàn (2,4e14).
+
 ### Map Test
 Nút 🗺 Map (dưới Hướng dẫn): chọn map Test hoặc một trong hai phó bản (Chung Yên Hoàng Đế, Phượng Tước Kiếm). Game khởi động vào map Test. Map Test có 1 quái bù nhìn, ô sửa máu hiện tại/tối đa (nút Đặt, Đầy), và thanh máu trên đầu quái. Sát thương vừa gây hiện giữa màn hình trong 3,5 giây và cộng dồn.
 Cạnh nút **Đầy** có thêm nút **Tấn công**: bấm để bật thì quái bù nhìn đứng yên tại chỗ (không di chuyển, không bị đánh lùi) và đánh bạn nếu bạn đứng trong tầm; bấm lại để quái trở về trạng thái choáng như mặc định.
@@ -82,5 +87,8 @@ Chạm màn hình "Chạm để vào game" → game vào toàn màn hình và kh
 - R T Y U chỉ hiện với Thiên Mệnh Kiếm + Cửu Ngũ/Thiên Mệnh Kiếm Pháp; đổi sang kiếm/kiếm pháp khác thì tự tắt.
 - Đang thi triển chiêu thì không dùng được chiêu khác. Thái Cực Âm Dương Cửu Cung Trảm đặt dưới chân.
 - Nút "?" mở hướng dẫn chơi (đã cập nhật đầy đủ các mục trên trong tab Điều khiển và Mẹo).
+- Phượng Tước: màu chiêu đổi theo skin (đỏ/vàng, vàng/trắng, Nhất Vương Tài Quyết Lục đen/đỏ).
+- Phượng Tước Đệ Ngũ Thức: nhân vật xoay theo hướng kiếm đang xoay.
+- Phượng Tước Đệ Tam Thức: phi kiếm chiếm 60% tổng sát thương của chiêu.
 
 Mọi chiêu của mọi kiếm đều là AOE (bán kính đánh tối thiểu 12).
