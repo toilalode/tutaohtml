@@ -15,4 +15,10 @@
 /* === NÚT NÓI CHUYỆN: giữa màn hình, chỉ hiện khi đứng gần NPC (fix.js ẩn hẳn khi xa) === */
 #dgTalk{left:50%;right:auto;top:auto;bottom:100px;transform:translateX(-50%)}
 
+/* === CỘT NÚT TRÁI (1 2 3 ? Map) / PHẢI (Q ⤒ E M2) ========================
+   zoom.js (hàm lay) tự tính khoảng cách giữa các nút bằng "gap" để cột vừa khít giữa HUD và hàng nút dưới.
+   style.css còn margin-top:6px cho mỗi nút => khoảng cách bị cộng đôi, cột cao hơn dự tính và đè lên HUD.
+   Bỏ margin để chỉ còn gap (đừng xoá). */
+.col>*+*{margin-top:0}
+
 /* === THÊM CSS CỦA BẠN TỪ DÒNG NÀY XUỐNG ================================== */
