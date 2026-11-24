@@ -12,11 +12,11 @@ const posOf=(fe,fx,fz)=>()=>fe&&fe.hp>0?[fe.m.position.x,fe.m.position.z]:[fx,fz
 async function fling(col,sc,x0,y0,z0,x1,y1,z1,n){const s=mkSword(col,sc);try{for(let f=0;f<=n;f++){const k=f/n,e=k*k;s.position.set(x0+(x1-x0)*e,y0+(y1-y0)*e,z0+(z1-z0)*e);s.lookAt(x1,y1,z1);await wait(1)}}finally{drop(s)}}
 
 // Xoay người + ẩn kiếm thật (khi kiếm bay/xoay) — áp ngay trước khi vẽ
-let spinOn=false,spinA=0,hid=false;
+let spinOn=false,spinA=0,hid=false,flipOn=false,flipA=0,flipY=0;
 {const rd=ren.render.bind(ren);ren.render=function(s,c){
- try{if(spinOn)player.rotation.y=spinA;if(hid){PA.sb.visible=false;PA.sg.visible=false;PA.aR.rotation.x=PA.aL.rotation.x=-1.5}}catch(e){}
+ try{if(spinOn)player.rotation.y=spinA;if(flipOn){player.rotation.order='YXZ';player.rotation.set(flipA,flipY,0);pb.position.set(0,1.1*(Math.cos(flipA)-1),-1.1*Math.sin(flipA))}if(hid){PA.sb.visible=false;PA.sg.visible=false;PA.aR.rotation.x=PA.aL.rotation.x=-1.5}}catch(e){}
  return rd(s,c)}}
-const reset=()=>{spinOn=false;if(hid){hid=false;try{PA.sb.visible=true;PA.sg.visible=true}catch(e){}}};
+const reset=()=>{spinOn=false;if(flipOn){flipOn=false;try{player.rotation.order='XYZ';player.rotation.x=0;pb.position.set(0,0,0)}catch(e){}}if(hid){hid=false;try{PA.sb.visible=true;PA.sg.visible=true}catch(e){}}};
 
 // Vòng tròn đứng (nhìn từ phía lưng nhân vật thấy là một vòng tròn), 3 cung quay ngược chiều nhau
 function ringV(r){
@@ -88,7 +88,7 @@ async function s5(){
    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l;
    wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);wheel(B,ex,2.6,ez,fx,fz,1);
    orbit(sw,p.x,p.y+1.7,p.z,-fz,fx,3.6,-f*.5);
-   spinA=Math.atan2(fx,fz)-f*.5;spinOn=true;
+   flipY=Math.atan2(fx,fz);flipA=f*.5;flipOn=true;
    if(f%6==0)hit(ex,ez,10,1e12*3,.2);
    const t=performance.now();
    if(t>=nx){
