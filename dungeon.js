@@ -47,8 +47,6 @@ function applyPose(){
 {const rd=ren.render.bind(ren);ren.render=function(s,c){applyPose();return rd(s,c)}}
 
 const mG=mat(GOLD,.5),mR=mat(RED,.5);
-// Kiếm pháp khác (không phải Chung Yên) + kiếm Dung Hợp: Kiếm Hồn (R), bóng Áp Chế và Xích Giáp (Y) nửa vàng nửa đỏ.
-// Chung Yên Kiếm Pháp: Kiếm Hồn và bóng Áp Chế đỏ hoàn toàn.
 function setTone(on,kh,red){[[S.kh,on||red],[S.gap,on||red],[S.xich,on]].forEach(([g,o])=>{let i=0;g.traverse(c=>{if(!c.isMesh)return;if(!c.userData.om)c.userData.om=c.material;c.material=o?(red?mR:(i++%2?mR:mG)):c.userData.om})});S.td.material.color.setHex(on?0xff7a1a:GOLD)}
 
 function owned(){
@@ -238,7 +236,7 @@ function buildWorld(){
  return w}
 function npc(label,shirt,x,z,fn){
  const g=roblox({skin:0xf0d4b0,shirt,pants:0x1a1020,sword:1.4});g.scale.setScalar(1.7);g.position.set(x,0,z);
- const c=document.createElement('canvas');c.width=512;c.height=96;const t=c.getContext('2d');t.font='bold 40px "Courier New",monospace';t.textAlign='center';t.lineWidth=6;t.strokeStyle='#000';t.strokeText(label,256,60);t.fillStyle='#ffd646';t.fillText(label,256,60);
+ const c=document.createElement('canvas');c.width=512;c.height=96;const t=c.getContext('2d');t.font='bold 40px \"Courier New\",monospace';t.textAlign='center';t.lineWidth=6;t.strokeStyle='#000';t.strokeText(label,256,60);t.fillStyle='#ffd646';t.fillText(label,256,60);
  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false,fog:false}));sp.scale.set(5.2,.98,1);sp.position.y=3.5;sp.renderOrder=20;g.add(sp);scene.add(g);
  return{g,sp,fn,x,z}}
 function dgEnter(){
