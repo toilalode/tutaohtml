@@ -1,21 +1,11 @@
-/* fix.css - vá lỗi hiển thị (iOS). Nạp SAU style.css và dungeon.css.
-   QUY TẮC iOS: mọi phần tử UI position:fixed nằm ĐÈ LÊN canvas 3D phải có will-change:transform (ép thành lớp riêng).
-   Thiếu là bị canvas che mất. Tuyệt đối KHÔNG tắt will-change của HUD/nút. */
-
-/* 0) Các phần tử UI do JS tạo (thanh tích luỹ, nút Nói chuyện, thanh boss, nút 3 AI, bảng AI, chip MÁU QUÁI) cần lớp riêng */
 #chargeBar,#dgBoss,.dgBtn,#aiBtn,#aiP,#eh,#tpTog{will-change:transform}
 
-/* 1) Thanh máu quái Test (#eh) + boss phó bản (#dgBossBar):
-      phần máu vẽ bằng background CỦA CHÍNH thanh (biến --p do fix.js cập nhật),
-      không còn phần tử fill riêng => chữ luôn nằm trên, không bị iOS vẽ đè. */
 #eh,#dgBossBar{background-color:rgba(10,0,15,.85);background-repeat:no-repeat;background-size:var(--p,100%) 100%}
 #eh{background-image:linear-gradient(90deg,#d00040,#ff6a00)}
 #dgBossBar{background-image:linear-gradient(90deg,#ffb000,#ff2a2a)}
 #ehF,#dgBossF{display:none!important}
 #ehT,#dgBossT{position:relative;z-index:1}
 
-/* 2) Panel MÁU QUÁI (map Test): THU GỌN mặc định để không che tầm nhìn.
-      Chỉ hiện chip nhỏ "⚙ MÁU QUÁI" ở góc trái; bấm chip để mở/đóng panel. */
 #tp{top:108px;left:70px;transform:none;width:max-content;max-width:calc(100% - 78px);flex-wrap:nowrap;white-space:nowrap}
 #tp>*{flex:0 0 auto}
 #tp:not(.tpOpen){visibility:hidden;pointer-events:none}
@@ -24,26 +14,20 @@
 #tp button{white-space:nowrap}
 #kp{top:184px}
 
-/* 3) Thanh máu boss phó bản: đưa lên sát mép trên, nhỏ gọn, để không che tầm nhìn giữa màn hình */
 #dgBoss{top:2px;width:min(34%,300px)}
 #dgBossN{font-size:10px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #dgBossBar{height:16px}
 #dgBossT{font-size:10px}
 
-/* 4) Nút Nói chuyện: góc dưới bên phải, phía trên hàng nút kỹ năng, tránh nút tâm và nút zoom */
 .dgBtn{z-index:300;padding:10px 18px;font-size:14px;white-space:nowrap;box-shadow:0 0 10px rgba(255,214,70,.7);pointer-events:auto}
 #dgTalk{left:auto;right:76px;top:auto;bottom:62px;transform:none}
 #dgTalk.far{opacity:.55}
 
-/* 5) Thanh tích luỹ (giữ N): fix.js dựng #chargeBar, ẩn thanh gốc.
-      Màu âm dương hoà hợp: trắng - đen - trắng. Phần tích luỹ vẽ bằng background của thanh (--p) để chữ luôn hiện. */
 #charge{display:none!important}
 #chargeBar{position:fixed;display:none;left:50%;bottom:88px;width:min(70%,420px);height:22px;transform:translateX(-50%);
  background-color:rgba(0,0,0,.72);background-image:linear-gradient(90deg,#fff 0%,#cfcfcf 22%,#111 50%,#cfcfcf 78%,#fff 100%);background-repeat:no-repeat;background-size:var(--p,0%) 100%;
  border:2px solid #fff;border-radius:6px;overflow:hidden;z-index:400;pointer-events:none;box-shadow:0 0 8px #fff,0 0 6px #000;
  font:bold 12px/18px 'Courier New',monospace;text-align:center;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap}
 
-/* 6) Nút "3 · AI" (bossai.js): mặc định bị nút "1 Kiếm pháp" (z-index 200) che mất.
-      Đẩy sang phải cột nút trái + lên lớp trên cùng. Khi người chơi đã kéo nút đi nơi khác (có lưu vị trí) thì không dịch nữa. */
 #aiBtn{z-index:350!important;pointer-events:auto}
 #aiBtn.aiDef{translate:66px 16px}

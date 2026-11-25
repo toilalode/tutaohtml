@@ -4,7 +4,6 @@ const SCALE=1000,baseHurt=hurt,el=$('hpT');
 hurt=function(d){const h=P.hp;baseHurt(d);if(P.hp<h)P.hp=h-(h-P.hp)/SCALE};
 (function tick(){requestAnimationFrame(tick);const t=String(Math.max(0,Math.round(P.hp*SCALE)));if(el.textContent!==t)el.textContent=t})();
 })();
-// Máu quái bù nhìn (Map Test): nâng giới hạn từ 1e25 lên 1e99 (game.js đang khoá ở 25 chữ số)
 (function(){
 const DIG=100,MAXHP=1e99;
 tpOpen=function(){tpEdit=true;{const e=enemies.find(x=>x.dummy);tpBuf=!e?'':e.inf?'∞':BigInt(Math.floor(e.max)).toString().slice(0,DIG)}$('kp').style.display='grid';$('tpM').style.borderColor='#fc0'};

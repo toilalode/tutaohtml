@@ -1,24 +1,7 @@
-/* custom.css - FILE CSS RIÊNG ĐỂ THÊM CSS MỚI. Nạp CUỐI CÙNG (sau style.css, dungeon.css, fix.css).
-   Thêm CSS mới vào đây thay vì sửa style.css => không bị ghi đè. */
-
-/* === LOGIC iOS (đừng xoá) ==================================================
-   iOS + body xoay 90° + canvas 3D: phần tử UI muốn nằm TRÊN canvas cần z-index cao và (nếu bị biến mất)
-   thêm will-change:transform để ép nó thành lớp riêng. Đừng tắt will-change hàng loạt.
-   Fill của thanh (HP, tích lực...) nên vẽ bằng background của chính thanh thay vì phần tử con để chữ không bị đè. */
-
-/* === LỚP HIỂN THỊ CHO UI MỚI ============================================
-   Thêm class "ui-top" vào phần tử mới để nó luôn nằm trên HUD/nút game (z-index 350).
-   Menu/popup toàn màn hình dùng "ui-modal" (z-index 950). */
 .ui-top{position:fixed;z-index:350;pointer-events:auto;will-change:transform}
 .ui-modal{position:fixed;z-index:950;pointer-events:auto;will-change:transform}
 
-/* === NÚT NÓI CHUYỆN: giữa màn hình, chỉ hiện khi đứng gần NPC (fix.js ẩn hẳn khi xa) === */
 #dgTalk{left:50%;right:auto;top:auto;bottom:100px;transform:translateX(-50%)}
 
-/* === CỘT NÚT TRÁI (1 2 3 ? Map) / PHẢI (Q ⤒ E M2) ========================
-   zoom.js (hàm lay) tự tính khoảng cách giữa các nút bằng "gap" để cột vừa khít giữa HUD và hàng nút dưới.
-   style.css còn margin-top:6px cho mỗi nút => khoảng cách bị cộng đôi, cột cao hơn dự tính và đè lên HUD.
-   Bỏ margin để chỉ còn gap (đừng xoá). */
 .col>*+*{margin-top:0}
 
-/* === THÊM CSS CỦA BẠN TỪ DÒNG NÀY XUỐNG ================================== */
