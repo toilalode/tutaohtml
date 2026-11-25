@@ -1,8 +1,7 @@
 'use strict';
-// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (tay phải xoay kiếm, tay trái thẳng), Đệ Tam (tay phải xoay phía sau, tay trái thẳng), Đệ Ngũ (bánh xe dọc quanh người), Chung Chương (Nguyên Phượng lao nghiêng xuống), Chúng Sinh Bình Giới Điệu (thế quỳ rút kiếm, bay lên chém, ôm kiếm lao xuống đâm nổ). Nạp sau ptfix.js.
 (function(){
 const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,ORG=0xff8a1a,hyp=Math.hypot,rnd=Math.random;
-const NPHP=1e14; // máu Nguyên Phượng: 100.000 tỷ
+const NPHP=1e14;
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
@@ -12,14 +11,11 @@ const lock=()=>{const p=player.position,F=nearFoe(p.x,p.z);return F&&F.d<60?F.e:
 const posOf=(fe,fx,fz)=>()=>fe&&fe.hp>0?[fe.m.position.x,fe.m.position.z]:[fx,fz];
 async function fling(col,sc,x0,y0,z0,x1,y1,z1,n){const s=mkSword(col,sc);try{for(let f=0;f<=n;f++){const k=f/n,e=k*k;s.position.set(x0+(x1-x0)*e,y0+(y1-y0)*e,z0+(z1-z0)*e);s.lookAt(x1,y1,z1);await wait(1)}}finally{drop(s)}}
 
-// Xoay người + ẩn kiếm thật (khi kiếm bay/xoay) + tư thế tay chân — áp ngay trước khi vẽ
 let spinOn=false,spinA=0,hid=false,flipOn=false,flipA=0,flipY=0,pose=null,drawing=false,kneel=null;
 {const rd=ren.render.bind(ren);ren.render=function(s,c){
  try{if(spinOn)player.rotation.y=spinA;if(flipOn){player.rotation.order='YXZ';player.rotation.set(flipA,flipY,0);pb.position.set(0,1.1*(Math.cos(flipA)-1),-1.1*Math.sin(flipA))}if(hid){PA.sb.visible=false;PA.sg.visible=false;PA.aR.rotation.x=PA.aL.rotation.x=-1.5}if(pose)pose()}catch(e){}
- // Nguyên Phượng (nhận ra bằng cánh 3D): nâng máu lên 100.000 tỷ ngay khi vừa xuất hiện
  try{for(const x of enemies)if(!x.bigNP&&x.hp>0&&x.m&&x.m.userData&&x.m.userData.wings){x.bigNP=1;x.max=x.hp=x.lh=NPHP}}catch(e){}
  return rd(s,c)}}
-// Thế quỳ rút kiếm: chân phải duỗi thẳng ra sau, chân trái gập gối 90° (đùi ngang, cẳng thẳng đứng), người hạ thấp sát đất
 function kneelOn(){
  if(kneel)return;
  const m=new THREE.MeshLambertMaterial({color:0x2e8b3a}),a=new THREE.Mesh(new THREE.BoxGeometry(.36,.36,.72),m),b=new THREE.Mesh(new THREE.BoxGeometry(.36,.54,.36),m);
@@ -28,28 +24,22 @@ function kneelOff(){
  if(!kneel)return;
  const[a,b,m]=kneel;pb.remove(a);pb.remove(b);a.geometry.dispose();b.geometry.dispose();m.dispose();PA.lL.visible=true;pb.position.set(0,0,0);pb.rotation.x=0;kneel=null}
 const kpose=()=>{pb.position.set(0,-.36,0);pb.rotation.x=drawing?.25:.12;PA.lR.rotation.set(1.047,0,0);PA.lL.rotation.set(0,0,0);PA.aL.rotation.set(-.2,0,0);PA.aR.rotation.set(drawing?-1.6:-.15,0,0)};
-// Đệ Nhị: tay phải xoay kiếm phía trước, tay trái đưa ra sau lưng
 const pose2=()=>{const t=performance.now()/1000*12;PA.aL.rotation.set(1.9,0,.25);PA.aR.rotation.set(-2.2+Math.sin(t)*.45,0,Math.cos(t)*.6)};
-// Đệ Tam: tay phải đưa ra sau lưng xoay kiếm, tay trái duỗi thẳng
 const pose3=()=>{const t=performance.now()/1000*12;PA.aL.rotation.set(-1.57,0,0);PA.aR.rotation.set(1.9+Math.sin(t)*.45,0,Math.cos(t)*.6)};
 const reset=()=>{spinOn=false;pose=null;drawing=false;kneelOff();if(flipOn){flipOn=false;try{player.rotation.order='XYZ';player.rotation.x=0;pb.position.set(0,0,0)}catch(e){}}if(hid){hid=false;try{PA.sb.visible=true;PA.sg.visible=true}catch(e){}}};
 
-// Vòng tròn đứng (nhìn từ phía lưng nhân vật thấy là một vòng tròn), 3 cung quay ngược chiều nhau
 function ringV(r){
  const g=new THREE.Group(),arcs=[];
  [[r,4.6,RED,.16],[r*.72,3.6,GLD,.13],[r*1.25,2.8,WHT,.1]].forEach(([rr,arc,c,w],i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(rr,w,6,36,arc),mat(c,.85));m.rotation.z=i*2.1;g.add(m);arcs.push(m)});
  scene.add(g);return{g,arcs}}
-// Vòng tròn nằm ngang (xoay chém quanh người/quái)
 function ringH(r,c1,c2){
  const g=new THREE.Group(),ws=[];
  [[r,4.2,c1,.2],[r*.8,3.2,c2,.16]].forEach(([rr,arc,c,w],i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(rr,w,6,36,arc),mat(c,.85));m.rotation.x=Math.PI/2;const q=new THREE.Group();q.add(m);q.rotation.y=i*3.1;g.add(q);ws.push(q)});
  scene.add(g);return{g,ws}}
-// Kiếm bay vòng theo vòng tròn đứng, mũi kiếm theo tiếp tuyến
 function orbit(sw,cx,cy,cz,fx,fz,r,th){
  const rx=fz,rz=-fx,c=Math.cos(th),s=Math.sin(th),px=cx+rx*r*c,py=cy+r*s,pz=cz+rz*r*c;
  sw.position.set(px,py,pz);sw.lookAt(px-rx*s,py+c,pz-rz*s)}
 
-// Mandala + Nguyên Phượng 3D (dùng cho Chung Chương)
 function mandala(){
  const g=new THREE.Group(),rs=[];
  for(let i=0;i<10;i++){const m=new THREE.Mesh(G('PTR2',()=>new THREE.RingGeometry(.9,1,48)),mat(i&1?0xff9a20:GLD,.85));m.scale.setScalar(5+i*2.4);m.position.z=-i*.12;g.add(m);rs.push([m,i&1?-.02:.015])}
@@ -68,7 +58,6 @@ function phxBig(){
  [5.2,6.4,7.6].forEach((r,i)=>{const m=new THREE.Mesh(G('PBH',()=>new THREE.RingGeometry(.92,1,48)),hl);m.scale.setScalar(r);m.position.set(0,1.8,-.9-i*.1);g.add(m)});
  g.userData={wings};return g}
 
-// Đệ Nhị: tay phải xoay kiếm thành vòng tròn trước mắt, tay trái thẳng; rồi kiếm giáng từ trời và NỔ
 async function s2(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Phượng Tước Kiếm Pháp — Đệ Nhị Thức',1000);await wait(16);say('Di Tinh Đầu — Chuyển Tuế Hoa!',1500);
@@ -85,7 +74,6 @@ async function s2(){
  const[ex,ez]=live();await fling(RED,4,p.x,26,p.z,ex,0,ez,20);
  const[bx,bz]=live();boom(bx,bz,60,GLD,1.5e14)}
 
-// Đệ Tam: tay phải đưa ra sau lưng xoay chém vòng tròn, tay trái thẳng; phi kiếm xuyên quái, đâm liên hoàn — KHÔNG nổ
 async function s3(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Phượng Tước Kiếm Pháp — Đệ Tam Thức',1000);
@@ -112,7 +100,6 @@ async function s3(){
   for(let i=0;i<10;i++){for(let f=0;f<4;f++){place(reach[f]);if(f==2){const[ex,ez]=live();FXK('slash',{x:ex+rnd()*2-1,z:ez+rnd()*2-1,r:6,col:i&1?RED:WHT});hit(ex,ez,12,8e12*3,.2);shake=Math.max(shake,5)}await wait(1)}}
  } finally{reset();drop(R.g);drop(sw0);if(sw)drop(sw)}}
 
-// Đệ Ngũ: bánh xe dọc (xoay trong mặt phẳng đứng, trục ngang) quanh người; mỗi 0,4 giây chém 1 nhát — KHÔNG nổ
 async function s5(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Đệ Ngũ Thức: Dung Vạn Hắc — Truyền Tân Hỏa!',1800);
@@ -135,7 +122,6 @@ async function s5(){
    await wait(1)}
  }finally{reset();drop(A.g);drop(sw)}}
 
-// Chung Chương: mandala sau lưng, kiếm khổng lồ, rồi Nguyên Phượng ở giữa và 8 Thiên Tướng vây quanh bên ngoài lao từ trời xuống
 async function s6(){
  const[tx,tz]=target(),p=player.position;say('Phượng Tước Kiếm Pháp Chung Chương',1200);
  const md=mandala(),dx=Math.sin(yaw),dz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
@@ -160,7 +146,6 @@ async function s6(){
   boom(tx,tz,90,GLD,8e14);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
  finally{drop(sw);drop(md.g);gs.forEach(drop)}}
 
-// Chúng Sinh Bình Giới Điệu (Nhất Vương Tài Quyết Lục): quỳ rút kiếm → bay lên thấp, lao xuống chém mạnh → bay lên cao ôm kiếm, lao xuống đâm quái, nổ cực mạnh
 async function s8(){
  const[tx,tz]=target(),p=player.position;let fl=0,sw=null;
  const near=k=>{p.x+=(tx-p.x)*k;p.z+=(tz-p.z)*k};
@@ -170,14 +155,12 @@ async function s8(){
   await wait(30);
   drawing=true;await wait(6);
   pose=null;drawing=false;kneelOff();
-  // đợt 1: bay lên khá thấp rồi lao xuống chém mạnh
   P.flyN++;fl=1;P.flyH=10;
   for(let f=0;f<14;f++){near(.12);await wait(1)}
   P.flyH=-8;
   for(let f=0;f<40&&p.y>.3;f++){near(.3);await wait(1)}
   FXK('slash',{x:tx,z:tz,r:30,col:WHT});
   boom(tx,tz,60,WHT,3e14);FXK('boom',{x:tx,z:tz,r:40,col:0x111111});await wait(14);
-  // đợt 2: bay lên cao ngay trên đầu quái, ôm kiếm lao xuống đâm
   say('Chúng Sinh Bình Giới Điệu!',1600);
   P.flyH=42;
   for(let f=0;f<20;f++){near(.25);await wait(1)}
@@ -202,8 +185,4 @@ let m1p=false;
 const baseAtk=atk;
 atk=function(){m1p=P.sw==4;try{baseAtk()}finally{m1p=false}};
 const baseMul=dmgMul;
-dmgMul=function(){const m=baseMul();return m1p?m*M1P/M1BASE:m};
-
-// Cập nhật hướng dẫn: Nguyên Phượng 100.000 tỷ máu
-try{GUIDE['Phượng Tước']=GUIDE['Phượng Tước'].replace('100 tỷ máu','100.000 tỷ máu')}catch(e){}
-})();
+dmgDul=undefined;
