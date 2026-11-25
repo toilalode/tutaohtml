@@ -157,24 +157,27 @@ async function s6(){
   boom(tx,tz,90,GLD,8e14);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
  finally{drop(sw);drop(md.g);gs.forEach(drop)}}
 
-// Chúng Sinh Bình Giới Điệu (Nhất Vương Tài Quyết Lục): quỳ rút kiếm sát đất → bay lên chém → phi lên cao rồi ôm kiếm lao xuống đâm, nổ cực mạnh
+// Chúng Sinh Bình Giới Điệu (Nhất Vương Tài Quyết Lục): quỳ rút kiếm → bay lên thấp, lao xuống chém mạnh → bay lên cao ôm kiếm, lao xuống đâm quái, nổ cực mạnh
 async function s8(){
  const[tx,tz]=target(),p=player.position;let fl=0,sw=null;
+ const near=k=>{p.x+=(tx-p.x)*k;p.z+=(tz-p.z)*k};
  say('Nhất Vương Tài Quyết Lục — Tung Hoành Thiên Hạ',2000);
  kneelOn();pose=kpose;drawing=false;
  try{
   await wait(30);
   drawing=true;await wait(6);
-  // đứng dậy, bay lên chém
   pose=null;drawing=false;kneelOff();
-  P.flyN++;fl=1;P.flyH=24;await wait(12);
-  for(let i=0;i<12;i++){FXK('slash',{x:tx+rnd()*20-10,z:tz+rnd()*20-10,r:8,col:i&1?0x111111:WHT});await wait(1)}
-  boom(tx,tz,45,WHT,2e14);await wait(14);
-  // phi lên cao ngay trên đầu quái
+  // đợt 1: bay lên khá thấp rồi lao xuống chém mạnh
+  P.flyN++;fl=1;P.flyH=10;
+  for(let f=0;f<14;f++){near(.12);await wait(1)}
+  P.flyH=-8;
+  for(let f=0;f<40&&p.y>.3;f++){near(.3);await wait(1)}
+  FXK('slash',{x:tx,z:tz,r:30,col:WHT});
+  boom(tx,tz,60,WHT,3e14);FXK('boom',{x:tx,z:tz,r:40,col:0x111111});await wait(14);
+  // đợt 2: bay lên cao ngay trên đầu quái, ôm kiếm lao xuống đâm
   say('Chúng Sinh Bình Giới Điệu!',1600);
   P.flyH=42;
-  for(let f=0;f<16;f++){p.x+=(tx-p.x)*.25;p.z+=(tz-p.z)*.25;await wait(1)}
-  // ôm kiếm lao xuống đâm
+  for(let f=0;f<20;f++){near(.25);await wait(1)}
   sw=mkSword(WHT,.7);hid=true;
   pose=()=>{PA.aR.rotation.set(-1.2,0,-.45);PA.aL.rotation.set(-1.2,0,.45)};
   P.flyH=-8;
@@ -183,6 +186,7 @@ async function s8(){
    sw.position.set(p.x+fx,p.y+1.5,p.z+fz);sw.lookAt(p.x+fx,p.y-20,p.z+fz);
    await wait(1)}
   P.flyH=0;
+  sw.position.set(tx,1,tz);
   boom(tx,tz,130,WHT,5e14);FXK('boom',{x:tx,z:tz,r:80,col:0x111111});await wait(12)}
  finally{reset();if(sw)drop(sw);if(fl){P.flyH=0;P.flyN--;P.fly=Math.max(P.fly,25)}}}
 
