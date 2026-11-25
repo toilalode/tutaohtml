@@ -135,7 +135,7 @@ async function s5(){
    await wait(1)}
  }finally{reset();drop(A.g);drop(sw)}}
 
-// Chung Chương: mandala sau lưng, kiếm khổng lồ, rồi 7 Nguyên Phượng lao NGHIÊNG từ trời xuống
+// Chung Chương: mandala sau lưng, kiếm khổng lồ, rồi Nguyên Phượng ở giữa và 8 Thiên Tướng vây quanh bên ngoài lao từ trời xuống
 async function s6(){
  const[tx,tz]=target(),p=player.position;say('Phượng Tước Kiếm Pháp Chung Chương',1200);
  const md=mandala(),dx=Math.sin(yaw),dz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
@@ -146,12 +146,15 @@ async function s6(){
   say('Phụng Tước Bát Điểu, Chung Chương!',2000);FXK('ring',{r:20,life:40,col:GLD});
   for(let f=0;f<44;f++){const cx=p.x+dx*1.6,cy=p.y+2.3,cz=p.z+dz*1.6;sw.position.set(cx-rx*3,cy,cz-rz*3);sw.lookAt(cx+rx*10,cy,cz+rz*10);if(f%11==0)FXK('ring',{r:8+f/3,life:24,col:f&1?ORG:GLD});upd();await wait(1)}
   for(let f=0;f<18;f++){const k=(f+1)/18;sw.position.set(p.x+dx*1.6,p.y+2.3+k*2,p.z+dz*1.6);sw.lookAt(tx,0,tz);upd();await wait(1)}
-  say('Nguyên Phượng Thiên Giáng — Vạn Quái Câu Tổn!',2000);
-  const st=[];
-  for(let i=0;i<7;i++){const g=phxBig();g.scale.setScalar(i==6?3.4:2.4);scene.add(g);gs.push(g);const a=i/7*6.283;st.push({sx:tx+Math.cos(a)*45,sz:tz+Math.sin(a)*45,ex:tx+Math.cos(a)*5,ez:tz+Math.sin(a)*5})}
+  say('Nguyên Phượng Thiên Giáng — Bát Đại Thiên Tướng!',2000);
+  const FC=[0xffd646,0xff7a1a,0xe8e8ff,0xff2a2a,0x303040,0x8a2be2,0x2ecc71,0x3aa0ff];
+  const pg=phxBig(),ps={sx:tx-dx*25,sz:tz-dz*25};pg.scale.setScalar(4.2);scene.add(pg);gs.push(pg);
+  const ring=[];
+  for(let i=0;i<8;i++){const g=roblox({angry:1,skin:0xe8c8a0,shirt:FC[i],pants:0x201018,sword:2});g.scale.setScalar(3);scene.add(g);gs.push(g);const a=i/8*6.283;ring.push({sx:tx+Math.cos(a)*45,sz:tz+Math.sin(a)*45,ex:tx+Math.cos(a)*18,ez:tz+Math.sin(a)*18})}
   for(let f=0;f<30;f++){
    const k=f/29,e=k*k;
-   gs.forEach((g,i)=>{const s=st[i];g.position.set(s.sx+(s.ex-s.sx)*e,70*(1-e)+2,s.sz+(s.ez-s.sz)*e);g.lookAt(s.ex,0,s.ez);g.rotateZ(i&1?.45:-.45);g.userData.wings.forEach(([w,sd])=>{w.rotation.y=sd*Math.sin(f*.6)*.3})});
+   pg.position.set(ps.sx+(tx-ps.sx)*e,70*(1-e)+2,ps.sz+(tz-ps.sz)*e);pg.lookAt(tx,0,tz);pg.userData.wings.forEach(([w,sd])=>{w.rotation.y=sd*Math.sin(f*.6)*.3});
+   ring.forEach((r,i)=>{const g=gs[i+1],x=r.sx+(r.ex-r.sx)*e,z=r.sz+(r.ez-r.sz)*e;g.position.set(x,70*(1-e),z);g.rotation.y=Math.atan2(tx-x,tz-z)});
    upd();await wait(1)}
   gs.forEach(drop);gs.length=0;
   boom(tx,tz,90,GLD,8e14);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
