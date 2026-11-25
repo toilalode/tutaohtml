@@ -1,5 +1,5 @@
 'use strict';
-// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (tay phải xoay kiếm, tay trái thẳng), Đệ Tam (tay phải xoay phía sau, tay trái thẳng), Đệ Ngũ (bánh xe dọc quanh người), Chung Chương (Nguyên Phượng lao nghiêng xuống), Chúng Sinh Bình Giới Điệu (thế quỳ chuẩn bị rút kiếm). Nạp sau ptfix.js.
+// Vá Phượng Tước Kiếm Pháp: Đệ Nhị (tay phải xoay kiếm, tay trái thẳng), Đệ Tam (tay phải xoay phía sau, tay trái thẳng), Đệ Ngũ (bánh xe dọc quanh người), Chung Chương (Nguyên Phượng lao nghiêng xuống), Chúng Sinh Bình Giới Điệu (thế quỳ rút kiếm, bay lên chém, ôm kiếm lao xuống đâm nổ). Nạp sau ptfix.js.
 (function(){
 const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,ORG=0xff8a1a,hyp=Math.hypot,rnd=Math.random;
 const NPHP=1e14; // máu Nguyên Phượng: 100.000 tỷ
@@ -157,25 +157,34 @@ async function s6(){
   boom(tx,tz,90,GLD,8e14);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
  finally{drop(sw);drop(md.g);gs.forEach(drop)}}
 
-// Chúng Sinh Bình Giới Điệu (Nhất Vương Tài Quyết Lục): người hạ thấp sát đất, thế quỳ chuẩn bị rút kiếm
+// Chúng Sinh Bình Giới Điệu (Nhất Vương Tài Quyết Lục): quỳ rút kiếm sát đất → bay lên chém → phi lên cao rồi ôm kiếm lao xuống đâm, nổ cực mạnh
 async function s8(){
- const[tx,tz]=target();
+ const[tx,tz]=target(),p=player.position;let fl=0,sw=null;
  say('Nhất Vương Tài Quyết Lục — Tung Hoành Thiên Hạ',2000);
  kneelOn();pose=kpose;drawing=false;
  try{
   await wait(30);
-  drawing=true;
+  drawing=true;await wait(6);
+  // đứng dậy, bay lên chém
+  pose=null;drawing=false;kneelOff();
+  P.flyN++;fl=1;P.flyH=24;await wait(12);
   for(let i=0;i<12;i++){FXK('slash',{x:tx+rnd()*20-10,z:tz+rnd()*20-10,r:8,col:i&1?0x111111:WHT});await wait(1)}
   boom(tx,tz,45,WHT,2e14);await wait(14);
-  drawing=false;
+  // phi lên cao ngay trên đầu quái
   say('Chúng Sinh Bình Giới Điệu!',1600);
-  const s=mkSword(0xffffff,6);s.position.set(tx,40,tz);s.lookAt(tx,0,tz);
-  try{
-   for(let f=0;f<24;f++){s.position.y=40+f*.4;await wait(1)}
-   for(let f=0;f<14;f++){const k=(f+1)/14;s.position.y=50*(1-k*k);await wait(1)}
-  }finally{drop(s)}
+  P.flyH=42;
+  for(let f=0;f<16;f++){p.x+=(tx-p.x)*.25;p.z+=(tz-p.z)*.25;await wait(1)}
+  // ôm kiếm lao xuống đâm
+  sw=mkSword(WHT,.7);hid=true;
+  pose=()=>{PA.aR.rotation.set(-1.2,0,-.45);PA.aL.rotation.set(-1.2,0,.45)};
+  P.flyH=-8;
+  for(let f=0;f<90&&p.y>.3;f++){
+   const fx=Math.sin(yaw)*.7,fz=Math.cos(yaw)*.7;
+   sw.position.set(p.x+fx,p.y+1.5,p.z+fz);sw.lookAt(p.x+fx,p.y-20,p.z+fz);
+   await wait(1)}
+  P.flyH=0;
   boom(tx,tz,130,WHT,5e14);FXK('boom',{x:tx,z:tz,r:80,col:0x111111});await wait(12)}
- finally{reset()}}
+ finally{reset();if(sw)drop(sw);if(fl){P.flyH=0;P.flyN--;P.fly=Math.max(P.fly,25)}}}
 
 async function exec(f,fly){P.busy++;P.lk++;if(fly){P.flyN++;P.flyH=fly}try{await f()}catch(e){console.error(e)}finally{reset();P.busy--;P.lk--;if(fly){P.flyN--;P.fly=Math.max(P.fly,25)}}}
 const baseRun=run;
