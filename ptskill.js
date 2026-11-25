@@ -185,4 +185,7 @@ let m1p=false;
 const baseAtk=atk;
 atk=function(){m1p=P.sw==4;try{baseAtk()}finally{m1p=false}};
 const baseMul=dmgMul;
-dmgDul=undefined;
+dmgMul=function(){const m=baseMul();return m1p?m*M1P/M1BASE:m};
+
+try{GUIDE['Phượng Tước']=GUIDE['Phượng Tước'].replace('100 tỷ máu','100.000 tỷ máu')}catch(e){}
+})();
