@@ -4,7 +4,6 @@
 <title>Tổng Hợp Kiếm Pháp</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="dungeon.css"><link rel="stylesheet" href="fix.css"><link rel="stylesheet" href="custom.css"><link rel="manifest" href="manifest.json"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tổng Hợp Kiếm Pháp"><meta name="theme-color" content="#020005">
 <link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <script>
-// Hiện lỗi JS ngay trên màn hình (để biết vì sao màn hình đen)
 (function(){function show(m){var d=document.getElementById('errbox');if(!d){d=document.createElement('pre');d.id='errbox';d.style.cssText='position:fixed;left:0;right:0;top:0;max-height:45%;overflow:auto;margin:0;padding:6px;background:rgba(150,0,0,.92);color:#fff;font:11px monospace;white-space:pre-wrap;z-index:99999;touch-action:auto;user-select:text';(document.body||document.documentElement).appendChild(d)}d.textContent+=m+'\n'}
 window.addEventListener('error',function(e){show('LỖI: '+e.message+' ('+(e.filename||'').split('/').pop()+':'+e.lineno+':'+e.colno+')')});
 window.addEventListener('unhandledrejection',function(e){show('LỖI PROMISE: '+(e.reason&&e.reason.message||e.reason))});})();
@@ -13,11 +12,9 @@ window.addEventListener('unhandledrejection',function(e){show('LỖI PROMISE: '+
 (function(){var d=document.documentElement;function f(){d.style.setProperty('--ih',window.innerHeight+'px')}f();addEventListener('resize',f);addEventListener('orientationchange',function(){setTimeout(f,350)})})();
 </script>
 <script>
-// Trang web (index) KHÔNG tự vào toàn màn hình khi chạm "vào game". Chế độ toàn màn hình của bản cài PWA vẫn do manifest.json ("display") quyết định, không đụng tới.
 (function(){var n=function(){return Promise.resolve()};['requestFullscreen','webkitRequestFullscreen','webkitRequestFullScreen','mozRequestFullScreen','msRequestFullscreen'].forEach(function(k){try{if(Element.prototype[k])Element.prototype[k]=n}catch(e){}})})();
 </script>
 <script>
-// Chống thu phóng khi bấm liên tục / chụm 2 ngón (không đụng tới pointer/touch của joystick và nút chiêu)
 (function(){var last=0;
 document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<350&&e.target.closest&&!e.target.closest('#popup,#guide,#tp,#kp,#start'))e.preventDefault();last=n},{passive:false});
 ['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault()})});

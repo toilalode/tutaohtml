@@ -45,7 +45,6 @@ button{font-family:'Courier New',monospace}
 #btns button.lock{opacity:.3;border-style:dashed}
 #start{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#020005;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#ffd700}
 #start h1{font-size:26px;font-size:clamp(20px,5vw,34px);text-shadow:0 0 16px #f80;margin:0 0 12px}#start p{font-size:16px;color:#fff}#start small{color:#aaa}
-/* Dự phòng: nếu trình duyệt không cho khoá xoay, tự xoay giao diện 90° khi máy đang để dọc */
 @media (orientation:portrait){
  html{overflow:hidden;height:100%}
  body{position:fixed;top:0;left:100vw;width:100vh;width:var(--ih,100vh);height:100vw;transform-origin:0 0;transform:rotate(90deg)}
@@ -76,10 +75,7 @@ button{font-family:'Courier New',monospace}
 #tp input{width:84px;padding:4px;background:#120a26;border:1px solid #9945ff;border-radius:4px;color:#fff;font:bold 12px 'Courier New',monospace;user-select:text;-webkit-user-select:text;touch-action:auto}
 #tp button{padding:5px 9px;background:#9945ff;color:#fff;border:0;border-radius:4px;font:bold 11px 'Courier New',monospace}
 
-/* cột trái lùi xuống 30px */
 #colL{bottom:82px}
-/* GPU: đẩy lên lớp compositor, thanh máu dùng transform thay vì width */
-/* will-change chỉ cho phần tử thật sự đổi transform/opacity mỗi khung hình (ít lớp GPU hơn để máy yếu không mất hình) */
 #dmg,#eh{will-change:transform,opacity}
 .hpb i,.stb i{transform-origin:0 50%;will-change:transform}
 #ehF{transform-origin:0 50%;will-change:transform}
@@ -93,7 +89,6 @@ button{font-family:'Courier New',monospace}
 #kp button.w2{grid-column:span 2;font-size:11px}
 #kp button:active{background:#9945ff}
 
-/* Popup 1,2,Map,M2: cho vuốt cuộn (bất kể máy đang xoay dọc/ngang) */
 #popup,#popup *{touch-action:pan-x pan-y}
 #popup{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;max-height:88vh}
 #guide{max-height:92vh}
