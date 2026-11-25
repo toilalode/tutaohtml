@@ -28,8 +28,8 @@ function kneelOff(){
  if(!kneel)return;
  const[a,b,m]=kneel;pb.remove(a);pb.remove(b);a.geometry.dispose();b.geometry.dispose();m.dispose();PA.lL.visible=true;pb.position.set(0,0,0);pb.rotation.x=0;kneel=null}
 const kpose=()=>{pb.position.set(0,-.36,0);pb.rotation.x=drawing?.25:.12;PA.lR.rotation.set(1.047,0,0);PA.lL.rotation.set(0,0,0);PA.aL.rotation.set(-.2,0,0);PA.aR.rotation.set(drawing?-1.6:-.15,0,0)};
-// Đệ Nhị: tay phải xoay kiếm phía trước, tay trái duỗi thẳng
-const pose2=()=>{const t=performance.now()/1000*12;PA.aL.rotation.set(-1.57,0,0);PA.aR.rotation.set(-2.2+Math.sin(t)*.45,0,Math.cos(t)*.6)};
+// Đệ Nhị: tay phải xoay kiếm phía trước, tay trái đưa ra sau lưng
+const pose2=()=>{const t=performance.now()/1000*12;PA.aL.rotation.set(1.9,0,.25);PA.aR.rotation.set(-2.2+Math.sin(t)*.45,0,Math.cos(t)*.6)};
 // Đệ Tam: tay phải đưa ra sau lưng xoay kiếm, tay trái duỗi thẳng
 const pose3=()=>{const t=performance.now()/1000*12;PA.aL.rotation.set(-1.57,0,0);PA.aR.rotation.set(1.9+Math.sin(t)*.45,0,Math.cos(t)*.6)};
 const reset=()=>{spinOn=false;pose=null;drawing=false;kneelOff();if(flipOn){flipOn=false;try{player.rotation.order='XYZ';player.rotation.x=0;pb.position.set(0,0,0)}catch(e){}}if(hid){hid=false;try{PA.sb.visible=true;PA.sg.visible=true}catch(e){}}};
