@@ -1,11 +1,8 @@
 'use strict';
-// Chung Yên Kiếm Pháp: thêm buff T / Y / U (hiệu ứng đỏ) và xếp R T Y U bên trái Z X C V.
-// Style 5 chỉ dùng được khi cầm Thiên Mệnh Kiếm — Dung Hợp Chung Yên (dungeon.js tự ép), nên chỉ cần kiểm tra P.sty==5.
 (function(){
 const RED=0xff2a2a,cy=()=>P.sty==5;
 const NM={R:'Hồn Chung Yên',T:'Thiên Địa',Y:'Xích Giáp',U:'Phản Hồi'};
 
-// Bật/tắt T, Y, U (giữ đúng luật của Thiên Mệnh Kiếm Pháp)
 const baseBuffCY=buff;
 buff=function(k){
  k=String(k).toUpperCase();
@@ -21,18 +18,15 @@ buff=function(k){
   if(P[key]){flash(RED);FXK('ring',{r:8,life:24,col:RED});FXK('aura',{life:30,col:RED})}return}
  return baseBuffCY(k)};
 
-// Không để syncRT xoá T / Y / U khi đang dùng Chung Yên Kiếm Pháp
 const baseSyncCY=syncRT;
 syncRT=function(){
  const keep=cy(),td=P.td,xi=P.xich,ab=P.absorb,pw=P.pwr;
  baseSyncCY();
  if(keep){P.td=td;P.xich=xi;P.absorb=ab;P.pwr=pw}};
 
-// Thiên Địa Chi Cảnh: sát thương ×2.3 (game.js chỉ tính cho kiếm pháp 0/1)
 const baseDmgCY=dmgMul;
 dmgMul=function(){let m=baseDmgCY();if(cy()&&P.td>0)m*=2.3;return m};
 
-// Nút: R T Y U nằm bên trái Z X C V
 const baseBuildCY=buildBtns;
 buildBtns=function(){
  baseBuildCY();
@@ -44,9 +38,6 @@ buildBtns=function(){
  ['T','Y','U'].forEach(k=>{const b=mk(k);bot.insertBefore(b,ref);bt[k]=b});
  placeCols()};
 
-// Hiệu ứng đang bật (vòng Thiên Địa, xích Xích Giáp, quầng Phản Hồi) đổi sang màu đỏ khi dùng Chung Yên Kiếm Pháp.
-// Lưu ý: dungeon.js đổi vật liệu xích sang mR/mG dùng chung (nửa đỏ nửa vàng) cho kiếm pháp khác;
-// chỉ chỉnh màu trên vật liệu gốc (userData.om), không đụng vào mR/mG, kẻo làm mất nửa đỏ nửa vàng.
 setInterval(()=>{
  const r=cy(),x=S.xich.children[0],tone=!r&&!!x&&!!x.userData.om&&x.material!==x.userData.om;
  S.td.material.color.setHex(r?RED:tone?0xff7a1a:GOLD);

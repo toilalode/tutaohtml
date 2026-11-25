@@ -1,8 +1,4 @@
 'use strict';
-// AI điều khiển boss Chung Yên Hoàng Đế: chọn chiêu tiếp theo dựa trên tình huống.
-// Gọi API bất đồng bộ — chiêu AI chọn xong sẽ được dùng ở lượt sau; chưa có thì boss chọn ngẫu nhiên như cũ.
-// (Đã bỏ nút AI / bảng chỉnh AI / phím 3 — AI chạy với cấu hình mặc định.)
-// Boss nói một câu mỗi 5 giây (ưu tiên câu AI vừa viết, không có thì dùng câu mẫu theo tình huống).
 (function(){
 const URL='https://my-ai-worker.vudanhquy1002.workers.dev/api/external/chat',KEY='vlx_e0107531b2bb4ce7afeaa38262724d92',LS='tm_bossai_v1';
 const MODELS=[['auto','Tự chọn (auto)'],['gemma-4-31b-it','Gemma 4 31B'],['gemma-4-26b-a4b-it','Gemma 4 26B A4B']];
@@ -18,7 +14,6 @@ const INFO={
  dash:'lao thẳng vào vị trí người chơi',
  wave:'sóng đất lan rộng, chỉ ở dạng 2'};
 
-// ---- cấu hình (lưu localStorage) ----
 const CFG={on:true,model:'auto',thinking:false,prompt:DEF_PROMPT};
 try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d){if(typeof d.on==='boolean')CFG.on=d.on;if(MODELS.some(m=>m[0]===d.model))CFG.model=d.model;if(typeof d.thinking==='boolean')CFG.thinking=d.thinking;if(typeof d.prompt==='string'&&d.prompt.trim()&&d.prompt.trim()!==OLD_DEF)CFG.prompt=d.prompt.slice(0,2000)}}catch(e){}
 window.bossAIon=CFG.on;
@@ -32,14 +27,12 @@ async function askGemma(prompt,{model='auto',thinking=false,systemPrompt='',sign
 let ready=null,busy=0,hist=[],status='Chưa gọi lần nào',nReq=0,nOk=0;
 const setStatus=s=>{status=s};
 
-// Người chơi đang dùng chiêu mạnh? (Kiếm Hồn, Quy Luật, sức mạnh U, Dom, đóng băng, Vạn Quái làm quái choáng)
 const strong=()=>{try{return !!(P.kh>0||P.ap>0||P.pwr>0||P.dom5>0||P.tf>0||enemies.some(e=>e.stunT>0))}catch(_){return false}};
 
 function buildPrompt(ctx){
  return 'Chọn chiêu tiếp theo cho boss. Chỉ trả về JSON một dòng dạng {"atk":"tên_chiêu","say":"câu ngắn","flee":false}, "atk" phải nằm trong pool.\nTình huống: '
  +JSON.stringify({dang:ctx.form,mau_boss_phan_tram:Math.round(ctx.boss*100),mau_nguoi_choi_phan_tram:Math.round(ctx.me),khoang_cach:Math.round(ctx.dist),kiem_hon_dang_bay:ctx.souls,nguoi_choi_dung_chieu_manh:!!ctx.strong,chieu_vua_dung:hist.slice(-4),pool:ctx.pool.map(k=>({atk:k,mo_ta:INFO[k]||''}))})}
 
-// Đọc trả lời của AI một cách dễ tính: JSON (kể cả bọc ```json hoặc có giải thích), dạng atk: xxx, hoặc chỉ nhắc tên chiêu
 function parse(txt,pool){
  let s=txt;
  if(s&&typeof s==='object')s=s.text||s.content||JSON.stringify(s);
@@ -56,8 +49,6 @@ function parse(txt,pool){
  if(pool.indexOf(atk)<0)throw new Error('AI trả lời sai định dạng: "'+s.replace(/\s+/g,' ').slice(0,80)+'"');
  return{atk,say:say.slice(0,70),flee}}
 
-// Không có giới hạn tần suất hay khoá tạm: mỗi lần boss chọn chiêu là gọi một request mới.
-// Chỉ không gọi chồng khi request trước chưa trả lời (tránh dồn hàng chờ).
 async function request(ctx){
  if(busy)return;
  busy=1;nReq++;
@@ -69,7 +60,6 @@ async function request(ctx){
   setStatus('lỗi — '+(e&&e.name==='AbortError'?'quá thời gian chờ':(e&&e.message)||e))}
  finally{clearTimeout(to);busy=0}}
 
-// ---- boss nói 5 giây một lần ----
 let lines=[];
 const FB={
  low:['Không không không!','Cứu ta với!','Không thể nào!','Ta không muốn chết!'],
@@ -91,7 +81,6 @@ setInterval(()=>{
   if(paused)return;
   say('Boss: '+quip(b),2500)}catch(_){}},5000);
 
-// Boss bỏ chạy: chạy ngược hướng người chơi một lúc (dungeon.js vẫn tự đánh bình thường)
 let fleeT=0,lastF=0;
 function fleeTick(t){
  requestAnimationFrame(fleeTick);
@@ -105,7 +94,6 @@ function fleeTick(t){
   const r=Math.hypot(p.x,p.z);if(r>96){p.x*=96/r;p.z*=96/r}}catch(_){}}
 requestAnimationFrame(t=>{lastF=t;fleeTick(t)});
 
-// dungeon.js gọi hàm này mỗi khi boss chọn chiêu; trả về tên chiêu hoặc null (= chọn ngẫu nhiên)
 window.bossAI=function(ctx){
  if(!window.bossAIon)return null;
  ctx.strong=strong();

@@ -1,11 +1,7 @@
 'use strict';
-/* fix.js - vá lỗi hiển thị, nạp sau cùng. Chỉ đọc trạng thái game, không sửa logic.
-   Mỗi mục nằm trong try riêng để một mục lỗi không làm mất các mục còn lại. */
 (function(){
 const el=id=>document.getElementById(id);
 
-/* 1) Thanh máu quái Test + boss: đọc scaleX của phần fill gốc -> đặt biến --p trên thanh (fill vẽ bằng background).
-      Phần tử boss do dungeon.js tạo MUỘN nên tìm lại mỗi khung hình. */
 try{
  const mirror=(fid,bid)=>{
   let last=null;
@@ -19,7 +15,6 @@ try{
  mirror('ehF','eh');mirror('dgBossF','dgBossBar');
 }catch(e){console.error('fix.js #1',e)}
 
-/* 2) Thanh tích luỹ (giữ N): phản chiếu thanh gốc của taicuc.js sang #chargeBar */
 try{
  const src=Array.from(document.body.children).find(n=>n.tagName==='DIV'&&!n.id&&n.style.zIndex==='250'&&n.children.length===2);
  if(src){
@@ -39,8 +34,6 @@ try{
  }
 }catch(e){console.error('fix.js #2',e)}
 
-/* 3) Nút Nói chuyện: dungeon.js tạo nút này MUỘN (khi vào phó bản) => tìm lại mỗi khung hình.
-      CHỈ HIỆN khi ở phó bản VÀ đang đứng gần NPC; còn lại ẨN HẮN (display:none), không làm mờ. */
 try{
  const NPC=[[-8,-7],[8,-7]],R=9;
  const near=()=>{const p=player.position;return NPC.some(n=>Math.hypot(p.x-n[0],p.z-n[1])<R)};
@@ -53,7 +46,6 @@ try{
  })();
 }catch(e){console.error('fix.js #3',e)}
 
-/* 4) Nút "3 · AI": nếu chưa có vị trí người chơi tự kéo thì dịch sang phải để khỏi bị nút "1" che (xem fix.css mục 6) */
 try{
  const ab=el('aiBtn');
  if(ab){
@@ -62,7 +54,6 @@ try{
  }
 }catch(e){console.error('fix.js #4',e)}
 
-/* 5) Panel MÁU QUÁI (map Test): thu gọn, chỉ hiện chip nhỏ; bấm chip để mở/đóng */
 try{
  const tp=el('tp');
  if(tp){
@@ -73,8 +64,6 @@ try{
  }
 }catch(e){console.error('fix.js #5',e)}
 
-/* 6) Joystick dùng ĐÁNH CHUỘT: giữ chuột trái trên joystick rồi kéo (cùng công thức với cảm ứng trong game.js).
-      Bỏ qua mousedown giả do iOS sinh ra sau khi chạm. */
 try{
  const joyEl=el('joy'),kn=el('knob');
  if(joyEl&&kn){
