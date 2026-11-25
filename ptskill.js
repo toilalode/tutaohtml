@@ -146,7 +146,7 @@ async function s6(){
   say('Phụng Tước Bát Điểu, Chung Chương!',2000);FXK('ring',{r:20,life:40,col:GLD});
   for(let f=0;f<44;f++){const cx=p.x+dx*1.6,cy=p.y+2.3,cz=p.z+dz*1.6;sw.position.set(cx-rx*3,cy,cz-rz*3);sw.lookAt(cx+rx*10,cy,cz+rz*10);if(f%11==0)FXK('ring',{r:8+f/3,life:24,col:f&1?ORG:GLD});upd();await wait(1)}
   for(let f=0;f<18;f++){const k=(f+1)/18;sw.position.set(p.x+dx*1.6,p.y+2.3+k*2,p.z+dz*1.6);sw.lookAt(tx,0,tz);upd();await wait(1)}
-  say('Nguyên Phượng Thiên Giáng — Bát Đại Thiên Tướng!',2000);
+  say('Nguyên Phượng Thiên Giáng — Vạn Quái Câu Tổn!',2000);
   const FC=[0xffd646,0xff7a1a,0xe8e8ff,0xff2a2a,0x303040,0x8a2be2,0x2ecc71,0x3aa0ff];
   const pg=phxBig(),ps={sx:tx-dx*25,sz:tz-dz*25};pg.scale.setScalar(4.2);scene.add(pg);gs.push(pg);
   const ring=[];
