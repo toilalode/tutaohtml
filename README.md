@@ -1,97 +1,114 @@
-# Tổng Hợp Kiếm Pháp 3D — hướng dẫn chạy (không màn hình đen)
-Game đã gói sẵn three.js trong `lib/` nên chạy được không cần Internet (trừ AI boss và chế độ `?debug`).
+# Tổng Hợp Kiếm Pháp 3D
 
-## Cấu trúc file
-- `index.html` — khung giao diện (HUD, nút, popup...), nạp các file dưới theo đúng thứ tự.
-- `skills.js`, `beasts.js` — bảng chiêu và mô hình bốn thú Tứ Tượng.
-- `rule.js` — menu Quy Luật Kiếm Hồn (Vạn Kiếm, Thiên Trảm, Áp Chế), nạp **trước** `game.js`.
-- `game.js` — lõi game: nhân vật, quái, chiêu thức, điều khiển, hướng dẫn trong game.
-- `zoom.js` — thu phóng camera, Tâm (shift-lock), sát thương liên tục trong Lãnh Địa, nút Tấn công ở map Test, bố cục hai cột nút; nạp **sau** `game.js`.
-- `lib/three.min.js` — thư viện 3D, chạy offline.
-- `sw.js` — service worker, cho phép cài game như app và chạy không mạng. Khi thêm file `.js`/`.css` mới phải thêm vào danh sách `CORE` và tăng `V`.
-- `hp.js`, `cutscene.js`, `dungeon.js` — hiển thị/hệ số HP, cắt cảnh Bát Quái và phó bản Chung Yên Hoàng Đế.
-- `taicuc.js`, `luongcuc.js` — chiêu Thái Cực và Lưỡng Cực Vô Lượng.
-- `chungyen-rtyu.js` — buff R T Y U của Chung Yên Kiếm Pháp.
-- `bossai.js` — AI chọn chiêu cho boss Chung Yên Hoàng Đế, gọi một API bên ngoài nên cần mạng (không có mạng thì boss chọn chiêu ngẫu nhiên).
-- `phuongtuoc.js`, `ptpre.js`, `ptfix.js`, `ptskill.js`, `ptpalette.js` — phó bản Phượng Tước Kiếm. `ptfix.js` có Nhất Vương Tài Quyết Lục, Áp Chế và phần đỏ của Kiếm Hồn; `ptskill.js` vá Đệ Nhị/Tam/Ngũ; `ptpalette.js` đổi màu chiêu theo skin.
-- `nomain.js`, `fix.js` — bỏ map chính (vào thẳng Test) và vá hiển thị; nạp sau cùng.
-- `gl.js` — thiết lập WebGL dự phòng; thêm `?debug` vào URL sẽ tải Eruda từ CDN (cần mạng).
-- Thứ tự thẻ `<script>` trong `index.html` quyết định file nào ghi đè hàm của file nào, đừng đổi thứ tự.
+Game chiến đấu kiếm pháp 3D chạy trên trình duyệt (three.js), tối ưu cho điện thoại xoay ngang và máy tính. Đã gói sẵn three.js trong `lib/` nên chạy được không cần Internet (trừ AI boss và chế độ `?debug`).
 
-## Cách 1 : Github Pages
-- Vào web tại :
-- https://toilalode.github.io/tutaohtml
-- Debug thêm đuôi ?debug vào cuối
+## Chạy game
 
-## Cách 2 : Localhost
-- Tải pkg install nodejs
-- Chạy lệnh gitclone https://github.com/toilalode/tutaohtml.git
-- Chạy tiếp npm install
-- Cuối cùng thì npm start PORT=8000
+**GitHub Pages:** https://toilalode.github.io/tutaohtml (thêm `?debug` vào cuối địa chỉ để bật Eruda, cần mạng).
 
-## Nếu màn hình đen
-- Phải mở `index.html` TRONG thư mục có `lib/three.min.js` (đừng tách file ra).
-- Lệnh server phải chạy ngay trong thư mục gốc của repo (nơi có file index.html).
-- Bật WebGL / tăng tốc phần cứng trong trình duyệt. Thử Chrome mới nhất.
-- Ctrl+Shift+R để xoá cache; xem Console (F12) để biết file nào lỗi 404.
-- Trang hiện dòng chữ đỏ báo thiếu three.min.js nếu đường dẫn sai.
+**Localhost:**
+```
+pkg install nodejs
+git clone https://github.com/toilalode/tutaohtml.git
+cd tutaohtml
+npm install
+npm start PORT=8000
+```
+Lệnh phải chạy ngay trong thư mục gốc của repo (nơi có `index.html` và `lib/three.min.js`).
 
-## Lưu game (localStorage)
-Tự lưu mỗi 2 giây: kiếm, kiếm pháp, quy luật đã chọn, kỷ lục đợt. Xoá lưu: mở Console gõ `resetSave()`.
-(localStorage gắn theo địa chỉ: localhost:8000 và IP-máy:8000 là 2 bộ lưu riêng.)
+**Cài như app:** mở bằng Chrome, menu ⋮ → "Thêm vào màn hình chính". Nhớ bật "Xoay tự động" của điện thoại.
+
+**Nếu màn hình đen:**
+- Mở `index.html` trong thư mục có `lib/three.min.js`, đừng tách file ra.
+- Bật WebGL / tăng tốc phần cứng, thử Chrome mới nhất.
+- Ctrl+Shift+R để xóa cache, xem Console (F12) để biết file nào lỗi 404.
+- Trang sẽ hiện dòng chữ đỏ nếu thiếu `three.min.js`; lỗi script cũng hiện trong khung đỏ ở đầu màn hình.
 
 ## Điều khiển
-WASD, Space nhảy, **Q lướt**, **E đỡ đòn (giữ)**, Z X C V B N M J chiêu, F chung chương, G chung cực áo nghĩa, 1 kiếm pháp, 2 kiếm, R T Y U buff (bật/tắt, không hồi chiêu), **H = M2** quy luật.
-**M1 = chạm/bấm vào màn hình** (chạm nhanh = 1 đòn, giữ yên = đánh liên tục, kéo = xoay camera). Chuột trái = M1, chuột phải = M2. Tab vẫn là M1.
-Cảm ứng: joystick trái, nút phải (Q / Nhảy / E / M2), kéo bên phải để xoay camera. Kéo ngón tay từ chỗ khác vào nút thì KHÔNG tính là bấm nút.
-Tự hồi máu: 2 HP/giây sau 3 giây không bị đánh. Chữ thi triển hiện ngay trên hàng nút chiêu 3px.
-Quy tắc buff: bật R thì cấm T, Y, U; bật T hoặc Y thì cấm R. T (Thiên Địa) không hấp thụ sát thương, chỉ Y (Xích Giáp) hấp thụ.
-Cửu Ngũ Chí Tôn Kiếm: mọi chiêu (trừ Ngôn Xuất Pháp Tuỳ Thức) đều bay lên trời. Đệ Ngũ Thức Thái Cực ngưng động thời gian (quái đứng im).
-Tứ Thánh: chọn kiếm pháp Tứ Tượng (phím 1) — Z/X Thanh Long, C Bạch Hổ, V/B Chu Tước, N Huyền Vũ, J/F cả bốn; Huyền Vũ tự đỡ đòn (đỡ liên tục, mỗi lần đỡ có 0,4 giây bất tử chống đòn dồn); Tứ Thánh Khí Tức tăng +500% sát thương Tứ Tượng.
 
-### Thu phóng, xoay camera & Tâm (xem chiêu bao quanh)
-- **Máy tính:** cuộn **chuột giữa** lên = phóng gần, xuống = thu xa (từ 3 đến 220, giữ phím cuộn mượt). Phím **O** phóng gần, phím **P** thu xa — giữ phím để zoom liên tục. Mũi tên **← → ↑ ↓** xoay camera. Phím **Shift** bật/tắt Tâm.
-- **Điện thoại:** **chụm 2 ngón** trên khung cảnh (không đặt trên nút/joystick) để thu phóng; kéo 1 ngón nửa phải màn hình để xoay camera (xoay được trọn 360° cả ngang lẫn dọc).
-- **Hàng nút dưới HUD Kiếm pháp/Kiếm (góc trên phải), cách HUD 10px:** `[🔒/🔓] [＋] [－]`, cỡ bằng nút Q (54×38). ＋ phóng gần, － thu xa, giữ nút để zoom liên tục. Hàng nút nằm trong khung HUD nên không bao giờ chèn lên HUD, kể cả điện thoại lẫn máy tính.
-- **Tâm (kiểu Roblox shift-lock):** bật (🔒) hiện một **chấm trắng** cố định ở giữa màn hình (không còn vòng/vạch đỏ). Xoay camera thì **nhân vật tự xoay theo** hướng camera — đi ngang vẫn quay mặt về phía tâm. Chiêu sẽ đánh vào quái gần tâm nhất, trong góc ~34° phía trước mặt (tối đa 60 đơn vị); không có quái thì đánh thẳng về phía trước. Đang thi triển chiêu thì nhân vật quay mặt về mục tiêu như bình thường, không bị Tâm chi phối. Tắt (🔓) thì mọi thứ về như cũ.
-- **Cột nút Q / Nhảy / E / M2 (cột phải):** lùi xuống 15px so với bản gốc, cỡ 54×38 bằng nút 1/2/?/Map, không còn bị thu nhỏ khi màn hình thấp — thay vào đó khoảng cách giữa các nút tự co hẹp trước (tối thiểu 1px) để không chèn HUD hay hàng chiêu; chỉ thu nhỏ nút khi đã hết cách.
-- **Cột nút 1/2/?/Map (cột trái):** lùi xuống 15px, áp dụng cùng cách co giãn như cột phải.
-- Zoom xa vẫn thấy nhân vật và chiêu: sương mù, bầu trời, mặt đất tự mở rộng; vòm Lãnh Địa tự trong hơn khi camera ra ngoài.
-- Mã nằm trong `zoom.js` (nạp sau `game.js`).
+| Thao tác | Máy tính | Điện thoại |
+|---|---|---|
+| Di chuyển | WASD | Joystick trái |
+| Nhảy | Space | Nút ⤒ |
+| Lướt (không hồi chiêu, tốn 8 thể lực) | Q | Nút Q |
+| Đỡ đòn (giữ) | E | Nút E |
+| M1 đánh thường | Chuột trái / Tab | Chạm màn hình (giữ yên = đánh liên tục) |
+| M2 | Chuột phải / H | Nút M2 |
+| Chọn kiếm pháp / kiếm / skin | 1 / 2 / 3 | Nút 1 / 2 / 3 |
+| Chiêu | Z X C V B N M J F G | Hàng nút dưới |
+| Buff | R T Y U | Hàng nút dưới |
+| Xoay camera | Kéo chuột, mũi tên | Kéo ngón nửa phải màn hình (360° cả ngang lẫn dọc) |
+| Thu phóng | Con lăn, O / P | Chụm 2 ngón, nút ＋ － |
+| Tâm (shift-lock) | Shift | Nút 🔒/🔓 |
 
-### Lãnh Địa (Nhất Trảm Độc Tôn)
-Thiên Mệnh Kiếm Pháp, phím G: mở Lãnh Địa, quái trong vực đứng im. Suốt lúc Lãnh Địa mở, mọi quái trong vực chịu sát thương liên tục mỗi 0,2 giây (không phụ thuộc Tâm hay mục tiêu). Ngay khi Lãnh Địa đóng (sau nhát chém cuối), toàn bộ quái trong vực chịu thêm đòn Vỡ Nát rất lớn kèm chớp vàng. Đổi map hoặc hồi sinh giữa chừng thì quái mới không dính đòn của Lãnh Địa cũ.
+- Đang thi triển chiêu thì không lướt, nhảy hay dùng chiêu khác được, quái cũng không đánh trúng bạn.
+- Tự hồi máu 2 HP/giây sau 3 giây không bị đánh. Game tự lưu mỗi 2 giây.
+- Nút `?` mở hướng dẫn chi tiết trong game.
 
-### Phượng Tước Kiếm Pháp & Nhất Vương Tài Quyết Lục
-- **Màu chiêu theo skin** (`ptpalette.js`): skin Đỏ thì chiêu chủ yếu đỏ, thỉnh thoảng có vàng; skin Vàng Trắng thì chủ yếu vàng, thỉnh thoảng có trắng; cả hai chiêu Nhất Vương Tài Quyết Lục (Khúc Chung Trảm, Chúng Sinh Bình Giới Điệu) ở cả hai skin đều chủ yếu đen, thỉnh thoảng có đỏ. Cứ 5 hiệu ứng thì có 1 hiệu ứng mang màu phụ (hằng `ACCENT_EVERY`).
-- **Đệ Ngũ Thức** (`ptskill.js`): hai bánh xe kiếm dọc quay quanh người và quanh quái, mỗi 0,4 giây chém 1 nhát, không nổ. Nhân vật xoay dọc (lộn vòng trong mặt phẳng đứng hướng về quái, quanh tâm thân người) cùng chiều và cùng tốc độ với thanh kiếm đang bay, nên đầu luôn hướng về phía kiếm. Kết thúc chiêu thì nhân vật đứng thẳng lại như bình thường.
-- **Đệ Tam Thức** (`ptskill.js`): xoay chém sau lưng, phi kiếm xuyên quái, rồi đâm liên hoàn, không nổ. Nhát phi kiếm chiếm **60%** tổng sát thương gốc của chiêu; 40% còn lại chia cho đoạn xoay chém (1,44e14) và đoạn đâm liên hoàn (2,4e14).
-- **Kiếm Hồn Nhất Vương** (nút R, `ptfix.js`): bóng kiếm hồn màu đen, thêm hai mắt đỏ và hai vòng đỏ nhỏ (một vòng hào quang trên đầu, một vòng dưới chân). Phần đỏ chỉ hiện khi Kiếm Hồn đang đen, tức là khi cầm Kiếm Phượng Tước.
-- **Áp Chế Nhất Vương** (nút M2, `ptfix.js`): bóng, tia và quái vẫn đen; cứ 4 tia thì có 1 tia đỏ, và bóng Áp Chế cũng có mắt đỏ cùng hai vòng đỏ như Kiếm Hồn.
+## Kiếm và kiếm pháp
 
-### Map Test
-Nút 🗺 Map (dưới Hướng dẫn): chọn map Test hoặc một trong hai phó bản (Chung Yên Hoàng Đế, Phượng Tước Kiếm). Game khởi động vào map Test. Map Test có 1 quái bù nhìn, ô sửa máu hiện tại/tối đa (nút Đặt, Đầy), và thanh máu trên đầu quái. Sát thương vừa gây hiện giữa màn hình trong 3,5 giây và cộng dồn.
-Cạnh nút **Đầy** có thêm nút **Tấn công**: bấm để bật thì quái bù nhìn đứng yên tại chỗ (không di chuyển, không bị đánh lùi) và đánh bạn nếu bạn đứng trong tầm; bấm lại để quái trở về trạng thái choáng như mặc định.
+**Kiếm:** Titan Sword (×1), Taichi Sword (×1,25; ×3 thêm khi dùng Thái Cực), Thiên Mệnh Kiếm (×1,7; thêm ×1,5 sát thương, vùng đánh ×1,5, hồi chiêu và thể lực ×0,4 khi dùng Cửu Ngũ hoặc Thiên Mệnh), Kiếm Phượng Tước.
 
-## Màn hình ngang
-Chạm màn hình "Chạm để vào game" → game vào toàn màn hình và khoá xoay ngang (Chrome Android). Nếu máy vẫn để dọc, giao diện tự xoay 90°. Muốn mở như app: menu Chrome ⋮ → "Thêm vào màn hình chính" (manifest.json đặt sẵn chế độ ngang toàn màn hình). Nhớ bật "Xoay tự động" của điện thoại để khoá ngang hoạt động tốt nhất.
+**Kiếm pháp:** Cửu Ngũ Chí Tôn, Thiên Mệnh, Tứ Tượng, Thái Cực, Định Hải, Chung Yên, Phượng Tước, Nhất Vương Tài Quyết Lục.
 
-## Cập nhật mới
-- Tách phần Quy Luật Kiếm Hồn ra file riêng `rule.js` (nạp trước `game.js`).
-- Thu phóng camera: con lăn chuột, phím O/P, chụm 2 ngón, nút ＋ － cùng cỡ nút Q, đặt dưới HUD Kiếm pháp/Kiếm.
-- Tâm kiểu Roblox shift-lock: chấm trắng giữa màn hình, nhân vật xoay theo camera, phím Shift hoặc nút tròn 🔒/🔓 để bật/tắt.
-- Lãnh Địa Nhất Trảm Độc Tôn gây sát thương liên tục trong lúc mở, thêm đòn Vỡ Nát khi đóng.
-- Map Test có thêm nút Tấn công cho quái bù nhìn đứng yên tại chỗ và đánh người chơi.
-- Cột nút Q/Nhảy/E/M2 và cột 1/2/?/Map lùi xuống, giữ nguyên kích thước, tự co khoảng cách thay vì thu nhỏ nút.
-- Tam Liên Trảm & Vạn Tượng Lai Triều Thức không còn bay lên trời. Lướt (Q) không hồi chiêu.
-- Kéo màn hình xoay camera 360° cả ngang lẫn dọc. Đã bỏ dòng chữ/nhãn "Phản Hồi".
-- Nhất Trảm Độc Tôn mở Lãnh Địa thật (quái trong vực đứng im, chém tất trúng).
-- R T Y U chỉ hiện với Thiên Mệnh Kiếm + Cửu Ngũ/Thiên Mệnh Kiếm Pháp; đổi sang kiếm/kiếm pháp khác thì tự tắt.
-- Đang thi triển chiêu thì không dùng được chiêu khác. Thái Cực Âm Dương Cửu Cung Trảm đặt dưới chân.
-- Nút "?" mở hướng dẫn chơi (đã cập nhật đầy đủ các mục trên trong tab Điều khiển và Mẹo).
-- Phượng Tước: màu chiêu đổi theo skin (đỏ/vàng, vàng/trắng, Nhất Vương Tài Quyết Lục đen/đỏ).
-- Phượng Tước Đệ Ngũ Thức: nhân vật xoay dọc (lộn vòng) theo thanh kiếm đang xoay.
-- Phượng Tước Đệ Tam Thức: phi kiếm chiếm 60% tổng sát thương của chiêu.
-- Kiếm Hồn Nhất Vương có mắt và vòng hào quang đỏ; Áp Chế Nhất Vương có tia, mắt và vòng đỏ xen trong màu đen.
+**Buff R T Y U** (chỉ với Thiên Mệnh Kiếm + Cửu Ngũ / Thiên Mệnh): R Kiếm Hồn, T Thiên Địa, Y Xích Giáp, U Phản Hồi. Bật R thì cấm T/Y/U và ngược lại.
 
-Mọi chiêu của mọi kiếm đều là AOE (bán kính đánh tối thiểu 12).
+**Lãnh Địa (Nhất Trảm Độc Tôn, phím G của Thiên Mệnh):** quái trong vực đứng im, chịu sát thương liên tục rồi đòn Vỡ Nát khi đóng.
+
+## Phó bản Phượng Tước Kiếm
+
+Vào bằng nút Map → Phó bản Phượng Tước Kiếm, nói chuyện với NPC bằng phím `I`.
+
+- **Map 1:** làm nhiệm vụ nhận Kiếm Phượng Tước.
+- **Map 2:** đánh Nguyên Phượng, đổi ngọc lấy skin Vàng Trắng (nút 3 để đổi skin).
+- **Map 3:** khiêu chiến Định Vương → Thí Vương → Tĩnh Vương → Viêm Đế → Hỗn Độn → Xi Vưu, mỗi boss mở chiêu, ngọc và Thiên Tướng.
+
+**Kiếm Hồn Nhất Vương (R)** và **Thiên Tướng (T / G)** không dùng chung được: bật cái này thì cấm cái kia.
+
+**Nhất Vương Trấn Áp (M2)** cần bật Kiếm Hồn trước; một đòn diệt tất cả, bóng, tia và quái đều đen, thỉnh thoảng có tia, mắt và vòng đỏ. Nút chỉ ghi "Trấn Áp".
+
+**Hitbox:** skin Đỏ ×250, skin Vàng Trắng ×1.000, bật Kiếm Hồn Nhất Vương nhân thêm ×750.
+
+**Màu chiêu theo skin** (`ptpalette.js`): skin Đỏ chủ yếu đỏ, thỉnh thoảng vàng; skin Vàng Trắng chủ yếu vàng, thỉnh thoảng trắng; hai chiêu Nhất Vương Tài Quyết Lục chủ yếu đen, thỉnh thoảng đỏ.
+
+**Đệ Ngũ Thức** (`ptskill.js`): hai vòng lửa quay quanh người (lửa đỏ ở skin Đỏ, lửa vàng ở skin Vàng Trắng), mỗi 0,4 giây tung một nhát chém cong theo một hướng cố định bay thẳng về phía quái. Nhân vật lộn vòng theo thanh kiếm đang quay.
+
+**Đệ Tam Thức:** xoay chém sau lưng, phi kiếm xuyên quái (chiếm 60% sát thương gốc), rồi đâm liên hoàn.
+
+## Map Test
+
+Game khởi động vào map Test. Có 1 quái bù nhìn với ô sửa máu hiện tại/tối đa (nút Đặt, Đầy), thanh máu trên đầu quái, sát thương vừa gây hiện giữa màn hình trong 3,5 giây. Nút **Tấn công** cạnh nút Đầy bật cho quái đứng yên tại chỗ và đánh bạn.
+
+Mọi chiêu đều là AOE (bán kính đánh tối thiểu 12).
+
+## Cấu trúc file
+
+Thứ tự thẻ `<script>` trong `index.html` quyết định file nào ghi đè hàm của file nào, đừng đổi thứ tự.
+
+| File | Vai trò |
+|---|---|
+| `index.html`, `style.css`, `dungeon.css`, `fix.css`, `custom.css` | Khung giao diện (HUD, nút, popup) |
+| `gl.js` | Thiết lập WebGL dự phòng, `?debug` tải Eruda |
+| `skills.js`, `beasts.js` | Bảng chiêu và mô hình bốn thú Tứ Tượng |
+| `chungyen.js`, `ptpre.js` | Bảng chiêu Chung Yên, phần chuẩn bị Phượng Tước |
+| `rule.js` | Menu Quy Luật Kiếm Hồn (nạp trước `game.js`) |
+| `game.js` | Lõi game: nhân vật, quái, chiêu, điều khiển, hướng dẫn |
+| `hp.js`, `zoom.js`, `cutscene.js` | Hiển thị HP, thu phóng và Tâm, cắt cảnh |
+| `dungeon.js`, `bossai.js` | Phó bản Chung Yên Hoàng Đế; AI boss (gọi API ngoài, không có mạng thì chọn chiêu ngẫu nhiên) |
+| `taicuc.js`, `luongcuc.js` | Chiêu Thái Cực và Lưỡng Cực Vô Lượng |
+| `chungyen-rtyu.js` | Buff R T Y U của Chung Yên |
+| `phuongtuoc.js` | Phó bản Phượng Tước: map, boss, nhiệm vụ, skin, Thiên Tướng, Vạn Quái |
+| `ptfix.js` | Nhất Vương Tài Quyết Lục, Nhất Vương Trấn Áp, phần đỏ của Kiếm Hồn, khóa chung R/Thiên Tướng |
+| `ptskill.js` | Đệ Nhị, Tam, Ngũ, Chung Chương |
+| `ptpalette.js` | Đổi màu chiêu theo skin |
+| `nomain.js`, `fix.js` | Bỏ map chính (vào thẳng Test), vá hiển thị; nạp sau cùng |
+| `resetsave.js` | Hỗ trợ xóa lưu |
+| `sw.js`, `manifest.json` | Service worker và manifest để cài như app |
+| `server.js`, `package.json` | Server localhost |
+| `agents.md` | Quy tắc lập trình cho repo |
+
+Khi thêm file `.js`/`.css` mới phải thêm vào danh sách `CORE` trong `sw.js` và tăng `V`.
+
+## Lưu game
+
+Dùng localStorage, tự lưu mỗi 2 giây (kiếm, kiếm pháp, quy luật, kỷ lục; Phượng Tước lưu riêng ở `tm_pt_v1`). Xóa lưu: mở Console gõ `resetSave()`. `localhost:8000` và `IP-máy:8000` là hai bộ lưu riêng.
