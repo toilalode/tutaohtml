@@ -263,7 +263,12 @@ const HP_MAX_DIGITS=25,HP_MAX=Number('9'.repeat(HP_MAX_DIGITS));
 const fmtSci=n=>n.toExponential(4).replace(/\.?0+e/,'e');
 const fmtHp=x=>{const s=String(x),n=Number(s);return s!=='∞'&&isFinite(n)&&n>=1e9?fmtSci(n):s};
 const fmtNum=n=>n>=1e9?fmtSci(n):n.toLocaleString('vi-VN');
-function tpApply(full){const e=enemies.find(x=>x.dummy);if(!e)return;if($('tpM').value=='∞'){e.inf=1;e.max=1e15;e.hp=1e15;e.lh=1e15;$('tpM').value='∞';$('tpC').value='∞';dmgSum=0;dmgT=0;tpClose();return}e.inf=0;let mx=Math.floor(+(tpEdit?tpBuf:String(e.max)))||0;if(mx<100){mx=100;toast('Máu tối đa tối thiểu 100')}mx=Math.min(mx,HP_MAX);tpClose();const c=mx;e.max=mx;e.hp=c;e.lh=c;$('tpM').value=fmtHp(mx);$('tpC').value=fmtHp(c);dmgSum=0;dmgT=0}
+function tpApply(full){const e=enemies.find(x=>x.dummy);if(!e)return;if($('tpM').value=='∞'){dummyInf(e,true);$('tpM').value='∞';$('tpC').value='∞';dmgSum=0;dmgT=0;tpClose();return}dummyInf(e,false);let mx=Math.floor(+(tpEdit?tpBuf:String(e.max)))||0;if(mx<100){mx=100;toast('Máu tối đa tối thiểu 100')}mx=Math.min(mx,HP_MAX);tpClose();const c=mx;e.max=mx;e.hp=c;e.lh=c;$('tpM').value=fmtHp(mx);$('tpC').value=fmtHp(c);dmgSum=0;dmgT=0}
+function dummyInf(e,on){
+ if(on){if(!e.infOn){e.infOn=1;Object.defineProperty(e,'hp',{configurable:true,enumerable:true,get:()=>e.infDead?0:1,set:v=>{if(e.infDead)return;const d=1-v;if(d>0)e.infDmg+=d}})}
+  e.inf=1;e.max=1e15;e.lh=1e15;e.infDmg=0;e.infDead=0;e.apKill=0;return}
+ if(e.infOn){e.infOn=0;delete e.hp;e.hp=0;e.inf=0;e.infDead=0;e.infDmg=0;e.apKill=0}else e.inf=0}
+function killInf(e){if(e.infDead)return;e.infDead=1;e.hit=8;toast('Áp Chế đã diệt quái vô hạn — bấm Đầy để hồi lại')}
 let tpEdit=false,tpBuf='';
 function tpOpen(){tpEdit=true;{const e=enemies.find(x=>x.dummy);tpBuf=!e?'':e.inf?'∞':BigInt(Math.floor(e.max)).toString().slice(0,HP_MAX_DIGITS)}$('kp').style.display='grid';$('tpM').style.borderColor='#fc0'}
 function tpClose(){tpEdit=false;$('kp').style.display='none';$('tpM').style.borderColor=''}
@@ -323,7 +328,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
   if(P.hurtT>0)P.hurtT-=dt;else if(P.hp>0&&P.hp<100)P.hp=Math.min(100,P.hp+2*dt);if(P.rule[3])P.hp=Math.min(100,P.hp+3*dt);
   let apN=0;if(P.ap>0){P.apT=(P.apT||0)+dt;apN=Math.floor(P.apT/.005);P.apT-=apN*.005}else P.apT=0;
   enemies.forEach(e=>{if(e.hp<=0)return;const d=_d.copy(player.position).sub(e.m.position);d.y=0;const l=d.length(),ang=Math.atan2(d.x,d.z),u=e.m.userData;
-   let sl=(P.dom5>0||P.tf?0:1);if(P.dom4>0&&l<12)sl=0;if(P.lt>0&&DC&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){sl=0}if(P.ap>0){sl=0;if(apN)e.hp-=AP_BASE*dmgMul()*apN}
+   let sl=(P.dom5>0||P.tf?0:1);if(P.dom4>0&&l<12)sl=0;if(P.lt>0&&DC&&Math.hypot(e.m.position.x-DC.x,e.m.position.z-DC.z)<DR){sl=0}if(P.ap>0){sl=0;if(apN){e.hp-=AP_BASE*dmgMul()*apN;if(e.infOn)e.apKill=1}}
    if(sl>0&&!e.dummy){e.m.rotation.y=ang;e.cd-=dt;
     if(l>1.9){e.m.position.add(d.normalize().multiplyScalar(3.4*dt));e.wind=0;e.ph+=dt*8;
      u.lL.rotation.x=Math.sin(e.ph)*.7;u.lR.rotation.x=-Math.sin(e.ph)*.7;u.aL.rotation.x=u.aR.rotation.x=-1.45+Math.sin(e.ph)*.15}
@@ -333,7 +338,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
      else if(e.cd<=0&&player.position.y<3.5)e.wind=.6;
      else u.aL.rotation.x=u.aR.rotation.x=e.cd>1.2?-.7:-1.45}}
    e.hit-=fr;e.ms.forEach(m=>m.emissive.setHex(e.hit>0?0xbbbbbb:P.ap>0?0x886600:0))});
-  enemies.forEach(e=>{const h=Math.max(0,e.hp);if(e.lh===undefined)e.lh=h;const d=e.lh-h;e.lh=h;if(e.inf){e.hp=1e15;e.lh=1e15}if(d>0){dmgSum+=d;dmgT=3.5;const el=$('dmg');el.style.transition='none';el.style.transform='translateX(-50%) scale(1.3)';requestAnimationFrame(()=>{el.style.transition='transform .15s';el.style.transform='translateX(-50%) scale(1)'})}});
+  enemies.forEach(e=>{let d;if(e.infOn){d=e.infDmg;e.infDmg=0;if(e.apKill){e.apKill=0;killInf(e)}}else{const h=Math.max(0,e.hp);if(e.lh===undefined)e.lh=h;d=e.lh-h;e.lh=h}if(d>0){dmgSum+=d;dmgT=3.5;const el=$('dmg');el.style.transition='none';el.style.transform='translateX(-50%) scale(1.3)';requestAnimationFrame(()=>{el.style.transition='transform .15s';el.style.transform='translateX(-50%) scale(1)'})}});
   if(dmgT>0){dmgT-=dt;if(dmgT<=0){dmgT=0;dmgSum=0}}
   enemies=enemies.filter(e=>{if(e.hp<=0&&!e.dummy){scene.remove(e.m);freeObj(e.m);kills++;return false}return true});if(!enemies.length&&MAP=='main')spawn();
   if(P.hp<=0)say('Gục! Nhấn Enter / chạm để chơi lại',3000),P.hp<=0&&setTimeout(()=>{if(P.hp<=0)respawn()},2500);
@@ -377,7 +382,7 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
   const d0=MAP=='test'?enemies.find(x=>x.dummy):null,eh=$('eh');
   if(d0){const sw=Math.sin(T*2);d0.m.rotation.z=sw*.07;d0.m.userData.aL.rotation.x=d0.m.userData.aR.rotation.x=.15+sw*.05;d0.stars.children.forEach((s,i)=>{const a=T*3+i*1.57;s.position.set(Math.cos(a)*.7,Math.sin(T*5+i)*.08,Math.sin(a)*.7)});
    const v=_v.set(d0.m.position.x,d0.m.position.y+3.6,d0.m.position.z).project(cam);
-   if(v.z<1&&Math.abs(v.x)<1.3){const hpv=Math.max(0,Math.ceil(d0.hp)),pc=d0.inf?100:Math.max(0,Math.min(100,hpv/d0.max*100));eh.style.display='block';sX('eh','translate('+((v.x*.5+.5)*VW()).toFixed(0)+'px,'+((-v.y*.5+.5)*VH()).toFixed(0)+'px) translate(-50%,-100%)');sX('ehF','scaleX('+(pc/100).toFixed(3)+')');const tcv=d0.inf?'∞':fmtHp(hpv);if($('tpC').value!==tcv)$('tpC').value=tcv;if(!tpEdit){const tmv=d0.inf?'∞':fmtHp(d0.max);if($('tpM').value!==tmv)$('tpM').value=tmv}sT('ehT',d0.inf?'∞ / ∞':fmtNum(hpv)+' / '+fmtNum(d0.max))}else eh.style.display='none'}
+   if(v.z<1&&Math.abs(v.x)<1.3){const hpv=Math.max(0,Math.ceil(d0.hp)),infOk=d0.inf&&d0.hp>0,pc=d0.inf?(infOk?100:0):Math.max(0,Math.min(100,hpv/d0.max*100));eh.style.display='block';sX('eh','translate('+((v.x*.5+.5)*VW()).toFixed(0)+'px,'+((-v.y*.5+.5)*VH()).toFixed(0)+'px) translate(-50%,-100%)');sX('ehF','scaleX('+(pc/100).toFixed(3)+')');const tcv=d0.inf?(infOk?'∞':'0'):fmtHp(hpv);if($('tpC').value!==tcv)$('tpC').value=tcv;if(!tpEdit){const tmv=d0.inf?'∞':fmtHp(d0.max);if($('tpM').value!==tmv)$('tpM').value=tmv}sT('ehT',d0.inf?(infOk?'∞':'0')+' / ∞':fmtNum(hpv)+' / '+fmtNum(d0.max))}else eh.style.display='none'}
   else eh.style.display='none'}
  ren.render(scene,cam)}
 addEventListener('DOMContentLoaded',()=>requestAnimationFrame(loop));
