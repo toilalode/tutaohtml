@@ -6,12 +6,17 @@ const goldSkin=()=>{try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
 /* Nhát chém cong (vầng trăng khuyết dựng đứng) như hiệu ứng slash; luôn cùng một hướng, bay thẳng từ người chơi về phía quái */
+const crescent=(R,A,w)=>{
+ const sh=new THREE.Shape(),N=24;
+ for(let i=0;i<=N;i++){const t=-A/2+A*i/N,x=Math.cos(t)*R,y=Math.sin(t)*R;i?sh.lineTo(x,y):sh.moveTo(x,y)}
+ for(let i=N;i>=0;i--){const t=-A/2+A*i/N,r=R-w*Math.sin(Math.PI*i/N);sh.lineTo(Math.cos(t)*r,Math.sin(t)*r)}
+ return new THREE.ShapeGeometry(sh)};
 const vslash=(sx,sz,fx,fz,l)=>{
- const R=9,A=2.4,a=-1.1,th=Math.atan2(fx,fz),z0=a-A/2,cs=Math.cos(th),sn=Math.sin(th),reach=Math.max(6,l-2),
-  m=new THREE.Mesh(G('PTVS2',()=>new THREE.TorusGeometry(R,.55,6,28,A)),mat(RED,.95)),
-  c=new THREE.Mesh(G('PTVS3',()=>new THREE.TorusGeometry(R,.2,6,28,A)),mat(WHT,.95)),
-  place=t=>{const d=3+(reach-3)*t,ang=a+t*.5,s=1+t*.3,ox=Math.cos(ang)*R*s,oy=Math.sin(ang)*R*s;m.position.set(sx+fx*d-ox*cs,6-oy,sz+fz*d+ox*sn);m.rotation.z=z0+t*.5;m.scale.setScalar(s)};
- m.add(c);m.rotation.set(0,th,z0);place(0);
+ const R=8.5,A=2.4,th=Math.atan2(fx,fz)-Math.PI/2,reach=Math.max(6,l-4),
+  m=new THREE.Mesh(G('PTCR1',()=>crescent(R,A,3.2)),mat(RED,.95)),
+  c=new THREE.Mesh(G('PTCR2',()=>crescent(R,A,1.4)),mat(WHT,.95)),
+  place=t=>{const d=1+(reach-1)*t;m.position.set(sx+fx*d,2,sz+fz*d);m.rotation.set(0,th,1.1-t);m.scale.setScalar(1+t*.3)};
+ c.renderOrder=1;m.add(c);place(0);
  add(m,12,(f,t)=>{place(t);const o=.95*(1-t);m.material.opacity=o;c.material.opacity=o})};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
 const nearFoe=(x,z)=>{let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=hyp(e.m.position.x-x,e.m.position.z-z);if(d<bd){bd=d;b=e}}});return b?{e:b,d:bd}:null};
