@@ -106,17 +106,15 @@ async function s5(){
  const A=ringV(3.6),sw=mkSword(RED,.5);hid=true;
  const wheel=(R,cx,cy,cz,fx,fz,dir)=>{R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz)+Math.PI/2;R.arcs.forEach((m,i)=>{m.rotation.z+=dir*(i&1?-1:1)*.5})};
  try{
-  let n=0,nx=performance.now()+400;
-  for(let f=0;n<15;f++){
+  let n=0;const nx=performance.now()+2000;
+  for(let f=0;n<1;f++){
    const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,fx=dx/l,fz=dz/l;
    wheel(A,p.x,p.y+1.7,p.z,fx,fz,-1);
    orbit(sw,p.x,p.y+1.7,p.z,-fz,fx,3.6,-f*.5);
    flipY=Math.atan2(fx,fz);flipA=f*.5;flipOn=true;
-   if(f%6==0)hit(ex,ez,10,1e12*3,.2);
-   const t=performance.now();
-   if(t>=nx){
-    nx=t+400;n++;
-    if(n==1)flash(RED);
+   if(performance.now()>=nx){
+    n++;
+    flash(RED);
     FXK('slash',{x:ex+rnd()*3-1.5,z:ez+rnd()*3-1.5,r:16,col:RED});
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
@@ -186,6 +184,9 @@ const baseAtk=atk;
 atk=function(){m1p=P.sw==4;try{baseAtk()}finally{m1p=false}};
 const baseMul=dmgMul;
 dmgMul=function(){const m=baseMul();return m1p?m*M1P/M1BASE:m};
+
+/* Áp Chế chỉ diệt được quái vô hạn máu khi là Áp Chế Nhất Vương (Phượng Tước/Nhất Vương + Kiếm Hồn Nhất Vương). Các Áp Chế khác vẫn gây sát thương nhưng không giết được. */
+{const baseKillInf=killInf;killInf=function(e){if(P.sw==4&&P.sty>=6&&P.kh>0)baseKillInf(e)}}
 
 try{GUIDE['Phượng Tước']=GUIDE['Phượng Tước'].replace('100 tỷ máu','100.000 tỷ máu')}catch(e){}
 })();
