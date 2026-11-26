@@ -2,15 +2,17 @@
 (function(){
 const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,ORG=0xff8a1a,hyp=Math.hypot,rnd=Math.random;
 const NPHP=1e14;
+const goldSkin=()=>{try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}');return !!(d.up&&d.skin)}catch(e){return false}};
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
-/* Nhát chém cong (vầng trăng khuyết dựng đứng) như hiệu ứng slash; mỗi nhát đổi bên trái/phải */
-const vslash=(x,z,fx,fz,n)=>{
- const R=9,A=2.4,left=n&1,a=left?Math.PI-.6:.6,th=Math.atan2(fx,fz),z0=a-A/2,ox=Math.cos(a)*R,oy=Math.sin(a)*R,
+/* Nhát chém cong (vầng trăng khuyết dựng đứng) như hiệu ứng slash; luôn cùng một hướng, bay thẳng từ người chơi về phía quái */
+const vslash=(sx,sz,fx,fz,l)=>{
+ const R=9,A=2.4,a=-1.1,th=Math.atan2(fx,fz),z0=a-A/2,cs=Math.cos(th),sn=Math.sin(th),reach=Math.max(6,l-2),
   m=new THREE.Mesh(G('PTVS2',()=>new THREE.TorusGeometry(R,.55,6,28,A)),mat(RED,.95)),
-  c=new THREE.Mesh(G('PTVS3',()=>new THREE.TorusGeometry(R,.2,6,28,A)),mat(WHT,.95));
- m.add(c);m.rotation.set(0,th,z0);m.position.set(x-ox*Math.cos(th),10-oy,z+ox*Math.sin(th));
- add(m,12,(f,t)=>{m.rotation.z=z0+(left?-1:1)*t*.5;const o=.95*(1-t);m.material.opacity=o;c.material.opacity=o;m.scale.setScalar(1+t*.3)})};
+  c=new THREE.Mesh(G('PTVS3',()=>new THREE.TorusGeometry(R,.2,6,28,A)),mat(WHT,.95)),
+  place=t=>{const d=3+(reach-3)*t,ang=a+t*.5,s=1+t*.3,ox=Math.cos(ang)*R*s,oy=Math.sin(ang)*R*s;m.position.set(sx+fx*d-ox*cs,6-oy,sz+fz*d+ox*sn);m.rotation.z=z0+t*.5;m.scale.setScalar(s)};
+ m.add(c);m.rotation.set(0,th,z0);place(0);
+ add(m,12,(f,t)=>{place(t);const o=.95*(1-t);m.material.opacity=o;c.material.opacity=o})};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
 const nearFoe=(x,z)=>{let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=hyp(e.m.position.x-x,e.m.position.z-z);if(d<bd){bd=d;b=e}}});return b?{e:b,d:bd}:null};
 function stunAt(x,z,r,sec){enemies.forEach(e=>{if(hyp(e.m.position.x-x,e.m.position.z-z)<r){if(e.dummy)e.stun=Math.max(e.stun||0,sec);else e.cd=Math.max(e.cd,sec)}})}
@@ -38,6 +40,13 @@ const reset=()=>{spinOn=false;pose=null;drawing=false;kneelOff();if(flipOn){flip
 function ringV(r){
  const g=new THREE.Group(),arcs=[];
  [[r,4.6,RED,.16],[r*.72,3.6,GLD,.13],[r*1.25,2.8,WHT,.1]].forEach(([rr,arc,c,w],i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(rr,w,6,36,arc),mat(c,.85));m.rotation.z=i*2.1;g.add(m);arcs.push(m)});
+ scene.add(g);return{g,arcs}}
+function ringFire(r){
+ const pal=goldSkin()?[0xffb81a,0xffe14a,0xfff6b0]:[0xd01414,0xff3a22,0xff8c50],g=new THREE.Group(),arcs=[];
+ [[r,4.6,.1],[r*.72,3.6,.08],[r*1.25,2.8,.06]].forEach(([rr,arc,w],i)=>{
+  const q=new THREE.Group();
+  [[w*3.4,.35],[w*2,.6],[w,.95]].forEach(([tube,o],j)=>q.add(new THREE.Mesh(G('PTFR'+i+j+r,()=>new THREE.TorusGeometry(rr,tube,6,36,arc)),mat(pal[j],o))));
+  q.rotation.z=i*2.1;g.add(q);arcs.push(q)});
  scene.add(g);return{g,arcs}}
 function ringH(r,c1,c2){
  const g=new THREE.Group(),ws=[];
@@ -110,8 +119,8 @@ async function s3(){
 async function s5(){
  const fe=lock(),[tx,tz]=target(),p=player.position,live=posOf(fe,tx,tz);
  say('Đệ Ngũ Thức: Dung Vạn Hắc — Truyền Tân Hỏa!',1800);
- const A=ringV(3.6),sw=mkSword(RED,.5);hid=true;
- const wheel=(R,cx,cy,cz,fx,fz,dir)=>{R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz)+Math.PI/2;R.arcs.forEach((m,i)=>{m.rotation.z+=dir*(i&1?-1:1)*.5})};
+ const A=ringFire(3.6),sw=mkSword(RED,.5);hid=true;
+ const wheel=(R,cx,cy,cz,fx,fz,dir)=>{R.g.position.set(cx,cy,cz);R.g.rotation.y=Math.atan2(fx,fz)+Math.PI/2;const t=performance.now()/80;R.arcs.forEach((m,i)=>{m.rotation.z+=dir*(i&1?-1:1)*.5;m.scale.setScalar(1+Math.sin(t+i*2.1)*.05)})};
  try{
   let n=0,nx=performance.now()+400;
   for(let f=0;n<15;f++){
@@ -124,7 +133,7 @@ async function s5(){
    if(t>=nx){
     nx=t+400;n++;
     if(n==1)flash(RED);
-    vslash(ex,ez,fx,fz,n);
+    vslash(p.x,p.z,fx,fz,l);
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
  }finally{reset();drop(A.g);drop(sw)}}
