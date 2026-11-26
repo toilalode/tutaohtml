@@ -4,7 +4,13 @@ const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,ORG=0xff8a1a,hyp=Math.hypot,rnd=Mat
 const NPHP=1e14;
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
-const vslash=(x,z)=>{const m=new THREE.Mesh(G('PTVS',()=>new THREE.BoxGeometry(.5,18,.5)),mat(RED,.95));m.position.set(x,9,z);add(m,12,(f,t)=>{m.material.opacity=.95*(1-t);m.scale.x=m.scale.z=1+t*1.5})};
+/* Nhát chém cong (vầng trăng khuyết dựng đứng) như hiệu ứng slash; mỗi nhát đổi bên trái/phải */
+const vslash=(x,z,fx,fz,n)=>{
+ const R=9,A=2.4,left=n&1,a=left?Math.PI-.6:.6,th=Math.atan2(fx,fz),z0=a-A/2,ox=Math.cos(a)*R,oy=Math.sin(a)*R,
+  m=new THREE.Mesh(G('PTVS2',()=>new THREE.TorusGeometry(R,.55,6,28,A)),mat(RED,.95)),
+  c=new THREE.Mesh(G('PTVS3',()=>new THREE.TorusGeometry(R,.2,6,28,A)),mat(WHT,.95));
+ m.add(c);m.rotation.set(0,th,z0);m.position.set(x-ox*Math.cos(th),10-oy,z+ox*Math.sin(th));
+ add(m,12,(f,t)=>{m.rotation.z=z0+(left?-1:1)*t*.5;const o=.95*(1-t);m.material.opacity=o;c.material.opacity=o;m.scale.setScalar(1+t*.3)})};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
 const nearFoe=(x,z)=>{let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=hyp(e.m.position.x-x,e.m.position.z-z);if(d<bd){bd=d;b=e}}});return b?{e:b,d:bd}:null};
 function stunAt(x,z,r,sec){enemies.forEach(e=>{if(hyp(e.m.position.x-x,e.m.position.z-z)<r){if(e.dummy)e.stun=Math.max(e.stun||0,sec);else e.cd=Math.max(e.cd,sec)}})}
@@ -118,7 +124,7 @@ async function s5(){
    if(t>=nx){
     nx=t+400;n++;
     if(n==1)flash(RED);
-    vslash(ex,ez);
+    vslash(ex,ez,fx,fz,n);
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
  }finally{reset();drop(A.g);drop(sw)}}
