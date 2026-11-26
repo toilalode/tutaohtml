@@ -50,6 +50,7 @@ popup=function(title,opts,cur,fn){
  if(typeof title==='string'&&title.indexOf('Thiên Tướng (bật/tắt')===0){
   const on=opts.some(o=>o.includes('[BẬT]')),has=opts.some(o=>o.includes('[BẬT]')||o.includes('[TẮT]'));
   if(!has)toast('Chưa mở khóa Thiên Tướng — hạ Định Vương (Map 3)');
+  else if(!on&&P.kh>0)toast('Đang bật Kiếm Hồn Nhất Vương (R): cấm dùng Thiên Tướng');
   else opts.forEach((o,i)=>{if(on?o.includes('[BẬT]'):o.includes('[TẮT]'))fn(i)});
   bp(title,['.'],-1,()=>{});$('popup').style.display='none';paused=false;return}
  return bp(title,opts,cur,fn)};
@@ -66,6 +67,11 @@ const TKEYS=['dinh','thi','tinh','viem','hon','xv'];
 let ttC=0,gold=0,ttCt=0,ttBtn=null;
 const rd1=()=>{const n=now();if(n-ttCt>200){ttCt=n;try{const d=JSON.parse(localStorage.getItem('tm_pt_v1')||'{}'),b=d.beat||{},t=d.tt||[];ttC=(b[TKEYS[0]]&&t[0])?1:0;gold=(d.up&&d.skin)?1:0}catch(e){ttC=0;gold=0}}};
 const ttOn=()=>{rd1();return ttC};
+const ttNow=()=>{ttCt=0;return ttOn()};
+const baseBuffTT=buff;
+buff=function(k){
+ if(P.sty>=6&&String(k).toUpperCase()==='R'&&!P.kh&&ttNow())return toast('Đang bật Thiên Tướng: cấm dùng Kiếm Hồn Nhất Vương (R)');
+ return baseBuffTT(k)};
 const hbMul=()=>{rd1();return (gold?1000:250)*(P.kh>0?750:1)};
 const baseHit=hit;
 hit=function(x,z,r,d,kb){if(P.sw==4&&P.sty>=6)r*=hbMul();return baseHit(x,z,r,d,kb)};
@@ -100,7 +106,7 @@ function toggleTT(){if(own())innerLaw()}
 function toggleAP(){
  if(P.sty<6)return toast('Cần dùng Phượng Tước Kiếm Pháp hoặc Nhất Vương Tài Quyết Lục');
  if(!P.kh)return toast('Bật Kiếm Hồn Nhất Vương (R) trước');
- P.ap=P.ap?0:1;say(P.ap?'Áp Chế Nhất Vương — BẬT (một đòn diệt tất cả)':'Áp Chế Nhất Vương — TẮT',1400);if(P.ap)flash(0x000000)}
+ P.ap=P.ap?0:1;say(P.ap?'Nhất Vương Trấn Áp — BẬT (một đòn diệt tất cả)':'Nhất Vương Trấn Áp — TẮT',1400);if(P.ap)flash(0x000000)}
 lawMenu=function(){if(own())return toggleAP();return innerLaw()};
 addEventListener('keydown',e=>{
  if(e.code!=='KeyT'||!own())return;
@@ -109,14 +115,15 @@ addEventListener('keydown',e=>{
 const baseBuild=buildBtns;
 buildBtns=function(){
  baseBuild();ttBtn=null;
+ if(bt.R&&P.sty>=6){const o=bt.R,n=o.cloneNode(true);o.replaceWith(n);n.addEventListener('pointerdown',e=>{e.preventDefault();buff('R')});bt.R=n}
  if(own()){
-  if(bt.M2)bt.M2.innerHTML='<b>M2</b><i>Áp Chế</i>';
+  if(bt.M2)bt.M2.innerHTML='<b>M2</b><i>Trấn Áp</i>';
   const bot=$('btns'),b=document.createElement('button');
   b.innerHTML='<b>T</b><i>Thiên Tướng</i>';b.className='rt rT';
   b.addEventListener('pointerdown',e=>{e.preventDefault();toggleTT()});
   if(bt.R)bt.R.after(b);else{const k=bot.querySelector('.rt');if(k)bot.insertBefore(b,k);else bot.appendChild(b)}
   ttBtn=b}
  placeCols()};
-GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Áp Chế, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, mắt và vòng hào quang đỏ, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Áp Chế Nhất Vương màu đen (bóng, tia và quái đều đen, thỉnh thoảng có tia, mắt và vòng đỏ), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo.<h3>Hitbox</h3>Skin Đỏ: hitbox x250. Skin Vàng Trắng: hitbox x1.000. Bật Kiếm Hồn Nhất Vương: hitbox nhân thêm x750.';
+GUIDE['Phượng Tước']+='<h3>Kiếm Hồn Nhất Vương, Nhất Vương Trấn Áp, Thiên Tướng</h3>Nút R: bật/tắt Kiếm Hồn Nhất Vương (đen, mắt và vòng hào quang đỏ, x1.000.000). Nút M2 (hoặc chuột phải): bật/tắt Nhất Vương Trấn Áp màu đen (bóng, tia và quái đều đen, thỉnh thoảng có tia, mắt và vòng đỏ), một đòn diệt tất cả, cần bật Kiếm Hồn trước. Nút T (bên phải nút R): bật/tắt Thiên Tướng, nhân sức mạnh theo boss cao nhất đã hạ, kèm một quái nhỏ đi theo. Kiếm Hồn Nhất Vương và Thiên Tướng không dùng chung được: bật cái này thì cấm cái kia.<h3>Hitbox</h3>Skin Đỏ: hitbox x250. Skin Vàng Trắng: hitbox x1.000. Bật Kiếm Hồn Nhất Vương: hitbox nhân thêm x750.';
 buildBtns();
 })();
