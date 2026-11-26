@@ -16,8 +16,8 @@ async function rush(fe,fx,fz,n,keep,step){
 const dive=(fe,fx,fz,n,slashCol,once)=>rush(fe,fx,fz,n,2.5,f=>{if(once?f==0:f%2==0)FXK('slash',{x:player.position.x,z:player.position.z,r:6,col:f&2?slashCol:WHT})});
 async function s7(){
  const fe=lockOn(),[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Hoành Quán Vạn Cổ',2000);FXK('ring',{r:16,life:40,col:0xffffff});FXK('ring',{r:10,life:40,col:BLK});await wait(50);
- say('Khúc Chung Trảm!',1600);FXK('sky',{col:0xffffff});FXK('sky',{col:BLK});
- const[ax,az]=await dive(fe,tx,tz,14,BLK,1);
+ say('Khúc Chung Trảm!',1600);FXK('sky',{col:0xffffff});
+ const[ax,az]=await rush(fe,tx,tz,14,2.5);
  boom(ax,az,110,WHT,5.5e14);FXK('boom',{x:ax,z:az,r:70,col:BLK});await wait(12)}
 async function s8(){
  const fe=lockOn(),[tx,tz]=target();say('Nhất Vương Tài Quyết Lục — Tung Hoành Thiên Hạ',2000);await wait(30);
