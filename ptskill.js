@@ -4,6 +4,7 @@ const RED=0xff2a2a,GLD=0xffd646,WHT=0xfff4d0,ORG=0xff8a1a,hyp=Math.hypot,rnd=Mat
 const NPHP=1e14;
 const drop=g=>{scene.remove(g);freeObj(g)};
 const mkSword=(col,sc)=>{const g=new THREE.Group(),b=new THREE.Mesh(G('PTSB',()=>new THREE.BoxGeometry(.5,.15,7)),mat(col,.95)),gd=new THREE.Mesh(G('PTSG',()=>new THREE.BoxGeometry(2,.22,.3)),mat(GLD,.95));b.position.z=3.6;gd.position.z=.2;g.add(b,gd);g.scale.setScalar(sc);scene.add(g);return g};
+const vslash=(x,z)=>{const m=new THREE.Mesh(G('PTVS',()=>new THREE.BoxGeometry(.5,18,.5)),mat(RED,.95));m.position.set(x,9,z);add(m,12,(f,t)=>{m.material.opacity=.95*(1-t);m.scale.x=m.scale.z=1+t*1.5})};
 function boom(x,z,r,col,d,kb){FXK('boom',{x,z,r,col});FXK('ring',{r:r*1.4,life:40,col:WHT});flash(col);shake=Math.max(shake,Math.min(60,r/2));if(d)hit(x,z,r,d*3,kb||3)}
 const nearFoe=(x,z)=>{let b=null,bd=1e9;enemies.forEach(e=>{if(e.hp>0){const d=hyp(e.m.position.x-x,e.m.position.z-z);if(d<bd){bd=d;b=e}}});return b?{e:b,d:bd}:null};
 function stunAt(x,z,r,sec){enemies.forEach(e=>{if(hyp(e.m.position.x-x,e.m.position.z-z)<r){if(e.dummy)e.stun=Math.max(e.stun||0,sec);else e.cd=Math.max(e.cd,sec)}})}
@@ -117,7 +118,7 @@ async function s5(){
    if(t>=nx){
     nx=t+400;n++;
     if(n==1)flash(RED);
-    if(n==15)FXK('slash',{x:ex+rnd()*3-1.5,z:ez+rnd()*3-1.5,r:16,col:RED});
+    vslash(ex,ez);
     hit(ex,ez,16,9e13*3,.6);shake=Math.max(shake,10)}
    await wait(1)}
  }finally{reset();drop(A.g);drop(sw)}}
