@@ -164,7 +164,7 @@ async function s6(){
    ring.forEach((r,i)=>{const g=gs[i+1],x=r.sx+(r.ex-r.sx)*e,z=r.sz+(r.ez-r.sz)*e;g.position.set(x,70*(1-e),z);g.rotation.y=Math.atan2(tx-x,tz-z)});
    upd();await wait(1)}
   gs.forEach(drop);gs.length=0;
-  boom(tx,tz,90,GLD,8e14);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
+  boom(tx,tz,90,GLD,1e15);FXK('boom',{x:tx,z:tz,r:60,col:RED});await wait(10)}
  finally{drop(sw);drop(md.g);gs.forEach(drop)}}
 
 async function s8(){
@@ -194,7 +194,7 @@ async function s8(){
    await wait(1)}
   P.flyH=0;
   sw.position.set(tx,1,tz);
-  boom(tx,tz,130,WHT,5e14);FXK('boom',{x:tx,z:tz,r:80,col:0x111111});await wait(12)}
+  boom(tx,tz,130,WHT,1.5e15);FXK('boom',{x:tx,z:tz,r:80,col:0x111111});await wait(12)}
  finally{reset();if(sw)drop(sw);if(fl){P.flyH=0;P.flyN--;P.fly=Math.max(P.fly,25)}}}
 
 async function exec(f,fly){P.busy++;P.lk++;if(fly){P.flyN++;P.flyH=fly}try{await f()}catch(e){console.error(e)}finally{reset();P.busy--;P.lk--;if(fly){P.flyN--;P.fly=Math.max(P.fly,25)}}}
