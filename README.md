@@ -51,9 +51,6 @@ Lệnh phải chạy ngay trong thư mục gốc của repo (nơi có `index.htm
 
 **Kiếm pháp:** Cửu Ngũ Chí Tôn, Thiên Mệnh, Tứ Tượng, Thái Cực, Định Hải, Chung Yên, Phượng Tước, Nhất Vương Tài Quyết Lục.
 
-**Buff R T Y U** (chỉ với Thiên Mệnh Kiếm + Cửu Ngũ / Thiên Mệnh): R Kiếm Hồn, T Thiên Địa, Y Xích Giáp, U Phản Hồi. Bật R thì cấm T/Y/U và ngược lại.
-
-**Lãnh Địa (Nhất Trảm Độc Tôn, phím G của Thiên Mệnh):** quái trong vực đứng im, chịu sát thương liên tục rồi đòn Vỡ Nát khi đóng.
 
 ## Phó bản Phượng Tước Kiếm
 
@@ -63,17 +60,13 @@ Vào bằng nút Map → Phó bản Phượng Tước Kiếm, nói chuyện vớ
 - **Map 2:** đánh Nguyên Phượng, đổi ngọc lấy skin Vàng Trắng (nút 3 để đổi skin).
 - **Map 3:** khiêu chiến Định Vương → Thí Vương → Tĩnh Vương → Viêm Đế → Hỗn Độn → Xi Vưu, mỗi boss mở chiêu, ngọc và Thiên Tướng.
 
-**Kiếm Hồn Nhất Vương (R)** và **Thiên Tướng (T / G)** không dùng chung được: bật cái này thì cấm cái kia.
+**Kiếm Hồn Nhất Vương (R)** và **Thiên Tướng (T)** không dùng chung được: bật cái này thì cấm cái kia.
 
 **Nhất Vương Trấn Áp (M2)** cần bật Kiếm Hồn trước; một đòn diệt tất cả, bóng, tia và quái đều đen, thỉnh thoảng có tia, mắt và vòng đỏ. Nút chỉ ghi "Trấn Áp".
 
 **Hitbox:** skin Đỏ ×250, skin Vàng Trắng ×1.000, bật Kiếm Hồn Nhất Vương nhân thêm ×750.
 
 **Màu chiêu theo skin** (`ptpalette.js`): skin Đỏ chủ yếu đỏ, thỉnh thoảng vàng; skin Vàng Trắng chủ yếu vàng, thỉnh thoảng trắng; hai chiêu Nhất Vương Tài Quyết Lục chủ yếu đen, thỉnh thoảng đỏ.
-
-**Đệ Ngũ Thức** (`ptskill.js`): hai vòng lửa quay quanh người (lửa đỏ ở skin Đỏ, lửa vàng ở skin Vàng Trắng), mỗi 0,4 giây tung một nhát chém cong theo một hướng cố định bay thẳng về phía quái. Nhân vật lộn vòng theo thanh kiếm đang quay.
-
-**Đệ Tam Thức:** xoay chém sau lưng, phi kiếm xuyên quái (chiếm 60% sát thương gốc), rồi đâm liên hoàn.
 
 ## Map Test
 
