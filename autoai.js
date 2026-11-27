@@ -2,7 +2,7 @@
 (function(){
  const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt';
  const NOCAST={dom4:1,dom5:1,counter:1,guard2:1};
- let on=false,timer=0,strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
+ let on=false,timer=0,loadT=0,strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
  const busy=()=>P.busy>0||P.lk>0||P.cut>0;
  const started=()=>$('start').style.display==='none';
  const steer=(wx,wz)=>{
@@ -36,6 +36,14 @@
    const sv=(sp.tot||0)+(sp.sp==='rewrite'&&!(P.nost>0)?1e9:0);
    if(sv>score){score=sv;best=k}}
   if(best)cast(best)}
+ function loadout(){
+  const t=performance.now();
+  if(t-loadT<1500||busy())return;
+  loadT=t;
+  const fused=SWORDS.length>3,wantSw=fused?3:2,wantSty=fused&&STYLES.length>5?5:0;
+  const hasFused=$('bSword').textContent.indexOf('DUNG HỢP')>=0;
+  if(fused?!hasFused:P.sw!==2){P.sw=wantSw;syncRT();buildBtns()}
+  if(P.sty!==wantSty)setStyle(wantSty)}
  function talkToNpc(){
   const t=performance.now();
   if(t-talkT<2000)return;
@@ -60,6 +68,7 @@
  function tick(){
   if(!on)return;
   if(!started()||paused||P.hp<=0){steer(0,0);blockOn(0);return}
+  loadout();
   const pp=player.position,foes=enemies.filter(e=>e.hp>0);
   if(!foes.length){
    if(MAP==='dungeon')goQuest(pp);
