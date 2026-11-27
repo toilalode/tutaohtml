@@ -118,7 +118,7 @@ async function s3(){
   const place=d=>{const[ex,ez]=live(),dx=ex-p.x,dz=ez-p.z,l=hyp(dx,dz)||1,ux=dx/l,uz=dz/l;p.x=ex-ux*d;p.z=ez-uz*d;sw.position.set(p.x+ux*.6,p.y+1.3,p.z+uz*.6);sw.lookAt(ex,p.y+1.3,ez)};
   for(let f=0;f<10;f++){const[ex,ez]=live(),l=hyp(ex-p.x,ez-p.z);place(l>4.2?l-(l-4.2)/(10-f):l);await wait(1)}
   const reach=[4.2,3,1.5,1.5];
-  for(let i=0;i<10;i++){for(let f=0;f<4;f++){place(reach[f]);if(f==2){const[ex,ez]=live();FXK('slash',{x:ex+rnd()*2-1,z:ez+rnd()*2-1,r:6,col:i&1?RED:WHT});hit(ex,ez,12,8e12*3,.2);shake=Math.max(shake,5)}await wait(1)}}
+  for(let i=0;i<10;i++){for(let f=0;f<4;f++){place(reach[f]);if(f==2){const[ex,ez]=live();hit(ex,ez,12,8e12*3,.2);shake=Math.max(shake,5)}await wait(1)}}
  } finally{reset();drop(R.g);drop(sw0);if(sw)drop(sw)}}
 
 async function s5(){
