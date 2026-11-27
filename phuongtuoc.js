@@ -441,6 +441,7 @@ GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map
 GUIDE['Phó bản']=GUIDE['Phó bản'].replace('thêm vào menu Kiếm (phím 2)','là skin của Thiên Mệnh Kiếm, chọn ở nút 3 Đổi skin');
 GUIDE['Điều khiển']=GUIDE['Điều khiển'].replace('<b>2</b> chọn kiếm.','<b>2</b> chọn kiếm, <b>3</b> đổi skin (chọn kiếm rồi chọn skin).');
 
+window.PTAI={map:()=>ptMap,conv:()=>npcs.find(n=>n.fn===convMenu)||null,quest:()=>npcs.find(n=>n.fn===q1Menu)||null,go:goMap,running:()=>!!Q,start:q1Start,sword:()=>!!PT.sword};
 buildBtns();
 let last=now();
 (function tick(){requestAnimationFrame(tick);const t=now(),dt=paused?0:Math.min(.05,(t-last)/1000);last=t;try{step(dt,t/1000)}catch(e){console.error(e)}})();
