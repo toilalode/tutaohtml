@@ -102,7 +102,7 @@ const baseCast=cast;cast=function(k){const sp=SK[P.sty]&&SK[P.sty][k.toLowerCase
 const baseBuff=buff;buff=function(k){if(P.sty>=6){if(k.toUpperCase()=='R')toggleKH();return}return baseBuff(k)};
 const baseSync=syncRT;syncRT=function(){const k=P.kh;baseSync();if(P.sty>=6&&PT.kh)P.kh=k};
 function toggleKH(){
- if(!PT.kh)return toast('Chưa có Kiếm Hồn Nhất Vương — hạ Xi Vưu (Map 3)');
+ if(!PT.kh)return toast('Chưa có Kiếm Hồn Nhất Vương — hạ Xi Vưu Dạng 2 (Map 3)');
  P.kh=P.kh?0:1;say('Kiếm Hồn Nhất Vương — '+(P.kh?'BẬT':'TẮT'),1000);if(P.kh)flash(0x202020)}
 const baseLaw=lawMenu;lawMenu=function(){if(useTT())return ttMenu();return baseLaw()};
 function ttMenu(){
@@ -268,7 +268,7 @@ function armyHit(x,z,r,d){
 const BONE=[{n:'Vạn Quái Cận Kiến',cd:30,sta:40,fn:canKien},{n:'Vạn Quái Quy Nhất',cd:20,sta:40,fn:quyNhat}];
 function castBone(i){
  if(paused||P.block||P.lk>0||P.sty<6||!own())return;
- if(!PT.bone)return toast('Chưa mở khóa — hạ Xi Vưu (Map 3) để mở Vạn Quái');
+ if(!PT.bone)return toast('Chưa mở khóa — hạ Xi Vưu Dạng 2 (Map 3) để mở Vạn Quái');
  if(i==0&&army)return endArmy(true);
  if(i==1&&giant)return endGiant(true);
  const s=BONE[i],ck='pvq'+i;if(P.cd[ck]>0)return;
@@ -287,9 +287,10 @@ const BD={
  tinh:{n:'Tĩnh Vương',hp:2.5e18,c:0x1a6a8a,sc:4,k:400},
  viem:{n:'Viêm Đế',hp:5e18,c:0xd04010,sc:4.2,k:450},
  hon:{n:'Hỗn Độn',hp:6e18,c:0x202030,sc:4.4,k:500},
- xv:{n:'Xi Vưu',hp:1e19,c:0x7a0a14,sc:4.8,k:600},
+ xv:{n:'Xi Vưu Dạng 1',hp:1e19,c:0x7a0a14,sc:4.8,k:600},
+ xv2:{n:'Xi Vưu Dạng 2',hp:2e19,c:0x3a0a1a,sc:5.2,k:700},
  np:{n:'Nguyên Phượng',hp:1e17,c:0xffa030,sc:5.4,k:1000}};
-const ORDER=['dinh','thi','tinh','viem','hon','xv'];
+const ORDER=['dinh','thi','tinh','viem','hon','xv','xv2'];
 let PB=null;
 const bpos=()=>PB.e.m.position;
 const harm=d=>{if(PB&&P.hp>0)hurt(d*PB.d.k)};
@@ -321,7 +322,8 @@ function reward(k){
   else if(k=='tinh'){PT.ngoc.tinh=1;m='Ngọc Tĩnh Vương (x6), Đệ Tam Thức, Tam Hoàng Thiên Tướng (x20)'}
   else if(k=='viem'){PT.ngoc.viem+=2;m='2 Ngọc Viêm Đế, Đệ Tứ + Đệ Ngũ Thức, Viêm Đế Thiên Tướng (x25)'}
   else if(k=='hon'){PT.ngoc.hon+=2;m='2 Ngọc Hỗn Độn, Nhất Vương Tài Quyết Lục, Hỗn Độn Thiên Tướng (x35)'}
-  else{PT.core++;PT.lkh++;PT.kh=1;PT.bone=1;PT.xuong+=1e6;m='1 Lõi Sức Mạnh, 1 Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R), 1.000.000 xương cá, Vạn Quái cam x1.000 (K, L), Xi Vưu Thiên Tướng (x50)'}}
+  else if(k=='xv'){m='Chung Chương: Nguyên Phượng Thiên Giáng, Xi Vưu Thiên Tướng (x50). Khiêu chiến Xi Vưu Dạng 2 để nhận Kiếm Hồn Nhất Vương và Vạn Quái'}
+  else{PT.core++;PT.lkh++;PT.kh=1;PT.bone=1;PT.xuong+=1e6;m='1 Lõi Sức Mạnh, 1 Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R), 1.000.000 xương cá, Vạn Quái cam x1.000 (K, L)'}}
  else m='Đã nhận thưởng lần đầu';
  save();buildBtns();say('Chiến thắng! '+m,5200);flash(GLD)}
 function bossWin(){const k=PB.key;scene.remove(PB.e.m);freeObj(PB.e.m);enemies=enemies.filter(x=>x!==PB.e);PB=null;reward(k)}
@@ -437,7 +439,7 @@ mapMenu=function(){if(castBusy())return;popup('Chọn map',['Map chính (đợt 
 const baseSayTxt=say;
 say=function(t,ms){return baseSayTxt(typeof t=='string'?t.replace('mở menu Kiếm (phím 2) để chọn','mở nút 3 Đổi skin để chọn'):t,ms)};
 
-GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 1 con quái có 1.000 dạng (mỗi dạng 10.000 máu, diệt dạng này thì hiện dạng kế tiếp ngay tại chỗ) trong 10 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2). Phượng Tước Kiếm Pháp, Nhất Vương Tài Quyết Lục, Thiên Tướng, Vạn Quái Cận Kiến (K) và Quy Nhất (L) chỉ dùng được khi đang cầm Kiếm Phượng Tước.<h3>Map 2</h3>Chỉ dùng được Kiếm Phượng Tước và kiếm pháp của nó. Đánh Nguyên Phượng (100 triệu tỷ máu, biết bay: lượn trên không, lao từ trời xuống, mưa lửa, bão cánh; dưới 50% máu thì hóa cuồng, đánh nhanh và dày hơn): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. Nút 3 Đổi skin (có ở mọi map): chọn Kiếm Phượng Tước rồi chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Chỉ dùng được Kiếm Phượng Tước và kiếm pháp của nó. Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Xi Vưu rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
+GUIDE['Phượng Tước']='<h3>Phó bản Phượng Tước Kiếm</h3>Nút Map → Phó bản Phượng Tước Kiếm. Nói chuyện với Người Chuyển Đổi (phím I) để chọn map.<h3>Map 1</h3>Diệt 1 con quái có 1.000 dạng (mỗi dạng 10.000 máu, diệt dạng này thì hiện dạng kế tiếp ngay tại chỗ) trong 10 phút → Kiếm Phượng Tước (đỏ, phượng hoàng 3D): x100 sức mạnh, -80% hồi chiêu và thể lực cho Phượng Tước Kiếm Pháp và Nhất Vương Tài Quyết Lục (chọn kiếm ở nút 2). Phượng Tước Kiếm Pháp, Nhất Vương Tài Quyết Lục, Thiên Tướng, Vạn Quái Cận Kiến (K) và Quy Nhất (L) chỉ dùng được khi đang cầm Kiếm Phượng Tước.<h3>Map 2</h3>Chỉ dùng được Kiếm Phượng Tước và kiếm pháp của nó. Đánh Nguyên Phượng (2,5 triệu tỷ máu, biết bay: lượn trên không, lao từ trời xuống, mưa lửa, bão cánh; dưới 50% máu thì hóa cuồng, đánh nhanh và dày hơn): lần đầu nhận x40 sức mạnh, mỗi lần 40% rớt Ngọc Nguyên Phượng. Người Đổi Đồ đổi ngọc để mở skin Vàng Trắng. Nút 3 Đổi skin (có ở mọi map): chọn Kiếm Phượng Tước rồi chuyển qua lại giữa skin Đỏ và Vàng Trắng (x1.500, không hồi chiêu, không tốn thể lực).<h3>Map 3</h3>Chỉ dùng được Kiếm Phượng Tước và kiếm pháp của nó. Khiêu chiến lần lượt: Định Vương, Thí Vương, Tĩnh Vương, Viêm Đế, Hỗn Độn, Xi Vưu Dạng 1, Xi Vưu Dạng 2. Mỗi boss mở chiêu, ngọc và Thiên Tướng. Xi Vưu Dạng 1 mở Chung Chương (Nguyên Phượng Thiên Giáng) và Xi Vưu Thiên Tướng. Xi Vưu Dạng 2 rớt Lõi Sức Mạnh, Lõi Kiếm Hồn (Kiếm Hồn Nhất Vương, nút R, x1.000.000, -50% hồi chiêu) và 1.000.000 xương cá (mở Vạn Quái Cận Kiến K và Vạn Quái Quy Nhất L màu cam, y hệt bản Chung Yên, x1.000 sát thương).';
 GUIDE['Phó bản']=GUIDE['Phó bản'].replace('thêm vào menu Kiếm (phím 2)','là skin của Thiên Mệnh Kiếm, chọn ở nút 3 Đổi skin');
 GUIDE['Điều khiển']=GUIDE['Điều khiển'].replace('<b>2</b> chọn kiếm.','<b>2</b> chọn kiếm, <b>3</b> đổi skin (chọn kiếm rồi chọn skin).');
 

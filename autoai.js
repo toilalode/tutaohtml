@@ -1,6 +1,6 @@
 'use strict';
 (function(){
- const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt',PTCONV=[-10,-8],PTWORK=[10,-8],PTSWAP=[0,-14],SHOP=[8,-7],PTORDER=['dinh','thi','tinh','viem','hon','xv'];
+ const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt',PTCONV=[-10,-8],PTWORK=[10,-8],PTSWAP=[0,-14],SHOP=[8,-7],PTORDER=['dinh','thi','tinh','viem','hon','xv','xv2'];
  const NOCAST={dom4:1,dom5:1,counter:1,guard2:1};
  let on=false,timer=0,loadT=0,ptSel=0,ptLock=0,shopNext=0,swapNext=0,mapT=0,lsT=0,lsC={},strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
  const busy=()=>P.busy>0||P.lk>0||P.cut>0;
