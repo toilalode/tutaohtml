@@ -18,7 +18,7 @@ let swOv=0,prev='main',B=null,world=null,npcs=[],near=null,dfx=[],souls=[],army=
 
 const refill=()=>{st=MAXST};
 const baseDmg=dmgMul,baseCost=costMul,baseHit=hit,baseMk=mk,baseCast=cast,baseSet=setMap,baseResp=respawn,baseBuild=buildBtns,baseSay=say,baseRule=ruleSkill,baseBuff=buff,baseSync=syncRT,baseStyle=setStyle,basePopup=popup;
-dmgMul=function(){let m=baseDmg();if(boosted()){m*=50;if(soulOn())m*=P.sty==0?1000:101000;if(DG.khItem&&(P.ap>0||now()<m2T))m*=5}return m};
+dmgMul=function(){let m=baseDmg();if(P.sty<6)m*=40;if(boosted()){m*=50;if(soulOn())m*=P.sty==0?1000:101000;if(DG.khItem&&(P.ap>0||now()<m2T))m*=5}return m};
 costMul=function(){const c=baseCost();return fusedOn()?{cd:c.cd*.01,st:c.st*.01}:c};
 const M1=[5e4,7.5e4,1.25e5],M1F=2e5,baseAtk=atk;let m1=false;
 atk=function(){m1=true;try{baseAtk()}finally{m1=false}};
@@ -47,7 +47,7 @@ function applyPose(){
 {const rd=ren.render.bind(ren);ren.render=function(s,c){applyPose();return rd(s,c)}}
 
 const mG=mat(GOLD,.5),mR=mat(RED,.5);
-function setTone(on,kh,red){[[S.kh,on||red],[S.gap,on||red],[S.xich,on]].forEach(([g,o])=>{let i=0;g.traverse(c=>{if(!c.isMesh)return;if(!c.userData.om)c.userData.om=c.material;c.material=o?(red?mR:(i++%2?mR:mG)):c.userData.om})});S.td.material.color.setHex(on?0xff7a1a:GOLD)}
+function setTone(on,kh,red){[[S.kh,kh||red],[S.gap,on||red],[S.xich,on]].forEach(([g,o])=>{let i=0;g.traverse(c=>{if(!c.isMesh)return;if(!c.userData.om)c.userData.om=c.material;c.material=o?(red?mR:(i++%2?mR:mG)):c.userData.om})});S.td.material.color.setHex(on?0xff7a1a:GOLD)}
 
 function owned(){
  if(DG.fused&&SWORDS.length<4)SWORDS.push(['Thiên Mệnh Kiếm — Dung Hợp Chung Yên (Chung Yên)',1.7]);
