@@ -1,5 +1,5 @@
-const V='thienmenh-v18';
-const CORE=['./','index.html','style.css','dungeon.css','fix.css','custom.css','skills.js','chungyen.js','ptpre.js','beasts.js','rule.js','game.js','hp.js','zoom.js','cutscene.js','dungeon.js','taicuc.js','chungyen-rtyu.js','bossai.js','luongcuc.js','phuongtuoc.js','ptfix.js','ptskill.js','ptpalette.js','nomain.js','fix.js','autoai.js','resetsave.js','manifest.json','lib/three.min.js','gl.js',
+const V='thienmenh-v19';
+const CORE=['./','index.html','style.css','dungeon.css','fix.css','custom.css','skills.js','chungyen.js','ptpre.js','beasts.js','rule.js','patch.js','game.js','hp.js','zoom.js','cutscene.js','dungeon.js','taicuc.js','chungyen-rtyu.js','bossai.js','luongcuc.js','phuongtuoc.js','ptfix.js','ptskill.js','ptpalette.js','nomain.js','fix.js','autoai.js','resetsave.js','manifest.json','lib/three.min.js','gl.js',
   'icons/icon-192.png','icons/icon-512.png','icons/maskable-192.png','icons/maskable-512.png','icons/apple-touch-icon.png','icons/favicon-48.png'];
 const STATIC=/\/(lib\/three\.min\.js|icons\/[^/]+)$/;
 self.addEventListener('install',e=>{
