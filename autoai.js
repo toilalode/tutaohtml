@@ -1,8 +1,8 @@
 'use strict';
 (function(){
- const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt',PTCONV=[-10,-8],PTWORK=[10,-8],PTORDER=['dinh','thi','tinh','viem','hon','xv'];
+ const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt',PTCONV=[-10,-8],PTWORK=[10,-8],PTSWAP=[0,-14],SHOP=[8,-7],PTORDER=['dinh','thi','tinh','viem','hon','xv'];
  const NOCAST={dom4:1,dom5:1,counter:1,guard2:1};
- let on=false,timer=0,loadT=0,ptSel=0,ptLock=0,lsT=0,lsC={},strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
+ let on=false,timer=0,loadT=0,ptSel=0,ptLock=0,shopNext=0,swapNext=0,lsT=0,lsC={},strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
  const busy=()=>P.busy>0||P.lk>0||P.cut>0;
  const started=()=>$('start').style.display==='none';
  const steer=(wx,wz)=>{
@@ -59,22 +59,42 @@
   const p=plan(),cur=$('bSword').textContent.indexOf('DUNG HỢP')>=0?3:P.sw;
   if(cur!==p.sw){P.sw=p.sw;syncRT();buildBtns()}
   if(P.sty!==p.sty)setStyle(p.sty)}
+ function answer(pick,round){
+  if($('popup').style.display!=='block')return;
+  const opts=Array.from($('popts').children),i=pick($('ptitle').textContent,opts.map(o=>o.textContent));
+  if(i>=0&&opts[i]&&round<6){
+   opts[i].click();
+   setTimeout(()=>answer(pick,round+1),700)}
+  else if(opts.length)opts[opts.length-1].click()}
  function talkVia(btn,pick){
   const t=performance.now();
-  if(t-talkT<2000)return;
+  if(t-talkT<2000)return false;
   talkT=t;
   const tk=$(btn);
   if(tk)tk.click();
-  setTimeout(()=>{
-   if($('popup').style.display!=='block')return;
-   const opts=Array.from($('popts').children),i=pick($('ptitle').textContent,opts.map(o=>o.textContent));
-   if(i>=0&&opts[i])opts[i].click()},700)}
+  setTimeout(()=>answer(pick,0),700);
+  return true}
  function walkTo(pp,pos){
   const dx=pos[0]-pp.x,dz=pos[1]-pp.z;
   if(Math.hypot(dx,dz)>3){steer(dx,dz);return false}
   steer(0,0);
   return true}
+ function shopWant(){
+  const d=lsc('tm_dungeon_v1');
+  return (!d.fused&&d.power>=70)||(!d.style&&d.power>=30)||(!d.khItem&&d.hon>=40)||(!d.vq&&d.bone>=100000)}
+ function shopPick(title,texts){
+  if(title.indexOf('Thương Nhân Chung Yên')!==0)return -1;
+  const num=k=>{const m=new RegExp(k+' (\\d+)').exec(title);return m?+m[1]:0};
+  const wallet={'lõi sức mạnh':num('SM'),'lõi kiếm hồn':num('KH'),'xương quái':num('Xương')};
+  return texts.findIndex(x=>{
+   const m=/— (\d+) (lõi sức mạnh|lõi kiếm hồn|xương quái)/.exec(x);
+   return !!m&&x.indexOf('[ĐÃ CÓ]')<0&&wallet[m[2]]>=+m[1]})}
  function goQuest(pp){
+  const t=performance.now();
+  if(t>shopNext&&shopWant()){
+   if(!walkTo(pp,SHOP))return;
+   if(talkVia('dgTalk',shopPick))shopNext=t+60000;
+   return}
   if(!walkTo(pp,[NPCX,NPCZ]))return;
   talkVia('dgTalk',title=>title===NPCNAME?0:-1)}
  function ptPick(title,texts){
@@ -84,6 +104,7 @@
    if(!pt.sword){ptSel=1;return 0}
    if(PTORDER.some(k=>!b[k])){ptSel=3;return 2}
    ptSel=2;return 1}
+  if(title==='Người Đổi Đồ')return 0;
   if(title==='Lấy Kiếm Phượng Tước'){ptLock=performance.now()+620000;return 0}
   if(title==='Khiêu Chiến Vua'){
    const i=texts.findIndex(x=>x.indexOf('[ĐÃ HẠ]')<0&&x.indexOf('[KHÓA]')<0);
@@ -93,6 +114,11 @@
  function ptQuest(pp){
   const pt=lsc('tm_pt_v1');
   if(ptSel===1&&pt.sword)ptSel=0;
+  const t=performance.now();
+  if(ptSel===2&&t>swapNext&&pt.sword&&!pt.up&&((pt.ngoc||{}).np||0)>=1){
+   if(!walkTo(pp,PTSWAP))return;
+   if(talkVia('ptTalk',ptPick))swapNext=t+60000;
+   return}
   if(!walkTo(pp,ptSel?PTWORK:PTCONV))return;
   if(ptSel&&performance.now()<ptLock)return;
   talkVia('ptTalk',ptPick)}
@@ -158,5 +184,5 @@
  row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px;pointer-events:auto';
  row.appendChild(ab);
  $('hudR').appendChild(row);
- try{GUIDE['Mẹo']+='<br>• <b>🤖 AI + Nhiệm vụ</b> (góc trên phải): AI tự di chuyển, giữ khoảng cách và né, đánh thường, bật buff, thi triển chiêu. AI tự chọn Kiếm Phượng Tước (khi đã mở khóa chiêu), Dung Hợp Chung Yên hoặc Thiên Mệnh Kiếm cùng kiếm pháp hợp. Trong phó bản Chung Yên AI tự nói chuyện NPC, khiêu chiến và đánh boss lặp lại; trong phó bản Phượng Tước AI tự đi qua Map 1, 3 để lấy kiếm và hạ lần lượt các boss. Bấm lại để tắt.'}catch(_){}
+ try{GUIDE['Mẹo']+='<br>• <b>🤖 AI + Nhiệm vụ</b> (góc trên phải): AI tự di chuyển, giữ khoảng cách và né, đánh thường, bật buff, thi triển chiêu. AI tự chọn Kiếm Phượng Tước (khi đã mở khóa chiêu), Dung Hợp Chung Yên hoặc Thiên Mệnh Kiếm cùng kiếm pháp hợp. Trong phó bản Chung Yên AI tự nói chuyện NPC, khiêu chiến và đánh boss lặp lại; trong phó bản Phượng Tước AI tự đi qua Map 1, 3 để lấy kiếm và hạ lần lượt các boss. AI cũng tự đổi đồ: mua đồ ở Thương Nhân Chung Yên khi đủ lõi và xương, đổi Ngọc Nguyên Phượng lấy skin Vàng Trắng ở Người Đổi Đồ. Bấm lại để tắt.'}catch(_){}
 })();
