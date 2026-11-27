@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const KEY='tm_dungeon_v1',RED=0xff2a2a,VIO=0xb050ff,HPX=1e14;
+const KEY='tm_dungeon_v1',RED=0xff2a2a,VIO=0xb050ff,HPX=1e14,CYM=10;
 const DG={power:0,hon:0,bone:0,kills:0,fused:0,style:0,khItem:0,vq:0,extreme:0,eq:0};
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)for(const k in DG)if(Number.isFinite(d[k])&&d[k]>=0)DG[k]=d[k]}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DG))}catch(e){}};
@@ -176,7 +176,7 @@ function makeBoss(form,ext){
  for(let i=0;i<5;i++){const a=i*1.2566,k=new THREE.Mesh(G('DGC5',()=>new THREE.ConeGeometry(.08,.3,4)),gold);k.position.set(Math.cos(a)*.2,2.05,Math.sin(a)*.2);g.add(k)}
  const cape=new THREE.Mesh(G('DGCP',()=>new THREE.PlaneGeometry(.9,1.5)),new THREE.MeshBasicMaterial({color:0x8a0a1a,side:THREE.DoubleSide}));cape.position.set(0,1.05,-.25);g.add(cape);
  scene.add(g);
- const max=(form==1?1e13:1.5e13)*HPX*(ext?10:1),e={m:g,ms,hp:max,max,lh:max,hit:0,cd:99,wind:0,ph:0,dummy:1,boss:1};enemies.push(e);
+ const max=(form==1?1e13:1.5e13)*HPX*CYM*(ext?10:1),e={m:g,ms,hp:max,max,lh:max,hit:0,cd:99,wind:0,ph:0,dummy:1,boss:1};enemies.push(e);
  return{e,form,ext,dm:(ext?3:1)*60000,max,q:[],cd:2.5,busy:0,healCd:14,ultCd:30,hl:null,inv:0,ph:0,arm:0,armT:0,rush:null,lastHp:max}}
 function formTwo(){
  const g=B.e.m;g.scale.setScalar(5);
@@ -191,7 +191,7 @@ function reward(x){
 function bossDown(){
  const e=B.e;
  if(B.form==1){
-  B.form=2;B.max=1.5e13*HPX*(B.ext?10:1);e.hp=B.max;e.lh=B.max;B.lastHp=B.max;B.inv=0;B.q=[];B.hl=null;B.rush=null;B.busy=0;B.cd=3.4;clearSouls();formTwo();
+  B.form=2;B.max=1.5e13*HPX*CYM*(B.ext?10:1);e.hp=B.max;e.lh=B.max;B.lastHp=B.max;B.inv=0;B.q=[];B.hl=null;B.rush=null;B.busy=0;B.cd=3.4;clearSouls();formTwo();
   say('Chung Yên Hoàng Đế — Dạng Hai!',2800);flash(GOLD);shake=Math.max(shake,18);burst(e.m.position.x,e.m.position.z,30,GOLD)}
  else{
   scene.remove(e.m);freeObj(e.m);enemies=enemies.filter(x=>x!==e);clearSouls();
@@ -294,7 +294,7 @@ addEventListener('keydown',e=>{
  if(e.repeat)return;const t=e.target;if(t&&(t.tagName=='INPUT'||t.tagName=='TEXTAREA'))return;
  const c=e.code;if(c=='KeyI')talk();else if(c=='KeyK')castBone(0);else if(c=='KeyL')castBone(1)});
 
-GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1e27 máu. Hết máu sẽ hóa Dạng 2: 1,5e27 máu. Sát thương boss ×100 so với trước. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2); R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp, sát thương ×101.000, gấp 1000 lần Kiếm Hồn Thiên Mệnh; với Chung Yên Kiếm Pháp Kiếm Hồn và các chiêu Quy Luật đổi sang màu đỏ; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ. Quái gây sát thương liên tục và phản sát thương khi bị boss đánh trúng.`;
+GUIDE['Phó bản']=`<h3>Vào phó bản</h3>Nút 🗺 Map → <b>Phó bản Chung Yên Hoàng Đế</b>. Lại gần NPC rồi bấm <b>Nói chuyện (I)</b>. Chết sẽ bị đưa về map cũ; muốn rời phó bản thì chọn map khác ở nút Map.<h3>NPC Chung Yên Tận Diệt</h3>1) Khiêu chiến boss · 2) Xem số boss đã hạ, lõi sức mạnh, lõi kiếm hồn, xương quái · 3) Bật/tắt Cực Hạn (máu boss ×10, sát thương boss ×3, hồi chiêu của bạn +5%, đổi lại chắc chắn nhận 15 lõi sức mạnh, 10 lõi kiếm hồn, 6000 xương).<h3>Boss Chung Yên Hoàng Đế</h3>Dạng 1: 1e28 máu. Hết máu sẽ hóa Dạng 2: 1,5e28 máu. Sát thương boss ×100 so với trước. Có chém, kiếm khí, mưa kiếm, nổ lớn, kiếm hồn đánh hộ, hồi máu (bị gián đoạn nếu chịu đủ sát thương), Dạng 2 thêm Trảm Địa và Hủy Diệt. Thưởng thường: 90% 1 lõi sức mạnh, 70% 1 lõi kiếm hồn, 500 xương.<h3>Thương Nhân Chung Yên</h3>1) 70 lõi sức mạnh: kiếm Thiên Mệnh Kiếm — Dung Hợp Chung Yên, thêm vào menu Kiếm (phím 2) để chọn; R T Y U dùng như Thiên Mệnh Kiếm (sát thương ×50, vùng trúng ×15 với Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp; hồi chiêu và thể lực -99%; hiệu ứng nửa vàng nửa đỏ cho Cửu Ngũ / Thiên Mệnh Kiếm Pháp, R T Y U).<br>2) 30 lõi sức mạnh: Chung Yên Kiếm Pháp (Z X C V, hiệu ứng đỏ, chỉ dùng được khi cầm kiếm Dung Hợp Chung Yên).<br>3) 40 lõi kiếm hồn: Kiếm Hồn Chung Yên (nút R với kiếm Dung Hợp, Cửu Ngũ / Thiên Mệnh / Chung Yên Kiếm Pháp, sát thương ×101.000, gấp 1000 lần Kiếm Hồn Thiên Mệnh; với Chung Yên Kiếm Pháp Kiếm Hồn và các chiêu Quy Luật đổi sang màu đỏ; M2 ×5).<br>4) 100000 xương: Vạn Quái Cận Kiến (phím K) và Vạn Quái Quy Nhất (phím L, dùng độc lập), quái màu tím. Chỉ dùng được khi đang cầm kiếm Dung Hợp Chung Yên; quái trong vùng đánh bị choáng 3 giây, đứng im và không đánh trả. Sát thương hai chiêu ×100 tỷ. Quái vô hạn máu, không tự nổ và không tự biến mất: chỉ bấm lại K / L thì quái mới chết và phát nổ. Quái gây sát thương liên tục và phản sát thương khi bị boss đánh trúng.`;
 
 mkUI();owned();$('stT').nextSibling.textContent='/'+MAXST;buildBtns();
 let last=now();
