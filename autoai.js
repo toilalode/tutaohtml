@@ -2,7 +2,8 @@
 (function(){
  const KEEP=8,FAR=12,LIMIT=140,TICK=110;
  const NOCAST={dom4:1,dom5:1,counter:1,guard2:1};
- let on=false,timer=0,strafe=1,strafeT=0,lastDash=0;
+ let on=false,timer=0,strafe=1,strafeT=0,lastDash=0,task=null,actAt=0;
+ const TALK=6;
  const busy=()=>P.busy>0||P.lk>0||P.cut>0;
  const started=()=>$('start').style.display==='none';
  const steer=(wx,wz)=>{
@@ -36,9 +37,46 @@
    const sv=(sp.tot||0)+(sp.sp==='rewrite'&&!(P.nost>0)?1e9:0);
    if(sv>score){score=sv;best=k}}
   if(best)cast(best)}
+ const TASKS=[
+  [null,'Cày quái tại chỗ (hủy nhiệm vụ)'],
+  [{go:'quest'},'Nhiệm vụ Kiếm Phượng Tước (tự đi, nói chuyện, đánh, lặp lại)'],
+  [{go:'test'},'Chuyển tới Map Test'],
+  [{go:'dungeon'},'Chuyển tới Phó bản Chung Yên'],
+  [{go:'pt',n:1},'Chuyển tới Phượng Tước — Map 1'],
+  [{go:'pt',n:2},'Chuyển tới Phượng Tước — Map 2'],
+  [{go:'pt',n:3},'Chuyển tới Phượng Tước — Map 3']];
+ const act=(fn,msg)=>{actAt=performance.now()+1500;toast(msg);fn()};
+ const endTask=msg=>{task=null;if(msg)toast(msg);paint()};
+ function walkTo(n){
+  const pp=player.position,dx=n.x-pp.x,dz=n.z-pp.z;
+  if(Math.hypot(dx,dz)<TALK){steer(0,0);return true}
+  steer(dx,dz);return false}
+ function taskStep(){
+  if(performance.now()<actAt){steer(0,0);return true}
+  if(task.go==='test'||task.go==='dungeon'){
+   const m=task.go;
+   if(MAP!==m){act(()=>setMap(m),'AI đang chuyển map');task=null;paint();return true}
+   endTask();return false}
+  const A=window.PTAI;
+  if(!A){endTask('Thiếu phuongtuoc.js, AI không làm được nhiệm vụ');return false}
+  if(MAP!=='pt'){act(()=>setMap('pt'),'AI vào Phó bản Phượng Tước');return true}
+  const want=task.go==='pt'?task.n:1;
+  if(want>=2&&!A.sword()){endTask('Chưa có Kiếm Phượng Tước nên AI chưa vào được Map '+want);return false}
+  if(A.map()!==want){
+   const c=A.conv();
+   if(!c)return false;
+   if(!walkTo(c))return true;
+   act(()=>A.go(want),'AI nói chuyện với Người Chuyển Đổi');return true}
+  if(task.go==='pt'){endTask();return false}
+  if(A.running())return false;
+  const q=A.quest();
+  if(!q)return false;
+  if(!walkTo(q))return true;
+  act(A.start,'AI nói chuyện nhận nhiệm vụ');return true}
  function tick(){
   if(!on)return;
   if(!started()||paused||P.hp<=0){steer(0,0);blockOn(0);return}
+  if(task&&taskStep())return;
   const pp=player.position,foes=enemies.filter(e=>e.hp>0);
   if(!foes.length){steer(0,0);return}
   let near=null,nd=1e9;
@@ -67,19 +105,33 @@
   clearInterval(timer);
   timer=0;
   if(on)timer=setInterval(tick,TICK);
-  else{steer(0,0);blockOn(0)}
+  else{task=null;steer(0,0);blockOn(0)}
   toast(on?'AI đang chơi hộ bạn':'Đã tắt AI');
   paint()}
  const ab=document.createElement('button');
  ab.className='c4';
+ const mb=document.createElement('button');
+ mb.className='c4';
  function paint(){
+  mb.style.cssText='height:38px;min-width:88px;border-radius:8px;padding:0 8px;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;white-space:nowrap;border:2px solid '+(task?'#2ecc71':'#667')+';background:'+(task?'#0f4d2a':'#0a0a1a')+';opacity:'+(task?1:.8);
+  mb.textContent=task?'🧭 Đang chạy':'🧭 Nhiệm vụ';
   ab.style.cssText='height:38px;min-width:96px;border-radius:8px;padding:0 8px;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;white-space:nowrap;border:2px solid '+(on?'#2ecc71':'#667')+';background:'+(on?'#0f4d2a':'#0a0a1a')+';opacity:'+(on?1:.8);
   ab.textContent=on?'🤖 AI: BẬT':'🤖 AI cày hộ'}
  paint();
  ab.addEventListener('pointerdown',e=>{e.preventDefault();setOn(!on)});
+ function taskMenu(){
+  if(castBusy())return;
+  const cur=task?TASKS.findIndex(x=>x[0]&&x[0].go===task.go&&x[0].n===task.n):0;
+  popup('AI nhiệm vụ & chuyển map',TASKS.map(x=>x[1]),cur,i=>{
+   task=TASKS[i][0]?Object.assign({},TASKS[i][0]):null;
+   actAt=0;
+   if(task&&!on)setOn(true);
+   else{toast(task?'AI bắt đầu: '+TASKS[i][1]:'AI cày quái tại chỗ');paint()}})}
+ mb.addEventListener('click',e=>{e.preventDefault();taskMenu()});
  const row=document.createElement('div');
  row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px;pointer-events:auto';
  row.appendChild(ab);
+ row.appendChild(mb);
  $('hudR').appendChild(row);
- try{GUIDE['Mẹo']+='<br>• <b>🤖 AI cày hộ</b> (góc trên phải): AI tự di chuyển giữ khoảng cách với quái, né, đánh thường, bật buff và thi triển chiêu theo kiếm pháp đang chọn. Bấm lại để tắt.'}catch(_){}
+ try{GUIDE['Mẹo']+='<br>• <b>🤖 AI cày hộ</b> (góc trên phải): AI tự di chuyển giữ khoảng cách với quái, né, đánh thường, bật buff và thi triển chiêu theo kiếm pháp đang chọn. Bấm lại để tắt.<br>• <b>🧭 Nhiệm vụ</b>: AI tự làm nhiệm vụ Kiếm Phượng Tước (vào Phó bản Phượng Tước, đi tới NPC, nói chuyện, đánh, lặp lại) hoặc tự chuyển sang map bạn chọn.'}catch(_){}
 })();
