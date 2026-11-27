@@ -2,7 +2,7 @@
 (function(){
  const KEEP=8,BOSSKEEP=20,FAR=12,LIMIT=140,TICK=110,NPCX=-8,NPCZ=-7,NPCNAME='Chung Yên Tận Diệt',PTCONV=[-10,-8],PTWORK=[10,-8],PTSWAP=[0,-14],SHOP=[8,-7],PTORDER=['dinh','thi','tinh','viem','hon','xv'];
  const NOCAST={dom4:1,dom5:1,counter:1,guard2:1};
- let on=false,timer=0,loadT=0,ptSel=0,ptLock=0,shopNext=0,swapNext=0,lsT=0,lsC={},strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
+ let on=false,timer=0,loadT=0,ptSel=0,ptLock=0,shopNext=0,swapNext=0,mapT=0,lsT=0,lsC={},strafe=1,strafeT=0,lastDash=0,talkT=0,wp=null,wpT=0;
  const busy=()=>P.busy>0||P.lk>0||P.cut>0;
  const started=()=>$('start').style.display==='none';
  const steer=(wx,wz)=>{
@@ -122,6 +122,17 @@
   if(!walkTo(pp,ptSel?PTWORK:PTCONV))return;
   if(ptSel&&performance.now()<ptLock)return;
   talkVia('ptTalk',ptPick)}
+ function mapPick(title,texts){
+  if(title!=='Chọn map')return -1;
+  const pt=lsc('tm_pt_v1'),b=pt.beat||{},want=(!pt.sword||PTORDER.some(k=>!b[k]))?'Phượng Tước':'Chung Yên';
+  return texts.findIndex(x=>x.indexOf(want)>=0)}
+ function switchMap(){
+  const t=performance.now();
+  if(t-mapT<4000||busy())return false;
+  mapT=t;
+  mapMenu();
+  setTimeout(()=>answer(mapPick,0),700);
+  return true}
  function wander(pp){
   const t=performance.now();
   if(!wp||t>wpT||Math.hypot(wp.x-pp.x,wp.z-pp.z)<3){
@@ -134,6 +145,7 @@
   if(!started()||paused||P.hp<=0){steer(0,0);blockOn(0);return}
   loadout();
   if(MAP!=='pt')ptSel=0;
+  if(MAP==='main'&&switchMap())return;
   const pp=player.position,foes=enemies.filter(e=>e.hp>0);
   if(!foes.length){
    if(MAP==='dungeon')goQuest(pp);
@@ -184,5 +196,5 @@
  row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px;pointer-events:auto';
  row.appendChild(ab);
  $('hudR').appendChild(row);
- try{GUIDE['Mẹo']+='<br>• <b>🤖 AI + Nhiệm vụ</b> (góc trên phải): AI tự di chuyển, giữ khoảng cách và né, đánh thường, bật buff, thi triển chiêu. AI tự chọn Kiếm Phượng Tước (khi đã mở khóa chiêu), Dung Hợp Chung Yên hoặc Thiên Mệnh Kiếm cùng kiếm pháp hợp. Trong phó bản Chung Yên AI tự nói chuyện NPC, khiêu chiến và đánh boss lặp lại; trong phó bản Phượng Tước AI tự đi qua Map 1, 3 để lấy kiếm và hạ lần lượt các boss. AI cũng tự đổi đồ: mua đồ ở Thương Nhân Chung Yên khi đủ lõi và xương, đổi Ngọc Nguyên Phượng lấy skin Vàng Trắng ở Người Đổi Đồ. Bấm lại để tắt.'}catch(_){}
+ try{GUIDE['Mẹo']+='<br>• <b>🤖 AI + Nhiệm vụ</b> (góc trên phải): AI tự di chuyển, giữ khoảng cách và né, đánh thường, bật buff, thi triển chiêu. AI tự chọn Kiếm Phượng Tước (khi đã mở khóa chiêu), Dung Hợp Chung Yên hoặc Thiên Mệnh Kiếm cùng kiếm pháp hợp. Trong phó bản Chung Yên AI tự nói chuyện NPC, khiêu chiến và đánh boss lặp lại; trong phó bản Phượng Tước AI tự đi qua Map 1, 3 để lấy kiếm và hạ lần lượt các boss. AI tự chuyển map từ map chính vào phó bản (Phượng Tước nếu chưa xong, ngược lại Chung Yên). AI cũng tự đổi đồ: mua đồ ở Thương Nhân Chung Yên khi đủ lõi và xương, đổi Ngọc Nguyên Phượng lấy skin Vàng Trắng ở Người Đổi Đồ. Bấm lại để tắt.'}catch(_){}
 })();
