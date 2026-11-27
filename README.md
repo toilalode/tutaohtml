@@ -35,7 +35,7 @@ Lệnh phải chạy ngay trong thư mục gốc của repo (nơi có `index.htm
 | M1 đánh thường | Chuột trái / Tab | Chạm màn hình (giữ yên = đánh liên tục) |
 | M2 | Chuột phải / H | Nút M2 |
 | Chọn kiếm pháp / kiếm / skin | 1 / 2 / 3 | Nút 1 / 2 / 3 |
-| Chiêu | Z X C V B N M J F G | Hàng nút dưới |
+| Chiêu | Z X C V B N M J F G H | Hàng nút dưới |
 | Buff | R T Y U | Hàng nút dưới |
 | Xoay camera | Kéo chuột, mũi tên | Kéo ngón nửa phải màn hình (360° cả ngang lẫn dọc) |
 | Thu phóng | Con lăn, O / P | Chụm 2 ngón, nút ＋ － |
