@@ -5,10 +5,11 @@ const PATCHES={
  ['HPX=1e14,','HPX=750,'],
  ['1.5e13','1e13'],
  ['1e28 máu','75 triệu tỷ máu'],
- ['1,5e28 máu','75 triệu tỷ máu']],
+ ['1,5e28 máu','75 triệu tỷ máu'],
+ ["setMap=function(m){const was=MAP;if(was=='dungeon')dgLeave();","setMap=function(m){const was=MAP;endArmy(false);endGiant(false);if(was=='dungeon')dgLeave();"]],
 'phuongtuoc.js':[
  ['const fmtB=n=>(n/1e9)',"const fmtB=n=>n<1e9?Math.ceil(n).toLocaleString('vi-VN'):(n/1e9)"],
- ['hp:1e18*20,','hp:5e13*20,'],
+ ['hp:1e18*20,','hp:3.75e12*20,'],
  ['hp:1.5e18*20,','hp:1e14*20,'],
  ['hp:2.5e18*20,','hp:1.5e14*20,'],
  ['hp:5e18*20,','hp:2.5e14*20,'],
