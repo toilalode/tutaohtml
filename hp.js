@@ -10,3 +10,10 @@ tpOpen=function(){tpEdit=true;{const e=enemies.find(x=>x.dummy);tpBuf=!e?'':e.in
 tpKey=function(k){if(tpBuf=='∞'&&k!='inf')tpBuf='';if(k=='inf')tpBuf='∞';else if(k=='del')tpBuf=tpBuf.slice(0,-1);else if(k=='clr')tpBuf='';else if(tpBuf.length<DIG)tpBuf=(tpBuf+k).replace(/^0+(?=\d)/,'');$('tpM').value=fmtHp(tpBuf)};
 tpApply=function(full){const e=enemies.find(x=>x.dummy);if(!e)return;if($('tpM').value=='∞'){dummyInf(e,true);$('tpM').value='∞';$('tpC').value='∞';dmgSum=0;dmgT=0;tpClose();return}dummyInf(e,false);let mx=Math.floor(+(tpEdit?tpBuf:String(e.max)))||0;if(mx<100){mx=100;toast('Máu tối đa tối thiểu 100')}if(mx>MAXHP){mx=MAXHP;toast('Máu tối đa 1e+99')}tpClose();const c=mx;e.max=mx;e.hp=c;e.lh=c;$('tpM').value=fmtHp(mx);$('tpC').value=fmtHp(c);dmgSum=0;dmgT=0};
 })();
+(function(){
+/* Áp Chế Nhất Vương diệt quái vô hạn máu: ghi sát thương là ∞ thay vì số hữu hạn */
+const baseKill=killInf;
+killInf=function(e){const was=e.infDead;baseKill(e);if(!was&&e.infDead)e.infDmg=Infinity};
+const baseST=sT;
+sT=function(id,v){return baseST(id,id==='dmg'&&v==='-Infinity'?'-∞':v)};
+})();
