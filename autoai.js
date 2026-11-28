@@ -188,12 +188,13 @@
  const ab=document.createElement('button');
  ab.className='c4';
  function paint(){
-  ab.style.cssText='height:38px;min-width:150px;border-radius:8px;padding:0 8px;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;white-space:nowrap;border:2px solid '+(on?'#2ecc71':'#667')+';background:'+(on?'#0f4d2a':'#0a0a1a')+';opacity:'+(on?1:.8);
-  ab.textContent=on?'🤖 AI + Nhiệm vụ: BẬT':'🤖 AI + Nhiệm vụ'}
+  ab.style.cssText='height:22px;width:22px;min-width:0;border-radius:6px;padding:0;font-size:12px;display:flex;align-items:center;justify-content:center;border:1px solid '+(on?'#2ecc71':'#445')+';background:'+(on?'#0f4d2a':'rgba(10,10,26,.5)')+';opacity:'+(on?.9:.3);
+  ab.title='AI + Nhiệm vụ';
+  ab.textContent='🤖'}
  paint();
  ab.addEventListener('pointerdown',e=>{e.preventDefault();setOn(!on)});
  const row=document.createElement('div');
- row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px;pointer-events:auto';
+ row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:2px;pointer-events:auto';
  row.appendChild(ab);
  $('hudR').appendChild(row);
  try{GUIDE['Mẹo']+='<br>• <b>🤖 AI + Nhiệm vụ</b> (góc trên phải): AI tự di chuyển, giữ khoảng cách và né, đánh thường, bật buff, thi triển chiêu. AI tự chọn Kiếm Phượng Tước (khi đã mở khóa chiêu), Dung Hợp Chung Yên hoặc Thiên Mệnh Kiếm cùng kiếm pháp hợp. Trong phó bản Chung Yên AI tự nói chuyện NPC, khiêu chiến và đánh boss lặp lại; trong phó bản Phượng Tước AI tự đi qua Map 1, 3 để lấy kiếm và hạ lần lượt các boss. AI tự chuyển map từ map chính vào phó bản (Phượng Tước nếu chưa xong, ngược lại Chung Yên). AI cũng tự đổi đồ: mua đồ ở Thương Nhân Chung Yên khi đủ lõi và xương, đổi Ngọc Nguyên Phượng lấy skin Vàng Trắng ở Người Đổi Đồ. Bấm lại để tắt.'}catch(_){}
