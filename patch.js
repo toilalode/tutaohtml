@@ -17,6 +17,7 @@ const PATCHES={
  ['hp:2e19*50,','hp:1e15*50,'],
  ['hp:1e17*5,','hp:2.5e15*5,'],
  ['500 triệu tỷ máu','12,5 triệu tỷ máu'],
+ ['if(apOn){if(e.hp>0){if(e.inf){e.inf=0;e.apInf=1}e.hp=-1;e.hit=8}}','if(apOn){if(!e.infOn&&e.hp>0){e.hp=-1;e.hit=8}}'],
  ["const ptOnly=()=>MAP=='pt'&&ptMap>=2;","const ptOnly=()=>MAP=='pt'&&ptMap>=2;window.ptOnly=ptOnly;const baseStyleOnly=setStyle;setStyle=function(n){if(ptOnly()&&n<6)return toast('Map này chỉ dùng được kiếm pháp Phượng Tước');return baseStyleOnly(n)};"]],
 'ptskill.js':[
  ['NPHP=1e14;','NPHP=2.5e15*5;'],
